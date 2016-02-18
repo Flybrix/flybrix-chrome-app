@@ -1,0 +1,42 @@
+
+// https://developer.chrome.com/extensions/manifest
+
+{
+    "manifest_version": 2,
+    "name": "Flybrix Configuration Utility",
+    "version": "0.9",
+    "description": "Use the Flybrix Configuration Utility to tune and reconfigure your Flybrix flyer.",
+    "icons": { "16": "icon16.png",
+               "48": "icon48.png",
+              "128": "icon128.png" },
+    "minimum_chrome_version": "46", 
+
+    "app": {
+        "background": {
+            "scripts": [ "background.js" ],
+            "persistent": true
+        }
+    },
+    "short_name": "Flybrix",
+    
+    "permissions": [
+        "serial",
+        "storage",
+        "fileSystem",
+        "fileSystem.write",
+		"hid",
+		"usb",
+        {
+            "usbDevices": [
+                    {
+                        "vendorId": 5824,
+                        "productId": 1144
+                    },
+                    {
+                        "vendorId": 5824,
+                        "productId": 1143
+                    }
+            ]
+        }
+    ]
+}

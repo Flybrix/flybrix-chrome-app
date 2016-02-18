@@ -1,0 +1,246 @@
+<div>
+
+    <div class="flybrix-plot-holder">
+        <div class="flybrix-plot-title">DATA RATE</div>
+        <div id="data-rate-plot" class="data-rate-plot"></div>
+    </div>
+
+    <p style="margin-bottom: 10px; margin-top: 10px; font-weight: bold;">Data transfer:</p>
+    <div>
+        <span style="float:left; min-width:100px; margin-right: 10px">Target delay factor</span>
+        <input type="number" min="0" max="1001" step="1" value="500" id="target-delay" style="float:left; min-width:100px; margin-right: 10px"></input>
+
+        <span style="float:left; min-width:100px; margin-right: 10px">Target Rate (Hz)</span>
+        <output type="number" id="target-rate" style="float:left; width:100px; height: 16px; margin-right: 10px; background-color:#ffffff"></output>
+
+        <span style="float:left; min-width:100px; margin-right: 10px">Actual Rate (Hz)</span>
+        <output type="number" id="actual-rate" style="float:left; width:100px; height: 16px; margin-right: 10px; background-color:#ffffff"></output>
+    </div>
+
+    <p style="margin-bottom: 10px; margin-top: 50px;font-weight: bold;">State data:</p>
+    <div id="current-state">
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="0" value="value"></input>
+            <span class="model-entry-title">timestamp_us</span>
+            <label class="model-entry-label">mpu usec counter<input class="model-entry-field timestamp_us"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="1" value="value"></input>
+            <span class="model-entry-title">status</span>
+            <label class="model-entry-label">state status bitfield<input class="model-entry-field status"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="2" value="value"></input>
+            <span class="model-entry-title">V0_raw</span>
+            <label class="model-entry-label">battery voltage<input class="model-entry-field V0_raw"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="3" value="value"></input>
+            <span class="model-entry-title">I0_raw</span>
+            <label class="model-entry-label">total current<input class="model-entry-field I0_raw"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="4" value="value"></input>
+            <span class="model-entry-title">I1_raw</span>
+            <label class="model-entry-label">electronics current<input class="model-entry-field I1_raw"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="5" value="value"></input>
+            <span class="model-entry-title">accel</span>
+            <label class="model-entry-label">x-axis<input class="model-entry-field accel 0"/></label>
+            <label class="model-entry-label">y-axis<input class="model-entry-field accel 1"/></label>
+            <label class="model-entry-label">z-axis<input class="model-entry-field accel 2"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="6" value="value"></input>
+            <span class="model-entry-title">gyro</span>
+            <label class="model-entry-label">x-axis<input class="model-entry-field gyro 0"/></label>
+            <label class="model-entry-label">y-axis<input class="model-entry-field gyro 1"/></label>
+            <label class="model-entry-label">z-axis<input class="model-entry-field gyro 2"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="7" value="value"></input>
+            <span class="model-entry-title">mag</span>
+            <label class="model-entry-label">x-axis<input class="model-entry-field mag 0"/></label>
+            <label class="model-entry-label">y-axis<input class="model-entry-field mag 1"/></label>
+            <label class="model-entry-label">z-axis<input class="model-entry-field mag 2"/></label>
+        </div>                         
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="8" value="value"></input>
+            <span class="model-entry-title">temperature</span>
+            <label class="model-entry-label">BMP280 T<input class="model-entry-field temperature"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="9" value="value"></input>
+            <span class="model-entry-title">pressure</span>
+            <label class="model-entry-label">BMP280 P<input class="model-entry-field pressure"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="10" value="value"></input>
+            <span class="model-entry-title">ppm</span>
+            <label class="model-entry-label">CH0<input class="model-entry-field ppm 0"/></label>
+            <label class="model-entry-label">CH1<input class="model-entry-field ppm 1"/></label>
+            <label class="model-entry-label">CH2<input class="model-entry-field ppm 2"/></label>
+            <label class="model-entry-label">CH3<input class="model-entry-field ppm 3"/></label>
+            <label class="model-entry-label">CH4<input class="model-entry-field ppm 4"/></label>
+            <label class="model-entry-label">CH5<input class="model-entry-field ppm 5"/></label>
+        </div>  
+        <div class="model-entry">
+            <span class="model-entry-title" style="margin-left: 22px;">ppm_midpoint</span>
+            <label class="model-entry-label">pitch<input class="model-entry-field ppm_midpoint 0"/></label>
+            <label class="model-entry-label">roll<input class="model-entry-field ppm_midpoint 1"/></label>
+            <label class="model-entry-label">yaw<input class="model-entry-field ppm_midpoint 2"/></label>
+        </div>                
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="11" value="value"></input>
+            <span class="model-entry-title">AUX_chan_mask</span>
+            <label class="model-entry-label">bitfield<input class="model-entry-field AUX_chan_mask"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="12" value="value"></input>
+            <span class="model-entry-title">command</span>
+            <label class="model-entry-label">thrust<input class="model-entry-field command 0"/></label>
+            <label class="model-entry-label">pitch<input class="model-entry-field command 1"/></label>
+            <label class="model-entry-label">roll<input class="model-entry-field command 2"/></label>
+            <label class="model-entry-label">yaw<input class="model-entry-field command 3"/></label>
+        </div>      
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="13" value="value"></input>
+            <span class="model-entry-title">control</span>
+            <label class="model-entry-label">Fz<input class="model-entry-field control 0"/></label>
+            <label class="model-entry-label">Tx<input class="model-entry-field control 1"/></label>
+            <label class="model-entry-label">Ty<input class="model-entry-field control 2"/></label>
+            <label class="model-entry-label">Tz<input class="model-entry-field control 3"/></label>
+        </div>      
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="14" value="value"></input>
+            <span class="model-entry-title">control_T_trim</span>
+            <label class="model-entry-label">Tx<input class="model-entry-field control_T_trim 0"/></label>
+            <label class="model-entry-label">Ty<input class="model-entry-field control_T_trim 1"/></label>
+            <label class="model-entry-label">Tz<input class="model-entry-field control_T_trim 2"/></label>
+        </div> 
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="15" value="value"></input>
+            <span class="model-entry-title">pid_master_Fz</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Fz 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_master_Fz 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Fz 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Fz 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Fz 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Fz 5"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="16" value="value"></input>
+            <span class="model-entry-title">pid_master_Tx</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Tx 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_master_Tx 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Tx 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Tx 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Tx 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Tx 5"/></label>
+        </div>        
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="17" value="value"></input>
+            <span class="model-entry-title">pid_master_Ty</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Ty 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_master_Ty 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Ty 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Ty 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Ty 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Ty 5"/></label>
+        </div>        
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="18" value="value"></input>
+            <span class="model-entry-title">pid_master_Tz</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Tz 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_master_Tz 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Tz 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Tz 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Tz 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Tz 5"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="19" value="value"></input>
+            <span class="model-entry-title">pid_slave_Fz</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Fz 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Fz 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Fz 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Fz 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Fz 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Fz 5"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="20" value="value"></input>
+            <span class="model-entry-title">pid_slave_Tx</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Tx 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Tx 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Tx 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Tx 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Tx 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Tx 5"/></label>
+        </div>        
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="21" value="value"></input>
+            <span class="model-entry-title">pid_slave_Ty</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Ty 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Ty 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Ty 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Ty 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Ty 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Ty 5"/></label>
+        </div>        
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="22" value="value"></input>
+            <span class="model-entry-title">pid_slave_Tz</span>
+            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Tz 0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Tz 1"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Tz 2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Tz 3"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Tz 4"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Tz 5"/></label>
+        </div>                                        
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="23" value="value"></input>
+            <span class="model-entry-title">MotorOut</span>
+            <label class="model-entry-label">CH0<input class="model-entry-field MotorOut 0"/></label>
+            <label class="model-entry-label">CH1<input class="model-entry-field MotorOut 1"/></label>
+            <label class="model-entry-label">CH2<input class="model-entry-field MotorOut 2"/></label>
+            <label class="model-entry-label">CH3<input class="model-entry-field MotorOut 3"/></label>
+            <label class="model-entry-label">CH4<input class="model-entry-field MotorOut 4"/></label>
+            <label class="model-entry-label">CH5<input class="model-entry-field MotorOut 5"/></label>
+            <label class="model-entry-label">CH6<input class="model-entry-field MotorOut 6"/></label>
+            <label class="model-entry-label">CH7<input class="model-entry-field MotorOut 7"/></label>
+        </div>    
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="24" value="value"></input>
+            <span class="model-entry-title">kinematicsAngle</span>
+            <label class="model-entry-label">pitch<input class="model-entry-field kinematicsAngle 0"/></label>
+            <label class="model-entry-label">roll<input class="model-entry-field kinematicsAngle 1"/></label>
+            <label class="model-entry-label">yaw<input class="model-entry-field kinematicsAngle 2"/></label>
+        </div>  
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="25" value="value"></input>
+            <span class="model-entry-title">kinematicsRate</span>
+            <label class="model-entry-label">pitch rate<input class="model-entry-field kinematicsRate 0"/></label>
+            <label class="model-entry-label">roll rate<input class="model-entry-field kinematicsRate 1"/></label>
+            <label class="model-entry-label">yaw rate<input class="model-entry-field kinematicsRate 2"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="26" value="value"></input>
+            <span class="model-entry-title">kinematicsAltitude</span>
+            <label class="model-entry-label">altitude<input class="model-entry-field kinematicsAltitude"/></label>
+        </div>
+        <div class="model-entry">
+            <input type="checkbox" class="model-change-mask" id="27" value="value"></input>
+            <span class="model-entry-title">loopCount</span>
+            <label class="model-entry-label">iterations<input class="model-entry-field loopCount"/></label>
+        </div>
+    </div>
+
+    <p style="margin-bottom: 10px; margin-top: 40px; font-weight: bold;">Save to file:</p>
+
+    <div class="flybrix-filehandler-holder">
+        <div id="capture-mode-filehandler" class="capture-mode-filehandler"></div>
+    </div>
+
+</div>

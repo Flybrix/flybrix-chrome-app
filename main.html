@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Configurator</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <link type="text/css" rel="stylesheet" href="./css/style.css" media="all" />
+        <link type="text/css" rel="stylesheet" href="./css/lib/jquery-ui.css" media="all" />
+
+        <script type="text/javascript" src="./js/lib/jquery-2.2.0.js"></script>
+        <script type="text/javascript" src="./js/lib/jquery-ui.js"></script>
+        <script type="text/javascript" src="./js/jquery.flot-flybrix.js"></script>
+        <script type="text/javascript" src="./js/lib/jquery.flot.navigate.js"></script>
+        <script type="text/javascript" src="./js/lib/three.js"></script>
+        <script type="text/javascript" src="./js/lib/three-libs/Stats.js"></script>
+        <script type="text/javascript" src="./js/lib/three-libs/STLLoader.js"></script>
+        <script type="text/javascript" src="./js/lib/three-libs/OrbitControls.js"></script>
+
+        <script type="text/javascript" src="./js/parser.js"></script>
+        <script type="text/javascript" src="./js/serial.js"></script>
+        <script type="text/javascript" src="./js/eeprom-config.js"></script>
+        <script type="text/javascript" src="./js/plot.js"></script>
+        <script type="text/javascript" src="./js/cobs.js"></script>
+        <script type="text/javascript" src="./js/filehandler.js"></script>
+        <script type="text/javascript" src="./js/teensy-firmware.js"></script>
+        <script type="text/javascript" src="./js/sphere-minimizer.js"></script>
+
+        <!-- Various tabs are divided into separate files (for clarity) -->
+        <script type="text/javascript" src="./tabs/tuning.js"></script>
+        <script type="text/javascript" src="./tabs/sensors.js"></script>
+        <script type="text/javascript" src="./tabs/signals.js"></script>
+        <script type="text/javascript" src="./tabs/vehicle.js"></script>
+        <script type="text/javascript" src="./tabs/motors.js"></script>
+        <script type="text/javascript" src="./tabs/datastream.js"></script>
+        <script type="text/javascript" src="./tabs/config.js"></script>
+
+        <script type="text/javascript" src="./js/main.js"></script>
+    </head>
+    <body>
+        <div style="padding: 5px;">
+            <div class="datastream-serial">
+                <select id="port-selector"></select>
+                <div class="button" id="connect">Connect</div>
+				<label>
+					<input class="auto_connect" type="checkbox" />
+					<span class="auto_connect">Auto Connect</span>
+                </label>
+				<!--<div class="button" id="refresh">Refresh</div>-->
+                <div class="datastream-report" id="port-usage">0 kpbs </div>
+            </div>
+
+            <div class="datastream-replay">
+                <div style="height: 30px; margin-top:20px"><div class='filename' id='file'></div><img class='button' id='open' src='/img/open.png'></img></div>
+                <div style="height: 20px;"><div class='slider'></div><img class='button' id='play' src='/img/play.png'></img></div>
+                <div class="datastream-report"> </div>
+            </div>
+
+            <div class="command-log" id='command-log'></div>
+
+            <div id="menu" class="tab-button-bar">
+                <a class="tab-button" href="#tuning" title="">Tuning</a>
+                <a class="tab-button" href="#signals" title="">R/C Signals</a>
+                <a class="tab-button" href="#sensors" title="">Sensor Data</a>
+                <a class="tab-button" href="#vehicle" title="">Vehicle View</a>
+                <a class="tab-button" href="#motors" title="">Motors</a>
+                <a class="tab-button" href="#datastream" title="">Datastream</a>
+                <a class="tab-button" href="#config" title="">Configuration</a>
+            </div>
+            <div class="tab-content">
+                <div id="tuning"></div>
+                <div id="signals"></div>
+                <div id="sensors"></div>
+                <div id="vehicle"></div>
+                <div id="motors"></div>
+                <div id="datastream"></div>
+                <div id="config"></div>
+            </div>
+
+        </div>
+    </body>
+</html>

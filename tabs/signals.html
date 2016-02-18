@@ -1,0 +1,71 @@
+<div>
+
+    <div class="flybrix-plot-holder">
+        <div class="flybrix-plot-title">Received PPM Signals</div>
+        <div id="signals-plot" class="signals-plot"></div>
+    </div>
+
+    <div class= "command-settings">
+        <div class="command-settings-assigned-channels">
+            <div class="command-settings-label">Throttle Channel</div><input class="command-settings-assignedChannel-field assignedChannel 0"/>
+            <div class="command-settings-label">Pitch Channel</div><input class="command-settings-assignedChannel-field assignedChannel 1"/>
+            <div class="command-settings-label">Roll Channel</div><input class="command-settings-assignedChannel-field assignedChannel 2"/>
+            <div class="command-settings-label">Yaw Channel</div><input class="command-settings-assignedChannel-field assignedChannel 3"/>
+            <div class="command-settings-label">AUX 1 Channel</div><input class="command-settings-assignedChannel-field assignedChannel 4"/>
+            <div class="command-settings-label">AUX 2 Channel</div><input class="command-settings-assignedChannel-field assignedChannel 5"/>
+        </div>
+        <div class="command-settings-commandInversion">
+            <div class="command-settings-label" style="width:105px">Invert Pitch Channel</div><input type='checkbox' class="command-settings-checkbox-inversion bitfield commandInversion 0"/>
+            <div class="command-settings-label" style="width:105px">Invert Roll Channel</div><input type='checkbox' class="command-settings-checkbox-inversion bitfield commandInversion 1"/>
+            <div class="command-settings-label" style="width:105px">Invert Yaw Channel</div><input type='checkbox' class="command-settings-checkbox-inversion bitfield commandInversion 2"/>
+        </div>
+        <div class="command-settings-scale-factors">
+            <div class="command-settings-master-row">
+                <div class="command-settings-label">Throttle to Altitude (meters)</div><input class="command-settings-commandScaling-field thrustMasterPIDParameters 6"/>
+                <div class="command-settings-label">Pitch to Angle (deg)</div><input class="command-settings-commandScaling-field pitchMasterPIDParameters 6"/>
+                <div class="command-settings-label">Roll to Angle (deg)</div><input class="command-settings-commandScaling-field rollMasterPIDParameters 6"/>
+                <div class="command-settings-label">Yaw to Angle (deg)</div><input class="command-settings-commandScaling-field yawMasterPIDParameters 6"/>
+            </div>
+            <div class="command-settings-slave-row">
+                <div class="command-settings-label">Throttle to Climb Rate (m/sec)</div><input class="command-settings-commandScaling-field thrustSlavePIDParameters 6"/>
+                <div class="command-settings-label">Pitch to Rate (deg/sec)</div><input class="command-settings-commandScaling-field pitchSlavePIDParameters 6"/>
+                <div class="command-settings-label">Roll to Rate (deg/sec)</div><input class="command-settings-commandScaling-field rollSlavePIDParameters 6"/>
+                <div class="command-settings-label">Yaw to Rate (deg/sec)</div><input class="command-settings-commandScaling-field yawSlavePIDParameters 6"/>
+            </div>     
+        </div>
+    </div>
+
+    <div class="command-settings-aux-levels">
+ 		<div class="led-green" id="auxbit00"><div class="led-label">AUX1 LOW</div></div>
+		<div class="led-green" id="auxbit01"><div class="led-label">AUX1 MID</div></div>
+		<div class="led-green" id="auxbit02"><div class="led-label">AUX1 HIGH</div></div>
+		<div class="led-green" id="auxbit03"><div class="led-label">AUX2 LOW</div></div>
+		<div class="led-green" id="auxbit04"><div class="led-label">AUX2 MID</div></div>
+		<div class="led-green" id="auxbit05"><div class="led-label">AUX2 HIGH</div></div>
+    </div>
+    
+    <p style="margin-top:20px">The master pid loop will be driven with these scaled command setpoints (target state values):</p>
+    <div class="flybrix-plot-holder">
+        <div class="flybrix-plot-title">Master PID Setpoints</div>
+        <div id="commands-master-plot" class="commands-master-plot"></div>
+    </div>
+
+    <p style="margin-top:20px">If the master pid is bypassed, the slave pid loop will be driven with these scaled command setpoints (target state derivitive values):</p>
+    <div class="flybrix-plot-holder">
+        <div class="flybrix-plot-title">Slave PID Setpoints</div>
+        <div id="commands-slave-plot" class="commands-slave-plot"></div>
+    </div>
+    
+    <p style="margin-top:20px">The trim values can be changed whenever the throttle is low and are added to he PWM setting after the feedback loops:</p>
+    <div class="flybrix-plot-holder">
+        <div class="flybrix-plot-title">Feed-forward PWM Trim</div>
+        <div id="commands-feedfoward-plot" class="commands-feedfoward-plot"></div>
+    </div>
+
+    <p style="margin-top:20px">If both the master pid and the slave pid are bypassed, the airframe will be powered with these levels, taking into account the trim settings:</p>
+    <div class="flybrix-plot-holder">
+        <div class="flybrix-plot-title">Direct PWM Output Levels</div>
+        <div id="commands-direct-plot" class="commands-direct-plot"></div>
+    </div>
+
+</div>
