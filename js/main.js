@@ -315,7 +315,6 @@ $(document).ready(function () {
 		return true;
 	}
 
-	$('.datastream-replay').data("buttonType", "play");
 	$('.datastream-replay #open').click(function () {
 		event.preventDefault();
 		var accepts = [{
@@ -391,13 +390,10 @@ $(document).ready(function () {
 
 	function fireOffStop() {
 		data_mode = "idle";
-		$(".datastream-replay").data("buttonType", "play");
-		$('.datastream-replay #play').attr("src", "/img/play.png");
 	}
 
 	$('.datastream-replay #play').click(function () {
 		console.log('click play', $(this));
-		if ($('.datastream-replay').data("buttonType") === "play") {
 			// TODO
 			// turn off serial port if necessary
 			// set mode to replay
@@ -407,17 +403,24 @@ $(document).ready(function () {
 			// drive everything via the slider value update -- send a chunk of bytes and then advance on a timer.
 
 			//$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
+			if (data_mode === "replay")
+				return;
 			data_mode = "replay";
-			$('.datastream-replay').data("buttonType", "pause");
-			$('.datastream-replay #play').attr("src", "/img/pause.png");
 
 			setTimeout(function () {
 				simulateData(replay_buffer.slice(replay_point), 500, 10);
-			}, 100)
-		} else {
+			}, 100);
+	});
+
+	$('.datastream-replay #pause').click(function () {
 			// stop playing
 			fireOffStop();
-		}
+	});
+
+	$('.datastream-replay #stop').click(function () {
+			// stop playing
+			fireOffStop();
+			setReplayPosition(0);
 	});
 	// TODO
 	// deal with slider related events
