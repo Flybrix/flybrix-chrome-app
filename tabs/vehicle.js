@@ -1,6 +1,8 @@
 var magnetometer_estimate = [0, 0, 0, 0];
 var magnetometer_estimate_points = [];
 
+var vehicle_signal_lights = [];
+
 function initialize_vehicle_view() {
 
     create_vehicle_view_scene();
@@ -22,6 +24,12 @@ function initialize_vehicle_view() {
         refresh_config_view_from_eepromConfig();
         setTimeout(function(){sendCONFIG(); setTimeout(eeprom_refresh_callback_list.fire, 100);}, 1);
     });
+
+    for (var i = 0; i < 16; ++i)
+        vehicle_signal_lights.push({
+            mask: (1 << i),
+            selector: $('#bit' + ("00" + i).slice(-2)),
+        });
 };
 
 function refresh_vehicle_view_from_eepromConfig() {
@@ -41,22 +49,13 @@ function update_vehicle_view() {
         update_vehicle_view_scene(pitch,roll,yaw);
 
         // indicate status
-        if (!(state.status & 0x0001)) {$('#bit00').css('background-color', '#000000');} else {$('#bit00').css('background-color', '');}
-        if (!(state.status & 0x0002)) {$('#bit01').css('background-color', '#000000');} else {$('#bit01').css('background-color', '');}
-        if (!(state.status & 0x0004)) {$('#bit02').css('background-color', '#000000');} else {$('#bit02').css('background-color', '');}
-        if (!(state.status & 0x0008)) {$('#bit03').css('background-color', '#000000');} else {$('#bit03').css('background-color', '');}
-        if (!(state.status & 0x0010)) {$('#bit04').css('background-color', '#000000');} else {$('#bit04').css('background-color', '');}
-        if (!(state.status & 0x0020)) {$('#bit05').css('background-color', '#000000');} else {$('#bit05').css('background-color', '');}
-        if (!(state.status & 0x0040)) {$('#bit06').css('background-color', '#000000');} else {$('#bit06').css('background-color', '');}
-        if (!(state.status & 0x0080)) {$('#bit07').css('background-color', '#000000');} else {$('#bit07').css('background-color', '');}
-        if (!(state.status & 0x0100)) {$('#bit08').css('background-color', '#000000');} else {$('#bit08').css('background-color', '');}
-        if (!(state.status & 0x0200)) {$('#bit09').css('background-color', '#000000');} else {$('#bit09').css('background-color', '');}
-        if (!(state.status & 0x0400)) {$('#bit10').css('background-color', '#000000');} else {$('#bit10').css('background-color', '');}
-        if (!(state.status & 0x0800)) {$('#bit11').css('background-color', '#000000');} else {$('#bit11').css('background-color', '');}
-        if (!(state.status & 0x1000)) {$('#bit12').css('background-color', '#000000');} else {$('#bit12').css('background-color', '');}
-        if (!(state.status & 0x2000)) {$('#bit13').css('background-color', '#000000');} else {$('#bit13').css('background-color', '');}
-        if (!(state.status & 0x4000)) {$('#bit14').css('background-color', '#000000');} else {$('#bit14').css('background-color', '');}
-        if (!(state.status & 0x8000)) {$('#bit15').css('background-color', '#000000');} else {$('#bit15').css('background-color', '');}
+        vehicle_signal_lights.forEach(function(v) {
+            if (!(state.status & v.mask)) {
+                v.selector.css('background-color', '#000000');
+            } else {
+                v.selector.css('background-color', '');
+            }
+        });
 
         last_vehicle_view_update = now;
     }
