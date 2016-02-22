@@ -94,8 +94,9 @@ function adjust_magnetometer_estimate() {
     if (!iterate)
       break;
   }
-  vehicle_view_sphere.position.set(magnetometer_estimate[0], magnetometer_estimate[1], magnetometer_estimate[2]);
-  var scaling = (magnetometer_estimate[3] < 1e-3) ? 1e-3 : magnetometer_estimate[3];
+  var magscale = 5;
+  vehicle_view_sphere.position.set(magnetometer_estimate[0] / magscale, magnetometer_estimate[1] / magscale, magnetometer_estimate[2] / magscale);
+  var scaling = (magnetometer_estimate[3] < 1e-3) ? 1e-3 : (magnetometer_estimate[3] / magscale);
   vehicle_view_sphere.scale.set(scaling, scaling, scaling);
 }
 
@@ -237,7 +238,7 @@ function update_vehicle_view_scene() {
     vehicle_view_pointcloud_geometry.attributes.position.updateRange.count = (vehicle_view_points_index+1)*3;
     vehicle_view_pointcloud_geometry.attributes.position.needsUpdate = true;
 
-    magnetometer_estimate_points.push([magx/magscale, magy/magscale, magz/magscale]);
+    magnetometer_estimate_points.push([magx, magy, magz]);
 
     vehicle_view_points_index++;
 
