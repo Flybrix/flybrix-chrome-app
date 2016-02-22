@@ -88,6 +88,18 @@
 			var plot = $.plot(this, plot_series, plot_options);
 
 			// add buttons
+			$("<img class='button' id='clear' src='/img/clear.png' style='right:-115px;top:140px;width:20px'/>")
+			.appendTo(plot_query)
+			.click(function (event) {
+				event.preventDefault();
+				var data = plot.getData();
+				data.forEach(function (v) {
+					console.log(v);
+					v.data = new Array();
+				});
+				plot.setData(data);
+			});
+
 			$("<img class='button' id='zoomout' src='/img/zoomout.png' style='right:-25px;top:140px;width:20px'/>")
 			.appendTo(plot_query)
 			.click(function (event) {
