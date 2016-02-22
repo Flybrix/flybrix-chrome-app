@@ -1,3 +1,5 @@
+var magnetometer_estimate = [0, 0, 0, 0];
+var magnetometer_estimate_points = [];
 
 function initialize_vehicle_view() {
 
@@ -12,7 +14,14 @@ function initialize_vehicle_view() {
     $('#vehicle-render').find('#update_mag_bias').click(function (e) {
         e.preventDefault();
         adjust_magnetometer_estimate();
-    })
+    });
+
+    $('#vehicle-render').find('#apply_bias_fix').click(function (e) {
+        e.preventDefault();
+        eepromConfig.magBias = magnetometer_estimate.slice(0, 3).map(function (v) {return -v;});
+        refresh_config_view_from_eepromConfig();
+        setTimeout(function(){sendCONFIG(); setTimeout(eeprom_refresh_callback_list.fire, 100);}, 1);
+    });
 };
 
 function refresh_vehicle_view_from_eepromConfig() {
@@ -73,8 +82,6 @@ var vehicle_view_container, vehicle_view_scene, vehicle_view_camera, vehicle_vie
 // custom global variables
 var vehicle_view_prism;
 var vehicle_view_sphere;
-var magnetometer_estimate = [0, 0, 0, 0];
-var magnetometer_estimate_points = [];
 
 var vehicle_view_pointcloud_geometry;
 var vehicle_view_points;
