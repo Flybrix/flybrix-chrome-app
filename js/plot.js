@@ -94,10 +94,10 @@
 				event.preventDefault();
 				var data = plot.getData();
 				data.forEach(function (v) {
-					console.log(v);
 					v.data = new Array();
 				});
 				plot.setData(data);
+				plot_query.update_flybrix_plot_series();
 			});
 
 			$("<img class='button' id='zoomout' src='/img/zoomout.png' style='right:-25px;top:138px;width:24px'/>")
@@ -339,11 +339,12 @@
 			var plot = $(this).data("plot");
 			var plot_series = plot.getData();
 			for (var i = 0; i < plot_series.length; i++) {
-				if (label === plot_series[i].label) {
+				if (label === undefined || label === plot_series[i].label) {
 					var series = plot_series[i];
 					var autoscale_checkbox_query = $('#' + $(this).attr('id'));
 
-					plot.appendData(i, [x, y], 200);
+					if (x !== undefined)
+						plot.appendData(i, [x, y], 200);
 
 					var now = Date.now();
 					if (redraw && ((now - series.lastUpdate) > 100)) { //throttle redraw to 10Hz
