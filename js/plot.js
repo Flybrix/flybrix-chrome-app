@@ -88,7 +88,19 @@
 			var plot = $.plot(this, plot_series, plot_options);
 
 			// add buttons
-			$("<img class='button' id='zoomout' src='/img/zoomout.png' style='right:-25px;top:140px;width:20px'/>")
+			$("<img class='button' id='clear' src='/img/clear.png' style='right:-115px;top:138px;width:24px'/>")
+			.appendTo(plot_query)
+			.click(function (event) {
+				event.preventDefault();
+				var data = plot.getData();
+				data.forEach(function (v) {
+					v.data = new Array();
+				});
+				plot.setData(data);
+				plot_query.update_flybrix_plot_series();
+			});
+
+			$("<img class='button' id='zoomout' src='/img/zoomout.png' style='right:-25px;top:138px;width:24px'/>")
 			.appendTo(plot_query)
 			.click(function (event) {
 				event.preventDefault();
@@ -327,11 +339,12 @@
 			var plot = $(this).data("plot");
 			var plot_series = plot.getData();
 			for (var i = 0; i < plot_series.length; i++) {
-				if (label === plot_series[i].label) {
+				if (label === undefined || label === plot_series[i].label) {
 					var series = plot_series[i];
 					var autoscale_checkbox_query = $('#' + $(this).attr('id'));
 
-					plot.appendData(i, [x, y], 200);
+					if (x !== undefined)
+						plot.appendData(i, [x, y], 200);
 
 					var now = Date.now();
 					if (redraw && ((now - series.lastUpdate) > 100)) { //throttle redraw to 10Hz
