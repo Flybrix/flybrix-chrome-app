@@ -405,6 +405,8 @@ $(document).ready(function () {
 			//$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
 			if (data_mode === "replay")
 				return;
+			if (data_mode === "serial")
+				connect_disconnect();
 			data_mode = "replay";
 
 			setTimeout(function () {
