@@ -372,7 +372,9 @@ $(document).ready(function () {
 			});
 	});
 
-	function simulateData(inputData, dataLength, tickDelay) {
+	var data_rate_field = $("#data-rate");
+
+	function simulateData(inputData, tickDelay) {
 		if (data_mode != "replay")
 			return;
 		if (inputData.length < 1) {
@@ -380,11 +382,12 @@ $(document).ready(function () {
 			setReplayPosition(0);
 			return;
 		}
+		var dataLength = Math.ceil(data_rate_field.val() * (tickDelay / 8));
 		cobsReader.AppendToBuffer(inputData.slice(0, dataLength), process_binary_datastream);
 		setReplayPosition(replay_point + dataLength);
 
 		setTimeout(function () {
-			simulateData(inputData.slice(dataLength), dataLength, tickDelay);
+			simulateData(inputData.slice(dataLength), tickDelay);
 		}, tickDelay);
 	}
 
@@ -410,7 +413,7 @@ $(document).ready(function () {
 			data_mode = "replay";
 
 			setTimeout(function () {
-				simulateData(replay_buffer.slice(replay_point), 500, 10);
+				simulateData(replay_buffer.slice(replay_point), 50);
 			}, 100);
 	});
 
