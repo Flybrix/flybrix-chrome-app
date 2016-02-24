@@ -6,7 +6,7 @@
 }
 
 .no-close .ui-dialog-titlebar-close {
-    display: none 
+    display: none
 }
 
 html
@@ -48,7 +48,7 @@ div.button {
 
 .tab-button-bar{
     position: absolute;
-    top: 120px;
+    top: 140px;
 }
 .tab-button{
     margin-top: 6px;
@@ -67,7 +67,7 @@ div.button {
     padding: 6px;
     font-weight: bold;
     margin-left: 1px;
-}    
+}
 .tab-content{
     display:none;
 }
@@ -168,9 +168,9 @@ div.button {
     position:relative;
     top:165px;
 }
- 
- 
- 
+
+
+
 .histogram-dialog{
     height: 320px !important;
     width: 660px !important;
@@ -181,7 +181,7 @@ div.button {
 .histogram-plot{
 }
 
-    
+
 .flybrix-filehandler .checkbox{
     top:0px;
     float: left;
@@ -457,7 +457,7 @@ div.button {
     left: 60px;
     }
 
-    
+
 .mixtable-factors{}
 .mixtable-row{
     height: 42px;
@@ -491,9 +491,9 @@ div.button {
     margin-right: 20px;
     margin-left: -17px;
 }
-    
-    
-    
+
+
+
 .led-green {
 	float: left;
 	margin: 20px 20px;
@@ -527,7 +527,7 @@ div.led-label {
 .datastream-serial{
     float: left;
     margin-right: 10px;
-	
+
     border: 1px solid silver;
     width: 90px;
     height: 105px;
@@ -558,7 +558,7 @@ div.led-label {
     margin-right: 10px;
     border: 1px solid silver;
     width: 180px;
-    height: 105px;
+    height: 125px;
     background-color: burlywood;
     padding: 5px;
 }
@@ -602,7 +602,7 @@ div.led-label {
 .hidden-canvas{
     display:none;
 }
-                
+
 .flight-mode-list{
     font-size: 11px;
     margin-top: 10px;
