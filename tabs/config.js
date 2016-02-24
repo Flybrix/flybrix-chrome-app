@@ -1,12 +1,25 @@
+function readTextFile(file, callback)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", chrome.runtime.getURL(file), true);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === XMLHttpRequest.DONE)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                callback(rawFile.responseText);
+            }
+        }
+    }
+    rawFile.send(null);
+}
 
 function initialize_config_view() {
 
 	$("#update_firmware").click(function () {
 		console.log("TODO: load hex string for call to teensy-firmware.js");
-		/*
-		hex_string = ...
-		load_firmware(hex_string);
-		 */
+		readTextFile($("#hexurl").val(), load_firmware);
 	});
 
 	$('#eeprom-refresh').click(function (e) {
@@ -25,7 +38,7 @@ function initialize_config_view() {
 		console.log("TODO: load the eepromConfig from a file and send");
         refresh_config_view_from_eepromConfig();
 	});
-    
+
 
     // accept only numeric input on model-entry-fields
     $("#current-config .model-entry-field").keydown(function (e) {
@@ -51,11 +64,11 @@ function initialize_config_view() {
     $("#current-config .model-entry-field.version").keydown(function (e) {
         e.preventDefault();
     });
-    
+
     $('#current-config .model-entry-field').connect_to_eeprom();
     eeprom_refresh_callback_list.add(refresh_config_view_from_eepromConfig);
-    
-	refresh_config_view_from_eepromConfig();   
+
+	refresh_config_view_from_eepromConfig();
 }
 
 function refresh_config_view_from_eepromConfig() {
