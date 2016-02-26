@@ -303,14 +303,14 @@ $(document).ready(function () {
 	//  https://api.jqueryui.com/slider/
 
 	function checkVersion(ver) {
-		if (ver === latest_stable_version)
+		if (ver === flybrix_app_configuration_version)
 			return true;
-		if (ver == null || latest_stable_version == null)
+		if (ver == null || flybrix_app_configuration_version == null)
 			return false;
-		if (ver.length !== latest_stable_version.length)
+		if (ver.length !== flybrix_app_configuration_version.length)
 			return false;
 		for (var i = 0; i < ver.length; ++i)
-			if (ver[i] !== latest_stable_version[i])
+			if (ver[i] !== flybrix_app_configuration_version[i])
 				return false;
 		return true;
 	}
@@ -347,7 +347,7 @@ $(document).ready(function () {
 							if (!('data' in dataObject))
 								throw "File is missing the 'data' field";
 							if (!checkVersion(dataObject.version))
-								throw "The requested recording is made on an old firmware version";
+								throw "The requested recording was made on a different firmware version";
 							replay_buffer = new Uint8Array(atob(dataObject.data).split("").map(function(c) {return c.charCodeAt(0); }));
 							replay_point = 0;
 						} catch (err) {
