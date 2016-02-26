@@ -1,6 +1,39 @@
 
 (function ($) {
 
+	// A map of all migration functions that update configuration data
+	var migrations = {
+		'0.8': function (config) {
+			config.version = config.config.version = [0, 9, 0];
+			console.log("Went from 0.8 to 0.9");
+			console.log("The migration system works!");
+		},
+		'0.9': function (config) {
+			config.version = config.config.version = [1, 0, 0];
+			console.log("Went from 0.9 to 1.0");
+			console.log("The migration system works!");
+		},
+	};
+
+	function migrate(config, recursive_call) {
+		recursive_call = recursive_call || false;
+		var desiredVersion = eepromConfig.version.slice(0, 2).join('.');
+		var currentVersion = config.version.slice(0, 2).join('.');
+
+		if (desiredVersion === currentVersion) { //http://semver.org/
+			if (recursive_call)
+				command_log('Configuration update <span style="color: green;">SUCCESSFUL</span>');
+			return true;
+		}
+		if (!recursive_call)
+			command_log('EEPROM version is newer than the configuration file - attempting update');
+		if (currentVersion in migrations) {
+			migrations[currentVersion](config);
+			return migrate(config, true);
+		}
+		return false;
+	}
+
 	$.fn.write_datastream_to_filehandler = function (data, force_write) {
 		this.each(function () {
 
@@ -191,15 +224,14 @@
 
                     console.log('here!');
 					// replace eepromConfig with configuration from backup file
-					if ( (eepromConfig.version[0] == deserialized_config_object.version[0]) &&
-                         (eepromConfig.version[1] == deserialized_config_object.version[1]) ){ //http://semver.org/
+					if (migrate(deserialized_config_object)){ //http://semver.org/
 
 						command_log('Configuration MAJOR and MINOR versions <span style="color: green;">MATCH</span>');
 						console.log('versions match');
-                        
+
                         eepromConfig = deserialized_config_object.config;
                         sendCONFIG();
-                        
+
 					} else {
 						command_log('Configuration MAJOR and MINOR versions <span style="color: red;">DO NOT MATCH</span>');
                         command_log('Reading configuration <span style="color: red">FAILED</span>');
