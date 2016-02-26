@@ -1,47 +1,51 @@
 
 (function ($) {
 
-	$.fn.write_to_filehandler = function (data, bypass_delay) {
+	$.fn.write_datastream_to_filehandler = function (data, force_write) {
 		this.each(function () {
 
 			var filehandler_query = $(this);
 
 			chosenEntry = filehandler_query.data("chosenEntry");
-			data = new Blob([filehandler_query.data("recordings"), data]);
-			filehandler_query.data("recordings", data);
+
+			data = new Blob([filehandler_query.data("blobData"), data]);
+			filehandler_query.data("blobData", data);
 
 			if (!chosenEntry) {
 				console.error('no file selected');
 				return;
 			}
-			if (bypass_delay || (new Date() - filehandler_query.data("lasttick") < 5000))
-				return;
-			filehandler_query.data("lasttick", new Date());
-			var dataReader = new window.FileReader();
-			dataReader.onloadend = function() {
+			if (force_write || (new Date() - filehandler_query.data("lastBlobWrite") > 5000)) {
+
+				filehandler_query.data("lastBlobWrite", new Date());
+
+				var dataReader = new window.FileReader();
+				dataReader.onloadend = function (e) {
+
 					chosenEntry.createWriter(//use this filewriter to write data
 						function (fileWriter) {
-							fileWriter.onerror = function (e) {
-								console.log('data write failed: ' + e.toString());
-							};
+						fileWriter.onerror = function (e) {
+							console.log('data write failed: ' + e.toString());
+						};
 
-							//write data
-							// data is decoded via new Uint8Array(atob(data).split("").map(function(c) {return c.charCodeAt(0); }));
-							fileWriter.write(new Blob([JSON.stringify({
-								version: eepromConfig.version,
-								config: eepromConfig,
-								data: btoa(String.fromCharCode.apply(null, new Uint8Array(dataReader.result)))
-							})]));
-						},
+						//write data
+						// data packets are decoded via new Uint8Array(atob(data).split("").map(function(c) {return c.charCodeAt(0); }));
+						fileWriter.write(new Blob([JSON.stringify({
+										version : eepromConfig.version,
+										config : eepromConfig,
+										data : btoa(String.fromCharCode.apply(null, new Uint8Array(e.target.result)))
+									})]));
+					},
 						function (e) {
-							console.error(e);
+						console.error(e);
 					});
+				};
+				dataReader.readAsArrayBuffer(data);
 			};
-			dataReader.readAsArrayBuffer(data);
 		});
 	};
 
-	$.fn.create_filehandler = function () {
+	$.fn.create_filehandler = function (button1_label, button2_label) {
 		this.each(function () {
 
 			$(this).addClass("flybrix-filehandler");
@@ -50,21 +54,34 @@
 
 			var filehandler_query = $(this);
 
-			//active checkbox clicks should be handled by the parent js
-			$("<input type='checkbox' id='active' value='value' class='checkbox'/>")
-			.appendTo(filehandler_query);
+			//create two buttons using passed in labels
+			//button actions are handled by parent js
+
+			$("<div class='button text-button filehandler-button1' id='button1'>" + button1_label + "</div>")
+			.appendTo(filehandler_query)
+			.click(function (event) {
+				event.preventDefault();
+				console.log("filehandler button1 click needs override");
+			});
+
+			$("<div class='button text-button filehandler-button2' id='button2'>" + button2_label + "</div>")
+			.appendTo(filehandler_query)
+			.click(function (event) {
+				event.preventDefault();
+				console.log("filehandler button2 click needs override");
+			});
 
 			var file_textbox_selector = '#' + filehandler_query.attr('id') + ' #file';
 			$("<div class='filename' id='file'/>")
 			.appendTo(filehandler_query);
 
-			$("<img class='button' src='/img/save.png'/>")
+			$("<img class='icon-button' src='/img/open.png'/>")
 			.appendTo(filehandler_query)
 			.click(function (event) {
 				event.preventDefault();
 				var accepts = [{
 						mimeTypes : ['text/*'],
-						extensions : ['dat', 'csv', 'txt', 'bin', 'log', 'raw']
+						extensions : ['dat', 'csv', 'txt', 'bin', 'log', 'raw', 'json']
 					}
 				];
 				chrome.fileSystem.chooseEntry({
@@ -76,8 +93,8 @@
 						return;
 					}
 					filehandler_query.data("chosenEntry", theEntry);
-					filehandler_query.data("recordings", new Blob());
-					filehandler_query.data("lasttick", new Date());
+					filehandler_query.data("blobData", new Blob());
+					filehandler_query.data("lastBlobWrite", new Date());
 
 					chrome.fileSystem.getDisplayPath(theEntry, function (displayPath) {
 						$(file_textbox_selector).html(displayPath);
@@ -88,109 +105,111 @@
 		});
 	};
 
-    $.fn.write_eeprom_to_filehandler = function (data) {
+	$.fn.write_eepromConfig_to_filehandler = function () {
 		this.each(function () {
 			var filehandler_query = $(this);
 
 			chosenEntry = filehandler_query.data("chosenEntry");
 
             if (!chosenEntry) {
-                command_log('No eeprom file selected!');
+                command_log('No file selected for saving configuration!');
 				console.error('no file selected');
 				return;
 			}
 
-            chosenEntry.createWriter(//use this filewriter to erase file
-                function (fileTruncator) {
-                overwrite_file = 0;
-                fileTruncator.truncate(0);
-                fileTruncator.onerror = function (e) {
-                    console.log('Truncate failed: ' + e.toString());
-                };
-                fileTruncator.onwriteend = function (e) {
-                    //console.log('Truncate complete');
-                    chosenEntry.createWriter(//use this filewriter to write data
-                        function (fileWriter) {
-                        fileWriter.onerror = function (e) {
-                            console.log('data write failed: ' + e.toString());
-                            console.error(e);
-                        };
-                        fileWriter.onwriteend = function (e) {
-                            command_log('Write -- <span style="color: green">SUCCESSFUL</span>');
-                            console.log('Write SUCCESSFUL');
-                        };
-                        //write data
-                        var dataBlob = new Blob([JSON.stringify(data)], {type: 'text/plain'});
-                        fileWriter.seek(-1);
-                        fileWriter.write(dataBlob);
-                    },
-                        function (e) {
-                        console.error(e);
-                    });
-                };
-            },
-                function (e) {
-                console.error(e);
-            });
+			chosenEntry.createWriter(//use this filewriter to erase file
+				function (fileTruncator) {
+				overwrite_file = 0;
+				fileTruncator.truncate(0);
+				fileTruncator.onerror = function (e) {
+					console.log('Truncate failed: ' + e.toString());
+				};
+				fileTruncator.onwriteend = function (e) {
+					//console.log('Truncate complete');
+					chosenEntry.createWriter(//use this filewriter to write data
+						function (fileWriter) {
+						fileWriter.onerror = function (e) {
+                            command_log('Writing configuration <span style="color: red">FAILED</span>');
+							console.log('data write failed: ' + e.toString());
+							console.error(e);
+						};
+						fileWriter.onwriteend = function (e) {
+							command_log('Writing configuration was <span style="color: green">SUCCESSFUL</span>');
+							console.log('Write SUCCESSFUL');
+						};
+						//write data
+						fileWriter.seek(-1);
+						fileWriter.write(new Blob([JSON.stringify({
+										version : eepromConfig.version,
+										config : eepromConfig
+                                        })]));
+					},
+						function (e) {
+						console.error(e);
+					});
+				};
+			},
+				function (e) {
+				console.error(e);
+			});
 
-        });
-    };
+		});
+	};
 
-   $.fn.read_eeprom_from_filehandler = function (data) {
+	$.fn.read_eepromConfig_from_filehandler = function () {
 		this.each(function () {
 			var filehandler_query = $(this);
 
 			chosenEntry = filehandler_query.data("chosenEntry");
 
-            if (!chosenEntry) {
-                command_log('No eeprom file selected!');
+			if (!chosenEntry) {
+				command_log('No file selected for loading configuration!');
 				console.error('no file selected');
 				return;
 			}
 
-            // read contents into variable
-            chosenFileEntry.file(function(file) {
-                var reader = new FileReader();
+			chosenEntry.file(function (file) {
+				var reader = new FileReader();
 
-                reader.onerror = function (e) {
-                    console.error(e);
-                };
+				reader.onerror = function (e) {
+                    command_log('Reading configuration <span style="color: red">FAILED</span>');
+					console.error(e);
+				};
 
-                reader.onloadend = function(e) {
-                    command_log('Read <span style="color: green;">SUCCESSFUL</span>');
-                    console.log('Read SUCCESSFUL');
+				reader.onloadend = function (e) {
+					command_log('Reading configuration was <span style="color: green;">SUCCESSFUL</span>');
 
-                    try { // check if string provided is a valid JSON
-                        var deserialized_config_object = JSON.parse(e.target.result);
+					try { // check if string provided is a valid JSON
+						var deserialized_config_object = JSON.parse(e.target.result);
+						if (deserialized_config_object.version === undefined)
+							throw 'no version parameter found';
+					} catch (e) {
+                        command_log('Reading configuration <span style="color: red">FAILED</span>');
+						command_log('File provided doesn\'t contain valid data');
+						return;
+					}
 
-                        if (deserialized_config_object.version === undefined)
-                            throw 'no version parameter found';
-                    } catch (e) {
-                        // data provided != valid json object
-                        command_log('Data provided doesn\'t contain valid JSON string -- <span style="color: red;">ABORTING</span>');
-                        console.log('Data provided != valid JSON string');
-                        return;
-                    }
+                    console.log('here!');
+					// replace eepromConfig with configuration from backup file
+					if ( (eepromConfig.version[0] == deserialized_config_object.version[0]) &&
+                         (eepromConfig.version[1] == deserialized_config_object.version[1]) ){ //http://semver.org/
 
-                    // replacing "old configuration" with configuration from backup file
-                    if (eepromConfig.version == deserialized_config_object.version) {
-                        command_log('EEPROM version number/pattern -- <span style="color: green;">MATCH</span>');
-                        console.log('EEPROM version number/pattern matches backup EEEPROM file version/pattern');
-                    } else {
-                        command_log('EEPROM version number/pattern -- <span style="color: red;">MISSMATCH</span> (manual values re-validation is advised)');
-                        console.log('EEPROM version number/pattern doesn\'t match backup EEPROM file version/pattern (manual values re-validation is advised)');
-                    }
+						command_log('Configuration MAJOR and MINOR versions <span style="color: green;">MATCH</span>');
+						console.log('versions match');
+                        
+                        eepromConfig = deserialized_config_object.config;
+                        sendCONFIG();
+                        
+					} else {
+						command_log('Configuration MAJOR and MINOR versions <span style="color: red;">DO NOT MATCH</span>');
+                        command_log('Reading configuration <span style="color: red">FAILED</span>');
+						console.log('version mismatch');
+					}
+				};
 
-                    eepromConfig = deserialized_config_object;
-
-                    // Send updated CONFIG to the flight controller
-                    sendCONFIG();
-
-                };
-
-                reader.readAsText(file);
-            });
-        });
-    };
+				reader.readAsText(file);
+			});
+		});
+	};
 }
 	(jQuery));

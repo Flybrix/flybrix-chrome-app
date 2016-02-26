@@ -1,6 +1,21 @@
 
 function initialize_config_view() {
 
+
+    $('#configuration-filehandler').create_filehandler("save", "load");
+
+	$('#configuration-filehandler #button1').unbind().click(function (event) { // save button
+        event.preventDefault();
+		$('#configuration-filehandler').write_eepromConfig_to_filehandler();
+	});
+    
+    $('#configuration-filehandler #button2').unbind().click(function (event) { // load button
+        event.preventDefault();
+        $('#configuration-filehandler').read_eepromConfig_from_filehandler();
+        setTimeout(function() {refresh_config_view_from_eepromConfig();}, 100);
+	});
+
+
 	$("#update_firmware").click(function () {
 		console.log("TODO: load hex string for call to teensy-firmware.js");
 		/*
@@ -15,18 +30,7 @@ function initialize_config_view() {
 		refresh_config_view_from_eepromConfig();
 	});
 
-	$('#eeprom-save').click(function (e) {
-		e.preventDefault();
-		console.log("TODO: save the eepromConfig to a file");
-	});
-
-	$('#eeprom-load').click(function (e) {
-		e.preventDefault();
-		console.log("TODO: load the eepromConfig from a file and send");
-        refresh_config_view_from_eepromConfig();
-	});
-    
-
+  
     // accept only numeric input on model-entry-fields
     $("#current-config .model-entry-field").keydown(function (e) {
         // Allow: backspace, delete, tab, escape, enter, '.', and '-'

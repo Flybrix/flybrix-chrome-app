@@ -2,15 +2,18 @@
     Hex File URL:
     <input id="hexurl" type="text" value="http://localhost:8000/octoteensy.cpp.hex"></input>
     <div class='button view-button' id="update_firmware">update firmware</div>
-    <div>
-        <textarea rows="10" cols="50" id="firmware_hex"></textarea>
-    </div>
+    
+    <textarea rows="10" cols="50" id="firmware_hex"></textarea>
+    
 
-    <div>
-        <div class='button view-button' id="eeprom-refresh">refresh configuration</div>
-        <div class='button view-button' id="eeprom-save">save configuration to file</div>
-        <div class='button view-button' id="eeprom-load">set configuration from file</div>
+
+    <div class="flybrix-filehandler-holder">
+        <div id="configuration-filehandler" class="configuration-filehandler"></div>
     </div>
+    
+    
+    <div class='button view-button' id="eeprom-refresh">refresh from flyer</div>
+
 
     <p style="margin-bottom: 10px; margin-top: 50px;font-weight: bold;">Configuration data:</p>
     <div id="current-config">
