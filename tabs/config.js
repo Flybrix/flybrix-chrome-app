@@ -17,6 +17,11 @@ function readTextFile(file, callback)
 
 function initialize_config_view() {
 
+  $("#update_recommended_firmware").click(function () {
+		command_log("Uploading recommended firmware...");
+		readTextFile("current_firmware_hex", load_firmware);
+	});
+
 	$("#update_firmware").click(function () {
 		console.log("TODO: load hex string for call to teensy-firmware.js");
 		readTextFile($("#hexurl").val(), load_firmware);
