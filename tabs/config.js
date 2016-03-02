@@ -1,3 +1,22 @@
+Firebase.INTERNAL.forceWebSockets();
+
+var firebaseReference = new Firebase('https://flybrix.firebaseio.com/firmware');
+
+firebaseReference.on('value', function(snapshot) {
+    var hexList = $("#hexid");
+    hexList.empty();
+    snapshot.forEach(function (child) {
+        var value = child.key();
+        hexList.append($("<option />").val(value).text(value));
+    });
+});
+
+function readFirebaseEntry(key, callback) {
+    firebaseReference.child(key).once("value", function (snapshot) {
+      callback(snapshot.val());
+    });
+}
+
 function readTextFile(file, callback)
 {
     readURL(chrome.runtime.getURL(file), callback);
@@ -28,8 +47,7 @@ function initialize_config_view() {
 	});
 
 	$("#update_firmware").click(function () {
-		console.log("TODO: load hex string for call to teensy-firmware.js");
-		readURL($("#hexurl").val(), load_firmware);
+		readFirebaseEntry($("#hexid").val(), load_firmware);
 	});
 
 	$('#eeprom-refresh').click(function (e) {
