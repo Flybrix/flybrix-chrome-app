@@ -1,7 +1,12 @@
 function readTextFile(file, callback)
 {
+    readURL(chrome.runtime.getURL(file), callback);
+}
+
+function readURL(file, callback)
+{
     var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", chrome.runtime.getURL(file), true);
+    rawFile.open("GET", file, true);
     rawFile.onreadystatechange = function ()
     {
         if(rawFile.readyState === XMLHttpRequest.DONE)
@@ -24,7 +29,7 @@ function initialize_config_view() {
 
 	$("#update_firmware").click(function () {
 		console.log("TODO: load hex string for call to teensy-firmware.js");
-		readTextFile($("#hexurl").val(), load_firmware);
+		readURL($("#hexurl").val(), load_firmware);
 	});
 
 	$('#eeprom-refresh').click(function (e) {
