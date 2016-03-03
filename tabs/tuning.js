@@ -82,7 +82,7 @@ function update_tuning_view() {
         for (var i = 0; i < pids.length; i++) {
             var selector = $("#" + pids[i] + "-plot");
             if (selector.find('#live').prop("checked")) {
-                console.log(selector, (stageobjs[i])[0] / 1000000, (stageobjs[i])[2]);
+                //console.log(selector, (stageobjs[i])[0] / 1000000, (stageobjs[i])[2]);
                 selector.update_flybrix_plot_series("setpoint", (stageobjs[i])[0] / 1000000, (stageobjs[i])[2], false);
                 selector.update_flybrix_plot_series("input", (stageobjs[i])[0] / 1000000, (stageobjs[i])[1], false);
                 selector.update_flybrix_plot_series("P", (stageobjs[i])[0] / 1000000, (stageobjs[i])[3], false);
