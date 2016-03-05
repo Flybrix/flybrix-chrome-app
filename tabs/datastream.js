@@ -91,11 +91,9 @@ function update_current_state() {
 	csq.find(".temperature").val((state.temperature * 1.0).toFixed(3));
 	csq.find(".pressure").val((state.pressure * 1.0).toFixed(3));
 	loadArrayValues(csq.find(".ppm"), state.ppm, 0);
-	loadArrayValues(csq.find(".ppm_midpoint"), state.ppm_midpoint, 0);
 	csq.find(".AUX_chan_mask").val((state.AUX_chan_mask * 1.0).toFixed(0));
 	loadArrayValues(csq.find(".command"), state.command, 0);
 	loadArrayValues(csq.find(".control"), state.control, 3);
-	loadArrayValues(csq.find(".control_T_trim"), state.control_T_trim, 0);
 	loadArrayValues(csq.find(".pid_master_Fz"), state.pid_master_Fz, 2);
 	loadArrayValues(csq.find(".pid_master_Tx"), state.pid_master_Tx, 2);
 	loadArrayValues(csq.find(".pid_master_Ty"), state.pid_master_Ty, 2);

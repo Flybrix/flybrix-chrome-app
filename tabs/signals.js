@@ -6,7 +6,6 @@ function initialize_signals_view() {
 
     $('#commands-master-plot').create_plot(["Fz (m)", "Tx (deg)", "Ty (deg)", "Tz (deg)"]);
     $('#commands-slave-plot').create_plot(["Fz (m/s)", "Tx (deg/s)", "Ty (deg/s)", "Tz (deg/s)"]);
-    $('#commands-feedfoward-plot').create_plot(["Tx Trim (pwm counts)", "Ty Trim (pwm counts)", "Tz Trim (pwm counts)"]);
     $('#commands-direct-plot').create_plot(["Fz (pwm counts)", "Tx (pwm counts)", "Ty (pwm counts)", "Tz (pwm counts)"]);
     
     parser_callback_list.add(update_signals_view);
@@ -66,9 +65,9 @@ function update_signals_view() {
         var throttle_threshold = ((RC_max - RC_min) / 10) + RC_min;
         
         var Fz_cmd = Math.min(Math.max(parseInt((state.ppm[eepromConfig.assignedChannel[0]] - throttle_threshold) * 4095 / (RC_max - throttle_threshold)), 0), 4095);
-        var Tx_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 0) & 1)) * (state.ppm[eepromConfig.assignedChannel[1]] - state.ppm_midpoint[0]) * 4095 / (RC_max - RC_min)), -2047), 2047);
-        var Ty_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 1) & 1)) * (state.ppm[eepromConfig.assignedChannel[2]] - state.ppm_midpoint[1]) * 4095 / (RC_max - RC_min)), -2047), 2047);        
-        var Tz_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 2) & 1)) * (state.ppm[eepromConfig.assignedChannel[3]] - state.ppm_midpoint[2]) * 4095 / (RC_max - RC_min)), -2047), 2047);
+        var Tx_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 0) & 1)) * (state.ppm[eepromConfig.assignedChannel[1]] - 1500) * 4095 / (RC_max - RC_min)), -2047), 2047);
+        var Ty_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 1) & 1)) * (state.ppm[eepromConfig.assignedChannel[2]] - 1500) * 4095 / (RC_max - RC_min)), -2047), 2047);        
+        var Tz_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 2) & 1)) * (state.ppm[eepromConfig.assignedChannel[3]] - 1500) * 4095 / (RC_max - RC_min)), -2047), 2047);
         
         plotq = $("#commands-master-plot");
         if(plotq.find("#live").prop("checked")) {
@@ -94,18 +93,12 @@ function update_signals_view() {
             plotq.update_flybrix_plot_series("Ty (deg/s)", state.timestamp_us / 1000000, scaleTy * Ty_cmd, false);
             plotq.update_flybrix_plot_series("Tz (deg/s)", state.timestamp_us / 1000000, scaleTz * Tz_cmd);
         }  
-        plotq = $("#commands-feedfoward-plot");
-        if(plotq.find("#live").prop("checked")) {
-            plotq.update_flybrix_plot_series("Tx Trim (pwm counts)", state.timestamp_us / 1000000, state.control_T_trim[0], false);
-            plotq.update_flybrix_plot_series("Ty Trim (pwm counts)", state.timestamp_us / 1000000, state.control_T_trim[1], false);
-            plotq.update_flybrix_plot_series("Tz Trim (pwm counts)", state.timestamp_us / 1000000, state.control_T_trim[2]);
-        }
         plotq = $("#commands-direct-plot");
         if(plotq.find("#live").prop("checked")) {
             plotq.update_flybrix_plot_series("Fz (pwm counts)", state.timestamp_us / 1000000, Fz_cmd, false);
-            plotq.update_flybrix_plot_series("Tx (pwm counts)", state.timestamp_us / 1000000, Tx_cmd + state.control_T_trim[0], false);
-            plotq.update_flybrix_plot_series("Ty (pwm counts)", state.timestamp_us / 1000000, Ty_cmd + state.control_T_trim[1], false);
-            plotq.update_flybrix_plot_series("Tz (pwm counts)", state.timestamp_us / 1000000, Tz_cmd + state.control_T_trim[2]);
+            plotq.update_flybrix_plot_series("Tx (pwm counts)", state.timestamp_us / 1000000, Tx_cmd, false);
+            plotq.update_flybrix_plot_series("Ty (pwm counts)", state.timestamp_us / 1000000, Ty_cmd, false);
+            plotq.update_flybrix_plot_series("Tz (pwm counts)", state.timestamp_us / 1000000, Tz_cmd);
         }
 
         last_signals_view_update = now;

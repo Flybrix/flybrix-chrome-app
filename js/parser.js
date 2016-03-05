@@ -9,11 +9,10 @@ var state_data_mask =
 	0, // mag: [0, 0, 0],
 	0, // temperature: 0,
 	0, // pressure: 0,
-	0, // ppm: [0,0,0,0,0,0] and ppm_midpoint: [0,0,0]
+	0, // ppm: [0,0,0,0,0,0]
 	0, // AUX_chan_mask: 0, //{AUX1_low, AUX1_mid, AUX1_high, AUX2_low, AUX2_mid, AUX2_high, x, x} (LSB-->MSB)
 	0, // command: [0,0,0,0], //throttle, pitch, roll, yaw
 	0, // control: [0,0,0,0], //Fz, Tx, Ty, Tz
-	0, // control_T_trim: [0,0,0], // Tx_trim, Ty_trim, Tz_trim
 	0, // pid_master_Fz: [0,0,0,0,0,0], //Fz: time, input, setpoint, p_term, i_term, d_term
 	0, // pid_master_Tx: [0,0,0,0,0,0], //Tx: time, input, setpoint, p_term, i_term, d_term
 	0, // pid_master_Ty: [0,0,0,0,0,0], //Ty: time, input, setpoint, p_term, i_term, d_term
@@ -41,11 +40,9 @@ var state = {
 	temperature : 0,
 	pressure : 0,
 	ppm : [0, 0, 0, 0, 0, 0],
-	ppm_midpoint : [0, 0, 0],
 	AUX_chan_mask : 0,
 	command : [0, 0, 0, 0], //throttle, pitch, roll, yaw
 	control : [0, 0, 0, 0], //Fz, Tx, Ty, Tz
-	control_T_trim : [0, 0, 0], // Tx_trim, Ty_trim, Tz_trim
 	pid_master_Fz : [0, 0, 0, 0, 0, 0], //Fz: time, input, setpoint, p_term, i_term, d_term
 	pid_master_Tx : [0, 0, 0, 0, 0, 0], //Tx: time, input, setpoint, p_term, i_term, d_term
 	pid_master_Ty : [0, 0, 0, 0, 0, 0], //Ty: time, input, setpoint, p_term, i_term, d_term
@@ -78,7 +75,6 @@ var StateFields = {
 	STATE_AUX_CHAN_MASK : 1 << 11,
 	STATE_COMMANDS : 1 << 12,
 	STATE_F_AND_T : 1 << 13,
-	STATE_T_TRIM : 1 << 14,
 	STATE_PID_FZ_MASTER : 1 << 15,
 	STATE_PID_TX_MASTER : 1 << 16,
 	STATE_PID_TY_MASTER : 1 << 17,
@@ -214,7 +210,6 @@ function parse_data_packet(mask, message_buffer) {
 	if (0 != (mask & StateFields.STATE_RX_PPM)) {
 		state_data_mask[10] = 1;
 		parseInt16Array(data, state.ppm, b);
-		parseInt16Array(data, state.ppm_midpoint, b);
 	}
 	if (0 != (mask & StateFields.STATE_AUX_CHAN_MASK)) {
 		state_data_mask[11] = 1;
@@ -228,10 +223,6 @@ function parse_data_packet(mask, message_buffer) {
 	if (0 != (mask & StateFields.STATE_F_AND_T)) {
 		state_data_mask[13] = 1;
 		parseFloat32Array(data, state.control, b);
-	}
-	if (0 != (mask & StateFields.STATE_T_TRIM)) {
-		state_data_mask[14] = 1;
-		parseFloat32Array(data, state.control_T_trim, b);
 	}
 	if (0 != (mask & StateFields.STATE_PID_FZ_MASTER)) {
 		state_data_mask[15] = 1;
