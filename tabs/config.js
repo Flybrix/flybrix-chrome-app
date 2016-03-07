@@ -2,7 +2,7 @@ Firebase.INTERNAL.forceWebSockets();
 
 var firebaseReference = new Firebase('https://flybrix.firebaseio.com/firmware');
 
-function getFirmwareListElement(key, value) {
+function getFirmwareListElement(key, value, callbackLeft, callbackRight, labelRight) {
   var entry = $("<div />").attr("id", key).addClass("firmware-entry");
   var data = $("<table />");
   function createRow(key, label) {
@@ -16,22 +16,70 @@ function getFirmwareListElement(key, value) {
   createRow("name", "Name:");
   createRow("author", "Author:");
   entry.append(data);
-  entry.append($("<div />").addClass("button").text("update firmware").click(function () {
-    readFirebaseEntry(key, load_firmware);
+  entry.append($("<div />").addClass("button").addClass("firmware-button").text("update firmware").click(function () {
+    callbackLeft(key, load_firmware);
+  }));
+  entry.append($("<div />").addClass("button").addClass("firmware-button").text(labelRight).click(function () {
+    callbackRight(key);
   }));
   return entry;
 }
 
+function updateLocalStorageData() {
+    var hexList = $("#hex-local");
+    hexList.empty();
+    chrome.storage.local.get(null, function (items) {
+        console.log(items);
+        for (var key in items) {
+            if (key.substring(0, 4) !== "hex:")
+                continue;
+            var shortKey = key.substring(4);
+            var item = items[key];
+            if (!("info" in item) || !("hex" in item))
+                continue;
+            hexList.append(getFirmwareListElement(shortKey, item.info, function (a, b) {
+                var longKey = "hex:" + a;
+                chrome.storage.local.get(longKey, function(items) {
+                    if (!(longKey in items))
+                        return;
+                    var item = items[longKey];
+                    if (!("hex" in item))
+                        return;
+                    b(item.hex);
+                })
+            }, function (key) {
+                chrome.storage.local.remove("hex:" + key, function () {
+                    console.log("Firmware", key, "removed");
+                });
+            }, "remove"));
+        }
+    });
+}
+
 firebaseReference.on('value', function(snapshot) {
-    var hexList = $("#hexid");
+    var hexList = $("#hex-remote");
     hexList.empty();
     snapshot.forEach(function (child) {
-        hexList.append(getFirmwareListElement(child.key(), child.child("info").val()));
+        hexList.append(getFirmwareListElement(child.key(), child.child("info").val(), readFirebaseEntry, function (key) {
+            readFirebaseEntryFull(key, function (data) {
+                var entry = {};
+                entry["hex:" + key] = data;
+                chrome.storage.local.set(entry, function () {
+                    console.log("Firmware", key, "stored");
+                });
+            });
+        }, "store"));
     });
 });
 
 function readFirebaseEntry(key, callback) {
     firebaseReference.child(key).child("hex").once("value", function (snapshot) {
+      callback(snapshot.val());
+    });
+}
+
+function readFirebaseEntryFull(key, callback) {
+    firebaseReference.child(key).once("value", function (snapshot) {
       callback(snapshot.val());
     });
 }
@@ -59,6 +107,8 @@ function readURL(file, callback)
 }
 
 function initialize_config_view() {
+  updateLocalStorageData();
+  chrome.storage.onChanged.addListener(updateLocalStorageData);
 
   $("#update_recommended_firmware").click(function () {
 		command_log("Uploading recommended firmware...");

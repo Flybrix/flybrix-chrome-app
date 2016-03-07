@@ -39,10 +39,27 @@ div.button {
     width: 180px;
 }
 
+.firmware-button {
+    width: 120px;
+		display: inline-block;
+		margin-right: 10px;
+}
+
 div.firmware-list {
 		height: 200px;
 		width: 320px;
 		overflow: auto;
+		border: 1px solid #999;
+		border-radius: 6px;
+		padding: 5px;
+}
+
+div.firmware-list-title {
+		text-transform: uppercase;
+		font-size: 14px;
+		font-weight: bold;
+		padding-top: 10px;
+		padding-bottom: 5px;
 }
 
 div.firmware-entry {
