@@ -2,13 +2,31 @@ Firebase.INTERNAL.forceWebSockets();
 
 var firebaseReference = new Firebase('https://flybrix.firebaseio.com/firmware');
 
+function getFirmwareListElement(key, value) {
+  var entry = $("<div />").attr("id", key).addClass("firmware-entry");
+  var data = $("<table />");
+  function createRow(key, label) {
+    if (key in value) {
+      var row = $("<tr />");
+      row.append($("<td />").text(label).addClass("fw-label"));
+      row.append($("<td />").text(value[key]).addClass("fw-data"));
+      data.append(row);
+    }
+  }
+  createRow("name", "Name:");
+  createRow("author", "Author:");
+  entry.append(data);
+  entry.append($("<div />").addClass("button").text("update firmware").click(function () {
+    readFirebaseEntry(key, load_firmware);
+  }));
+  return entry;
+}
+
 firebaseReference.on('value', function(snapshot) {
     var hexList = $("#hexid");
     hexList.empty();
     snapshot.forEach(function (child) {
-        var key = child.key();
-        var value = child.child("info").val();
-        hexList.append($("<option />").val(key).text(value.name + " v" + value.version + " by " + value.author));
+        hexList.append(getFirmwareListElement(child.key(), child.child("info").val()));
     });
 });
 
@@ -45,10 +63,6 @@ function initialize_config_view() {
   $("#update_recommended_firmware").click(function () {
 		command_log("Uploading recommended firmware...");
 		readTextFile("current_firmware_hex", load_firmware);
-	});
-
-	$("#update_firmware").click(function () {
-		readFirebaseEntry($("#hexid").val(), load_firmware);
 	});
 
 	$('#eeprom-refresh').click(function (e) {

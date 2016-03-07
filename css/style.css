@@ -39,6 +39,24 @@ div.button {
     width: 180px;
 }
 
+div.firmware-entry {
+		width: 280px;
+		height: 64px;
+		margin-top: 6px;
+		padding: 8px;
+		border: 1px solid #999;
+		border-radius: 6px;
+}
+
+div.firmware-entry .fw-label {
+		width: 60px;
+		font-weight: bold;
+}
+
+div.firmware-entry .fw-data {
+		width: 180px;
+}
+
 .indicator-warning{
     background-color: green;
     display: block;
