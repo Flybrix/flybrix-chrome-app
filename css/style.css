@@ -39,6 +39,12 @@ div.button {
     width: 180px;
 }
 
+div.firmware-list {
+		height: 200px;
+		width: 320px;
+		overflow: auto;
+}
+
 div.firmware-entry {
 		width: 280px;
 		height: 64px;
