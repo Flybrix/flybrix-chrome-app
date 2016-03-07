@@ -46,12 +46,15 @@ div.button {
 }
 
 div.firmware-list {
-		height: 200px;
-		width: 320px;
-		overflow: auto;
 		border: 1px solid #999;
 		border-radius: 6px;
 		padding: 5px;
+}
+
+div.firmware-list-inner {
+		height: 240px;
+		width: 330px;
+		overflow: auto;
 }
 
 div.firmware-list-title {
