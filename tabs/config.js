@@ -6,13 +6,14 @@ firebaseReference.on('value', function(snapshot) {
     var hexList = $("#hexid");
     hexList.empty();
     snapshot.forEach(function (child) {
-        var value = child.key();
-        hexList.append($("<option />").val(value).text(value));
+        var key = child.key();
+        var value = child.child("info").val();
+        hexList.append($("<option />").val(key).text(value.name + " v" + value.version + " by " + value.author));
     });
 });
 
 function readFirebaseEntry(key, callback) {
-    firebaseReference.child(key).once("value", function (snapshot) {
+    firebaseReference.child(key).child("hex").once("value", function (snapshot) {
       callback(snapshot.val());
     });
 }
