@@ -1,13 +1,20 @@
 <div>
     <div class='button view-button' id="update_recommended_firmware">load recommended firmware</div>
-    Hex File URL:
-    <!--<input id="hexurl" type="text" value="http://localhost:8000/octoteensy.cpp.hex"></input>-->
-    <select id="hexid"></select>
-    <div class='button view-button' id="update_firmware">update firmware</div>
-    
-    <textarea rows="10" cols="50" id="firmware_hex"></textarea>
-    
 
+    <div>
+        <div style="display: inline-block;">
+            <div class='firmware-list-title'>Remote firmwares:</div>
+            <div class='firmware-list'>
+              <div class='firmware-list-inner' id="hex-remote" />
+            </div>
+        </div>
+        <div style="display: inline-block; margin-left: 20px;">
+            <div class='firmware-list-title'>Local firmwares:</div>
+            <div class='firmware-list'>
+              <div class='firmware-list-inner' id="hex-local" />
+            </div>
+        </div>
+    </div>
 
     <div class="flybrix-filehandler-holder">
         <div id="configuration-filehandler" class="configuration-filehandler"></div>
