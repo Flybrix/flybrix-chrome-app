@@ -272,14 +272,14 @@ $(document).ready(function () {
 	//  https://api.jqueryui.com/slider/
 
 	function checkVersion(ver) {
-		if (ver === latest_stable_version)
+		if (ver === flybrix_app_configuration_version)
 			return true;
-		if (ver == null || latest_stable_version == null)
+		if (ver == null || flybrix_app_configuration_version == null)
 			return false;
-		if (ver.length !== latest_stable_version.length)
+		if (ver.length !== flybrix_app_configuration_version.length)
 			return false;
 		for (var i = 0; i < ver.length; ++i)
-			if (ver[i] !== latest_stable_version[i])
+			if (ver[i] !== flybrix_app_configuration_version[i])
 				return false;
 		return true;
 	}
