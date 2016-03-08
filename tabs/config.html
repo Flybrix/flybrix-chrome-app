@@ -1,14 +1,19 @@
 <div>
-    <div class='button view-button' id="update_recommended_firmware">load recommended firmware</div>
+    <div class='firmware-list-title'>Recommended firmware</div>
+    <div id="hex-recommended">
+      <p style="color: red;">
+        Unavailable
+      </p>
+    </div>
     <div>
         <div style="display: inline-block;">
-            <div class='firmware-list-title'>Remote firmwares:</div>
+            <div class='firmware-list-title'>Remote firmwares</div>
             <div class='firmware-list'>
               <div class='firmware-list-inner' id="hex-remote" />
             </div>
         </div>
         <div style="display: inline-block; margin-left: 20px;">
-            <div class='firmware-list-title'>Local firmwares:</div>
+            <div class='firmware-list-title'>Local firmwares</div>
             <div class='firmware-list'>
               <div class='firmware-list-inner' id="hex-local" />
             </div>

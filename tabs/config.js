@@ -2,6 +2,8 @@ Firebase.INTERNAL.forceWebSockets();
 
 var firebaseReference = new Firebase('https://flybrix.firebaseio.com/firmware');
 
+var officialVersionKey = "Official " + latest_stable_version.join(":");
+
 function getFirmwareListElement(key, value, callbackLeft, callbackRight, labelRight) {
   var entry = $("<div />").attr("id", key).addClass("firmware-entry");
   var data = $("<table />");
@@ -19,25 +21,39 @@ function getFirmwareListElement(key, value, callbackLeft, callbackRight, labelRi
   entry.append($("<div />").addClass("button").addClass("firmware-button").text("update firmware").click(function () {
     callbackLeft(key, load_firmware);
   }));
-  entry.append($("<div />").addClass("button").addClass("firmware-button").text(labelRight).click(function () {
-    callbackRight(key);
-  }));
+  if (callbackRight) {
+    entry.append($("<div />").addClass("button").addClass("firmware-button").text(labelRight).click(function () {
+      callbackRight(key);
+    }));
+  }
   return entry;
+}
+
+function removeLocalFirmware(key) {
+    chrome.storage.local.remove("hex:" + key, function () {
+        console.log("Firmware", key, "removed");
+    });
 }
 
 function updateLocalStorageData() {
     var hexList = $("#hex-local");
     hexList.empty();
     chrome.storage.local.get(null, function (items) {
-        console.log(items);
         for (var key in items) {
             if (key.substring(0, 4) !== "hex:")
                 continue;
+            var dataLocation = hexList;
+            var callbackRight = removeLocalFirmware;
             var shortKey = key.substring(4);
+            if (shortKey === officialVersionKey) {
+                dataLocation = $("#hex-recommended");
+                dataLocation.empty();
+                callbackRight = null;
+            }
             var item = items[key];
             if (!("info" in item) || !("hex" in item))
                 continue;
-            hexList.append(getFirmwareListElement(shortKey, item.info, function (a, b) {
+            dataLocation.append(getFirmwareListElement(shortKey, item.info, function (a, b) {
                 var longKey = "hex:" + a;
                 chrome.storage.local.get(longKey, function(items) {
                     if (!(longKey in items))
@@ -47,11 +63,7 @@ function updateLocalStorageData() {
                         return;
                     b(item.hex);
                 })
-            }, function (key) {
-                chrome.storage.local.remove("hex:" + key, function () {
-                    console.log("Firmware", key, "removed");
-                });
-            }, "remove"));
+            }, callbackRight, "remove"));
         }
     });
 }
@@ -60,7 +72,9 @@ firebaseReference.on('value', function(snapshot) {
     var hexList = $("#hex-remote");
     hexList.empty();
     snapshot.forEach(function (child) {
-        hexList.append(getFirmwareListElement(child.key(), child.child("info").val(), readFirebaseEntry, function (key) {
+        var key = child.key();
+        var info = child.child("info").val();
+        hexList.append(getFirmwareListElement(key, info, readFirebaseEntry, function (key) {
             readFirebaseEntryFull(key, function (data) {
                 var entry = {};
                 entry["hex:" + key] = data;
@@ -69,6 +83,13 @@ firebaseReference.on('value', function(snapshot) {
                 });
             });
         }, "store"));
+        if (key === officialVersionKey) {
+          var entry = {};
+          entry["hex:" + key] = child.val();
+          chrome.storage.local.set(entry, function () {
+            console.log("Recommended hex version stored");
+          });
+        }
     });
 });
 
@@ -82,6 +103,18 @@ function readFirebaseEntryFull(key, callback) {
     firebaseReference.child(key).once("value", function (snapshot) {
       callback(snapshot.val());
     });
+}
+
+function readLocalEntry(key, callback) {
+    var longKey = "hex:" + key;
+    chrome.storage.local.get(longKey, function(items) {
+        if (!(longKey in items))
+            return;
+        var item = items[longKey];
+        if (!("hex" in item))
+            return;
+        callback(item.hex);
+    })
 }
 
 function readTextFile(file, callback)
@@ -109,11 +142,6 @@ function readURL(file, callback)
 function initialize_config_view() {
   updateLocalStorageData();
   chrome.storage.onChanged.addListener(updateLocalStorageData);
-
-  $("#update_recommended_firmware").click(function () {
-		command_log("Uploading recommended firmware...");
-		readTextFile("current_firmware_hex", load_firmware);
-	});
 
 	$('#eeprom-refresh').click(function (e) {
 		e.preventDefault();
