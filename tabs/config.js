@@ -45,7 +45,7 @@ function updateLocalStorageData() {
             var dataLocation = hexList;
             var callbackRight = removeLocalFirmware;
             var shortKey = key.substring(4);
-            if (shortKey === officialVersionKey) {
+            if (shortKey === "@remote:" + officialVersionKey) {
                 dataLocation = $("#hex-recommended");
                 dataLocation.empty();
                 callbackRight = null;
@@ -77,7 +77,7 @@ firebaseReference.on('value', function(snapshot) {
         hexList.append(getFirmwareListElement(key, info, readFirebaseEntry, function (key) {
             readFirebaseEntryFull(key, function (data) {
                 var entry = {};
-                entry["hex:" + key] = data;
+                entry["hex:@remote:" + key] = data;
                 chrome.storage.local.set(entry, function () {
                     console.log("Firmware", key, "stored");
                 });
@@ -85,7 +85,7 @@ firebaseReference.on('value', function(snapshot) {
         }, "store"));
         if (key === officialVersionKey) {
           var entry = {};
-          entry["hex:" + key] = child.val();
+          entry["hex:@remote:" + key] = child.val();
           chrome.storage.local.set(entry, function () {
             console.log("Recommended hex version stored");
           });
@@ -139,9 +139,62 @@ function readURL(file, callback)
     rawFile.send(null);
 }
 
+function readHexFile(entry, callback) {
+    if (!entry) {
+        command_log('No hex file selected!');
+        console.log('no file selected');
+        return;
+    }
+
+    // read contents into variable
+    entry.file(function(file) {
+        var reader = new FileReader();
+
+        reader.onerror = function (e) {
+            console.log(e);
+        };
+
+        reader.onloadend = function(e) {
+            command_log('Read <span style="color: green;">SUCCESSFUL</span>');
+            console.log('Read SUCCESSFUL');
+
+            callback(e.target.result);
+        };
+
+        reader.readAsText(file);
+    });
+}
+
 function initialize_config_view() {
   updateLocalStorageData();
   chrome.storage.onChanged.addListener(updateLocalStorageData);
+
+  $('#load-hex-file').click(function (e) {
+    e.preventDefault();
+    var accepts = [{
+        mimeTypes : ['text/*'],
+        extensions : ['hex']
+      }
+    ];
+    chrome.fileSystem.chooseEntry({
+      type : 'openFile',
+      accepts : accepts
+    }, function (fileEntry) {
+      readHexFile(fileEntry, function (hexData) {
+        var entry = {};
+        entry["hex:@local:" + fileEntry.name] = {
+          info: {
+            name: fileEntry.name,
+            author: "Local file"
+          },
+          hex: hexData
+        }
+        chrome.storage.local.set(entry, function () {
+          console.log("Local file loaded");
+        });
+      })
+    });
+	});
 
 	$('#eeprom-refresh').click(function (e) {
 		e.preventDefault();
