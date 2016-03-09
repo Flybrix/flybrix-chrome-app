@@ -25,6 +25,7 @@ var CommandFields = {
 	COM_SET_STATE_MASK : 1 << 14,
 	COM_SET_STATE_DELAY : 1 << 15,
 	COM_REQ_HISTORY : 1 << 16,
+	COM_SET_LED : 1 << 17,
 };
 
 var serial_update_rate_Hz = 0;

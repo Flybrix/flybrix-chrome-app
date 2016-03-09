@@ -9,11 +9,10 @@ var state_data_mask =
 	0, // mag: [0, 0, 0],
 	0, // temperature: 0,
 	0, // pressure: 0,
-	0, // ppm: [0,0,0,0,0,0] and ppm_midpoint: [0,0,0]
+	0, // ppm: [0,0,0,0,0,0]
 	0, // AUX_chan_mask: 0, //{AUX1_low, AUX1_mid, AUX1_high, AUX2_low, AUX2_mid, AUX2_high, x, x} (LSB-->MSB)
 	0, // command: [0,0,0,0], //throttle, pitch, roll, yaw
 	0, // control: [0,0,0,0], //Fz, Tx, Ty, Tz
-	0, // control_T_trim: [0,0,0], // Tx_trim, Ty_trim, Tz_trim
 	0, // pid_master_Fz: [0,0,0,0,0,0], //Fz: time, input, setpoint, p_term, i_term, d_term
 	0, // pid_master_Tx: [0,0,0,0,0,0], //Tx: time, input, setpoint, p_term, i_term, d_term
 	0, // pid_master_Ty: [0,0,0,0,0,0], //Ty: time, input, setpoint, p_term, i_term, d_term
@@ -41,11 +40,9 @@ var state = {
 	temperature : 0,
 	pressure : 0,
 	ppm : [0, 0, 0, 0, 0, 0],
-	ppm_midpoint : [0, 0, 0],
 	AUX_chan_mask : 0,
 	command : [0, 0, 0, 0], //throttle, pitch, roll, yaw
 	control : [0, 0, 0, 0], //Fz, Tx, Ty, Tz
-	control_T_trim : [0, 0, 0], // Tx_trim, Ty_trim, Tz_trim
 	pid_master_Fz : [0, 0, 0, 0, 0, 0], //Fz: time, input, setpoint, p_term, i_term, d_term
 	pid_master_Tx : [0, 0, 0, 0, 0, 0], //Tx: time, input, setpoint, p_term, i_term, d_term
 	pid_master_Ty : [0, 0, 0, 0, 0, 0], //Ty: time, input, setpoint, p_term, i_term, d_term
@@ -78,7 +75,6 @@ var StateFields = {
 	STATE_AUX_CHAN_MASK : 1 << 11,
 	STATE_COMMANDS : 1 << 12,
 	STATE_F_AND_T : 1 << 13,
-	STATE_T_TRIM : 1 << 14,
 	STATE_PID_FZ_MASTER : 1 << 15,
 	STATE_PID_TX_MASTER : 1 << 16,
 	STATE_PID_TY_MASTER : 1 << 17,
@@ -106,7 +102,7 @@ function parse_pid_data(data, destination, byteRef) {
 }
 
 function arraybuffer2string(buf) {
-  return String.fromCharCode.apply(null, new Uint8Array(buf));
+	return String.fromCharCode.apply(null, new Uint8Array(buf));
 }
 
 function process_binary_datastream(command, mask, message_buffer) {
@@ -121,25 +117,30 @@ function process_binary_datastream(command, mask, message_buffer) {
 			var data = new DataView(message_buffer, 0);
 			data.parseCONFIG(eepromConfig);
 
-			if ((latest_stable_version[0] != eepromConfig.version[0]) ||
-				(latest_stable_version[1] != eepromConfig.version[1]) ||
-				(latest_stable_version[2] != eepromConfig.version[2])) {
-				command_log('<span style="color: red">WARNING: EEPROM Configuration Version Mismatch!</span>');
-				command_log('Configurator version: <strong>' + version + '</strong> - Flight software version: <strong>' + eepromConfig.version + '</strong>');
-
+			if ((flybrix_app_configuration_version[0] != eepromConfig.version[0]) ||
+				(flybrix_app_configuration_version[1] != eepromConfig.version[1])) {
+				command_log('<span style="color: red">WARNING: Configuration MAJOR or MINOR version mismatch!</span>');
+				command_log('eeprom version: <strong>' +
+					eepromConfig.version[0] + '.' +
+					eepromConfig.version[1] + '.' +
+					eepromConfig.version[2] + '</strong>' +
+					' - app expected version: <strong>' +
+					flybrix_app_configuration_version.version[0] + '.' +
+					flybrix_app_configuration_version.version[1] + '.' +
+					flybrix_app_configuration_version.version[2] + '</strong>');
 			} else {
-				command_log('Configuration CONFIG received -- <span style="color: green">OK</span>');
+				command_log('Recieved configuration version:  <span style="color: green">' + eepromConfig.version[0] + '.' + eepromConfig.version[1] + '.' + eepromConfig.version[2] + '</span>');
 			}
 		}
 		break;
 	case MessageType.DebugString:
-				var debug_string = arraybuffer2string(message_buffer);
-				console.log("Debug message: ", debug_string);
-        command_log('Received <span style="color: orange">DEBUG</span>: ' + debug_string);
+		var debug_string = arraybuffer2string(message_buffer);
+		console.log("Debug message: ", debug_string);
+		command_log('Received <span style="color: orange">DEBUG</span>: ' + debug_string);
 		break;
 	case MessageType.HistoryData:
-				var debug_string = arraybuffer2string(message_buffer);
-        command_log('Received <span style="color: orange">HISTORY DATA</span>');
+		var debug_string = arraybuffer2string(message_buffer);
+		command_log('Received <span style="color: orange">HISTORY DATA</span>');
 		break;
 	case MessageType.Response:
 		var data = new DataView(message_buffer, 0);
@@ -214,7 +215,6 @@ function parse_data_packet(mask, message_buffer) {
 	if (0 != (mask & StateFields.STATE_RX_PPM)) {
 		state_data_mask[10] = 1;
 		parseInt16Array(data, state.ppm, b);
-		parseInt16Array(data, state.ppm_midpoint, b);
 	}
 	if (0 != (mask & StateFields.STATE_AUX_CHAN_MASK)) {
 		state_data_mask[11] = 1;
@@ -228,10 +228,6 @@ function parse_data_packet(mask, message_buffer) {
 	if (0 != (mask & StateFields.STATE_F_AND_T)) {
 		state_data_mask[13] = 1;
 		parseFloat32Array(data, state.control, b);
-	}
-	if (0 != (mask & StateFields.STATE_T_TRIM)) {
-		state_data_mask[14] = 1;
-		parseFloat32Array(data, state.control_T_trim, b);
 	}
 	if (0 != (mask & StateFields.STATE_PID_FZ_MASTER)) {
 		state_data_mask[15] = 1;

@@ -186,7 +186,7 @@
 				var csv_str = "timestamp,";
 				// header row
 				for (var i = 0; i < plot_series.length; i++) {
-					csv_str += plot_series[i].label + ",";
+					csv_str += (plot_series[i].label).split('=')[0] + ",";
 				}
 				csv_str = csv_str.slice(0, -1) + '\n';
 				// data rows
@@ -339,13 +339,15 @@
 			var plot = $(this).data("plot");
 			var plot_series = plot.getData();
 			for (var i = 0; i < plot_series.length; i++) {
-				if (label === undefined || label === plot_series[i].label) {
+				if (label === undefined || label === (plot_series[i].label).split('=')[0]) {
 					var series = plot_series[i];
 					var autoscale_checkbox_query = $('#' + $(this).attr('id'));
 
-					if (x !== undefined)
+					if (x !== undefined) {
 						plot.appendData(i, [x, y], 200);
-
+                        // add the value to the label
+                        plot_series[i].label = label + '=' + y.toPrecision(4);
+                    }
 					var now = Date.now();
 					if (redraw && ((now - series.lastUpdate) > 100)) { //throttle redraw to 10Hz
 						setTimeout(function () {

@@ -1,4 +1,4 @@
-var latest_stable_version = [1,0,0]; //checked at startup!
+var flybrix_app_configuration_version = [1,1,0]; //checked at startup!
 
 var eepromConfig = {
 	version : [0.0, 0.0, 0.0],
