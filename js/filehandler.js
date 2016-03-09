@@ -13,6 +13,11 @@
 			console.log("Went from 0.9 to 1.0");
 			console.log("The migration system works!");
 		},
+		'1.0': function (config) {
+			// no changes to the actual config structure, but some PID parameters were changed
+			config.version = config.config.version = [1, 1, 0];
+			console.log("Went from 1.0 to 1.1");
+		}
 	};
 
 	function migrate(config, recursive_call) {
