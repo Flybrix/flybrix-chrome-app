@@ -39,6 +39,50 @@ div.button {
     width: 180px;
 }
 
+.firmware-button {
+    width: 120px;
+		display: inline-block;
+		margin-right: 10px;
+}
+
+div.firmware-list {
+		border: 1px solid #999;
+		border-radius: 6px;
+		padding: 5px;
+}
+
+div.firmware-list-inner {
+		height: 240px;
+		width: 330px;
+		overflow: auto;
+}
+
+div.firmware-list-title {
+		text-transform: uppercase;
+		font-size: 14px;
+		font-weight: bold;
+		padding-top: 10px;
+		padding-bottom: 5px;
+}
+
+div.firmware-entry {
+		width: 280px;
+		height: 64px;
+		margin-top: 6px;
+		padding: 8px;
+		border: 1px solid #999;
+		border-radius: 6px;
+}
+
+div.firmware-entry .fw-label {
+		width: 60px;
+		font-weight: bold;
+}
+
+div.firmware-entry .fw-data {
+		width: 180px;
+}
+
 .indicator-warning{
     background-color: green;
     display: block;

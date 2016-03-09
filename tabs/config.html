@@ -1,9 +1,24 @@
 <div>
-    Hex File URL:
-    <input id="hexurl" type="text" value="http://localhost:8000/octoteensy.cpp.hex"></input>
-    <div class='button view-button' id="update_firmware">update firmware</div>
+    <div class='firmware-list-title'>Recommended firmware</div>
+    <div id="hex-recommended">
+      <p style="color: red;">
+        Unavailable
+      </p>
+    </div>
+    <div class='button view-button' id="load-hex-file">load local firmware</div>
     <div>
-        <textarea rows="10" cols="50" id="firmware_hex"></textarea>
+        <div style="display: inline-block;">
+            <div class='firmware-list-title'>Remote firmwares</div>
+            <div class='firmware-list'>
+              <div class='firmware-list-inner' id="hex-remote" />
+            </div>
+        </div>
+        <div style="display: inline-block; margin-left: 20px;">
+            <div class='firmware-list-title'>Local firmwares</div>
+            <div class='firmware-list'>
+              <div class='firmware-list-inner' id="hex-local" />
+            </div>
+        </div>
     </div>
 
     <div>
@@ -75,7 +90,7 @@
             <label class="model-entry-label">CH5<input class="model-entry-field mixTableTz 5"/></label>
             <label class="model-entry-label">CH6<input class="model-entry-field mixTableTz 6"/></label>
             <label class="model-entry-label">CH7<input class="model-entry-field mixTableTz 7"/></label>
-        </div>        
+        </div>
         <div class="model-entry">
             <span class="model-entry-title">magBias</span>
             <label class="model-entry-label">x offset<input class="model-entry-field magBias 0"/></label>

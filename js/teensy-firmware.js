@@ -4,7 +4,7 @@ function load_firmware(firmware_hex_string) {
 	byte_count = 0;
 	end_record_seen = 0;
 	extended_addr = 0;
-	parse_hex();
+	parse_hex(firmware_hex_string);
 	teensy_open();
 }
 
@@ -244,7 +244,7 @@ function write_hex() {
 
 		} else {
 			//for (var addr = 0; addr < code_size; addr += block_size) {
-                
+
 			console.log(".");
 
 			buf[0] = addr & 255;
