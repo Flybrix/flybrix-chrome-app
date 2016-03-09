@@ -14,7 +14,18 @@ var updateColors = (function() {
     function update() {
         var l = getRgb($("#led-left"));
         var r = getRgb($("#led-right"));
-        send_message(CommandFields.COM_SET_LED, new Uint8Array([$("input[name=ledmode]:checked").val(), r.r, r.g, r.b, l.r, l.g, l.b, 0, 0]), false);
+        var message = new Uint8Array([
+            $("input[name=ledmode]:checked").val(),
+            r.r,
+            r.g,
+            r.b,
+            l.r,
+            l.g,
+            l.b,
+            $("#led-ind-red").is(":checked"),
+            $("#led-ind-grn").is(":checked"),
+        ]);
+        send_message(CommandFields.COM_SET_LED, message, false);
     }
 
     var latestUpdate = new Date();
@@ -52,9 +63,13 @@ function initialize_led_view() {
 
     $("input[name=ledmode]")
         .change(function() {
-            console.log("HELLO");
             updateColors(false);
-        })
+        });
+
+    $(".led-checkbox")
+        .click(function() {
+            updateColors(false);
+        });
 }
 
 
