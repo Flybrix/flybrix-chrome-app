@@ -83,6 +83,18 @@ div.firmware-entry .fw-data {
 		width: 180px;
 }
 
+div.color-box {
+		display:inline-block;
+}
+
+div.label-title {
+		text-transform: uppercase;
+		font-size: 14px;
+		font-weight: bold;
+		padding-top: 10px;
+		padding-bottom: 5px;
+}
+
 .indicator-warning{
     background-color: green;
     display: block;
