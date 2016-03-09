@@ -237,12 +237,12 @@ div.label-title {
 .histogram-plot{
 }
 
-
-.flybrix-filehandler .checkbox{
-    top:0px;
-    float: left;
-    margin-right: 10px;
+.flybrix-filehandler-holder{
+    height: 18px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
+
 .flybrix-filehandler .filename{
     top:0px;
     width: 500px;
@@ -253,22 +253,26 @@ div.label-title {
     float: left;
     margin-top: -5px;
     font-size: 12px;
+    margin-left:5px;
 }
-.flybrix-filehandler .button {
+.flybrix-filehandler .active{
+    border-width: 5px;
+    border-color: green;
+    border-style: solid;
+    margin-top: -10px;
+}
+.flybrix-filehandler .icon-button {
     position: absolute;
     cursor: pointer;
     margin-top: -3px;
     margin-left: 5px;
     width: 20px;
 }
-.flybrix-filehandler div.button {
-    font-size: 10px;
-    color: #999;
-    background-color: #F7F7C1;
-    padding-bottom: 8px;
-    padding-top: 8px;
-    padding-left: 15px;
-    padding-right: 15px;
+.flybrix-filehandler .text-button {
+    width: 80px;
+    float: left;
+    margin-top: -3px;
+    margin-left: 5px;
 }
 
 

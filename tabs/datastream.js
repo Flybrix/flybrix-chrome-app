@@ -15,24 +15,30 @@ function initialize_datastream_view() {
 
 	$('#data-rate-plot').create_plot(["update rate (Hz)", "target rate (Hz)"]);
 
-	$('#capture-mode-filehandler').create_filehandler();
+	$('#capture-mode-filehandler').create_filehandler("start", "stop");
 
-	$('#capture-mode-filehandler #active').change(function () {
-		if ($(this).prop("checked")) {
+	$('#capture-mode-filehandler #button1').unbind().click(function (event) { // start button
+        event.preventDefault();
+		if (!(data_mode === "capture")) {
+            command_log('Changing to capture mode.');
+            
+            $('#capture-mode-filehandler #file').addClass("active");
 
-			//fake serial data data
-			//var data = new Uint8Array([65,66,67,0,67,66,65]);
-			//setInterval(function(){$('#capture-mode-filehandler').write_to_filehandler(data);}, 100);
 			capture_mode_callback = function (data) {
-				$('#capture-mode-filehandler').write_to_filehandler(data, false);
+				$('#capture-mode-filehandler').write_datastream_to_filehandler(data, false);
 			}
-
-			command_log('Changing to capture mode.');
+			
 			old_data_mode = data_mode;
 			data_mode = "capture";
-		} else {
-			$('#capture-mode-filehandler').write_to_filehandler([], true);
-			command_log('Closing capture mode and returning to ' + old_data_mode);
+		}
+	});
+    
+    $('#capture-mode-filehandler #button2').unbind().click(function (event) { // stop button
+        event.preventDefault();
+		if (data_mode === "capture") {
+            command_log('Closing capture mode and returning to ' + old_data_mode);
+            $('#capture-mode-filehandler #file').removeClass("active");
+			$('#capture-mode-filehandler').write_datastream_to_filehandler([], true);
 			data_mode = old_data_mode;
 		}
 	});
@@ -91,11 +97,9 @@ function update_current_state() {
 	csq.find(".temperature").val((state.temperature * 1.0).toFixed(3));
 	csq.find(".pressure").val((state.pressure * 1.0).toFixed(3));
 	loadArrayValues(csq.find(".ppm"), state.ppm, 0);
-	loadArrayValues(csq.find(".ppm_midpoint"), state.ppm_midpoint, 0);
 	csq.find(".AUX_chan_mask").val((state.AUX_chan_mask * 1.0).toFixed(0));
 	loadArrayValues(csq.find(".command"), state.command, 0);
 	loadArrayValues(csq.find(".control"), state.control, 3);
-	loadArrayValues(csq.find(".control_T_trim"), state.control_T_trim, 0);
 	loadArrayValues(csq.find(".pid_master_Fz"), state.pid_master_Fz, 2);
 	loadArrayValues(csq.find(".pid_master_Tx"), state.pid_master_Tx, 2);
 	loadArrayValues(csq.find(".pid_master_Ty"), state.pid_master_Ty, 2);

@@ -42,68 +42,53 @@ var port_selector_refresh_callback;
 var discovered_ports = false;
 var connected_port = false;
 var auto_connect = false;
-function diff(A,B)
-{
+
+function diff(A, B) {
 	var out = [];
 
-    // create hardcopy
-    for (var i = 0; i < A.length; i++) {
-        out.push(A[i]);
-    }
+	// create hardcopy
+	for (var i = 0; i < A.length; i++) {
+		out.push(A[i]);
+	}
 
-    for (var i = 0; i < B.length; i++) {
-        if (out.indexOf(B[i]) != -1) {
-            out.splice(out.indexOf(B[i]), 1);
-        }
-    }
-	//console.log(A);
-	//console.log(B);
-    //console.log(out);
+	for (var i = 0; i < B.length; i++) {
+		if (out.indexOf(B[i]) != -1) {
+			out.splice(out.indexOf(B[i]), 1);
+		}
+	}
 	return out;
 
 }
+
 function refresh_port_selector() {
-//		console.log('click refresh');
+	chrome.serial.getDevices(function (ports) {
+		var devices = [];
+		ports.forEach(function (device) {
+			devices.push(device.path);
+		});
 
-//		console.log("Available port list requested.");
-//
+		if (!discovered_ports || diff(discovered_ports, devices).length > 0) {
+			var diff_ports = diff(discovered_ports, devices);
 
-		chrome.serial.getDevices(function (ports) {
-			var devices = [];
-            ports.forEach(function (device) {
-                devices.push(device.path);
-            });
-
-
-			if (!discovered_ports || diff(discovered_ports, devices).length>0)
-			{
-				var diff_ports = diff(discovered_ports, devices);
-
-
-				if (discovered_ports != false) {
-					console.log("discovered_ports not false");
-					if (diff_ports.length > 1) {
-						console.log('Port unplugged: ' + diff_ports);
-					} else {
-						console.log('Port unplugged: ' + diff_ports[0]);
+			if (discovered_ports != false) {
+				console.log("discovered_ports not false");
+				if (diff_ports.length > 1) {
+					console.log('Port unplugged: ' + diff_ports);
+				} else {
+					console.log('Port unplugged: ' + diff_ports[0]);
+				}
+			}
+			/*
+			if disconnected ports contains active then disconnect
+			 */
+			if (connected_port) {
+				for (var i = 0; i < diff_ports.length; i++) {
+					if (diff_ports[i] == connected_port) {
+						console.log("disconnected connected port");
+						connect_disconnect();
 					}
 				}
-				/*
-					if disconnected ports contains active then disconnect
-				*/
-				if (connected_port)
-				{
-					for (var i=0;i<diff_ports.length;i++)
-					{
-						if (diff_ports[i] == connected_port)
-						{
-							console.log("disconnected connected port");
-							connect_disconnect();
-						}
-					}
-				}
-
-
+			}
 
 			port_selector.html('');
 			if (devices.length > 0) {
@@ -115,8 +100,7 @@ function refresh_port_selector() {
 							text : device
 						}));
 				});
-				if (!discovered_ports)
-				{
+				if (!discovered_ports) {
 					chrome.storage.local.get('last_used_port', function (result) {
 						// if last_used_port was set, we try to select it
 						if (typeof result.last_used_port != 'undefined') {
@@ -138,101 +122,89 @@ function refresh_port_selector() {
 				console.log("No serial ports detected");
 
 			}
-			if (!discovered_ports)
-			{
+			if (!discovered_ports) {
 				discovered_ports = devices;
-			}
-			else
-			{
-				for (var i = 0; i < diff_ports.length; i++) {
-                    discovered_ports.splice(discovered_ports.indexOf(diff_ports[i]), 1);
-                }
-			}
-
-			}
-
-
-			var new_ports = diff(devices, discovered_ports);
-			if (new_ports.length)
-			{
-
-				if (new_ports.length > 1) {
-					console.log('Port found: ' + new_ports);
-				} else {
-					console.log('Port found: ' + new_ports[0]);
-				}
-				port_selector.html('');
-				devices.forEach(function (device) {
-					$(port_selector).append($("<option/>", {
-							value : device,
-							text : device
-						}));
-					});
-				// if already connected switch to connected port
-				if (connected_port)
-				{
-					port_selector.val(connected_port);
-				}
-				else
-				{
-					port_selector.val(new_ports[0])
-					if (auto_connect)
-					{
-						connect_disconnect();
-					}
-				}
-
-
-				discovered_ports = devices;
-
-			}
-
-		});
-		port_selector_refresh_callback = setTimeout(refresh_port_selector,200);
-	}
-function connect_disconnect()
-	{
-		console.log('connect/disconnect');
-		var connect_button = $('.datastream-serial #connect');
-		var connected = connect_button.data('connected'); //initially zero (false)
-
-		selected_port = String($(port_selector).val());
-
-
-		if (selected_port != '0') {
-			if (connected) {
-
-				console.log('Disconnecting from: ' + selected_port);
-				if (backgroundPage.serialConnectionId > 0)
-				{
-					chrome.serial.disconnect(backgroundPage.serialConnectionId, onSerialClose);
-				}
-
-				// if we disconnect before we ask for initial config data
-				if (initial_config_request) {
-					clearTimeout(initial_config_request);
-				}
-
-				// Reset port usage indicator to 0
-				$('span.port-usage').html(0 + ' kbps');
-
-				connect_button.text('Connect');
-				connected_port = false;
-				data_mode = "idle";
-
 			} else {
-				console.log('Connecting to: ' + selected_port);
-
-				chrome.serial.connect(selected_port, {
-					bufferSize : 4096 * 5, //???
-					bitrate : 250000 //doesn't matter for USB
-				}, serialConnectCallback);
-				connected_port = selected_port;
+				for (var i = 0; i < diff_ports.length; i++) {
+					discovered_ports.splice(discovered_ports.indexOf(diff_ports[i]), 1);
+				}
 			}
 
-			connect_button.data("connected", !connected);
 		}
+
+		var new_ports = diff(devices, discovered_ports);
+		if (new_ports.length) {
+
+			if (new_ports.length > 1) {
+				console.log('Port found: ' + new_ports);
+			} else {
+				console.log('Port found: ' + new_ports[0]);
+			}
+			port_selector.html('');
+			devices.forEach(function (device) {
+				$(port_selector).append($("<option/>", {
+						value : device,
+						text : device
+					}));
+			});
+			// if already connected switch to connected port
+			if (connected_port) {
+				port_selector.val(connected_port);
+			} else {
+				port_selector.val(new_ports[0])
+				if (auto_connect) {
+					connect_disconnect();
+				}
+			}
+
+			discovered_ports = devices;
+
+		}
+
+	});
+	port_selector_refresh_callback = setTimeout(refresh_port_selector, 200);
+}
+
+function connect_disconnect() {
+	console.log('connect/disconnect');
+	var connect_button = $('.datastream-serial #connect');
+	var connected = connect_button.data('connected'); //initially zero (false)
+
+	selected_port = String($(port_selector).val());
+
+	if (selected_port != '0') {
+		if (connected) {
+
+			console.log('Disconnecting from: ' + selected_port);
+			if (backgroundPage.serialConnectionId > 0) {
+				chrome.serial.disconnect(backgroundPage.serialConnectionId, onSerialClose);
+			}
+
+			// if we disconnect before we ask for initial config data
+			if (initial_config_request) {
+				clearTimeout(initial_config_request);
+			}
+
+			// Reset port usage indicator to 0
+			$('span.port-usage').html(0 + ' kbps');
+
+			connect_button.text('Connect');
+			connected_port = false;
+			data_mode = "idle";
+
+		} else {
+			console.log('Connecting to: ' + selected_port);
+
+			chrome.serial.connect(selected_port, {
+				bufferSize : 4096 * 5, //???
+				bitrate : 250000 //doesn't matter for USB
+			}, serialConnectCallback);
+			connected_port = selected_port;
+		}
+
+		connect_button.data("connected", !connected);
 	}
+}
 
 $(document).ready(function () {
 
@@ -240,32 +212,29 @@ $(document).ready(function () {
 	chrome.app.window.current().outerBounds.maxWidth = 0;
 
 	chrome.storage.local.get('auto_connect', function (result) {
-		if (result.auto_connect === 'undefined' || result.auto_connect)
-		{
+		if (result.auto_connect === 'undefined' || result.auto_connect) {
 			auto_connect = true;
-            $('input.auto_connect').prop('checked', true);
+			$('input.auto_connect').prop('checked', true);
 
+		} else {
+			// disabled by user
+			auto_connect = false;
+			$('input.auto_connect').prop('checked', false);
 		}
-		else {
-            // disabled by user
-            auto_connect = false;
-            $('input.auto_connect').prop('checked', false);
-        }
 		// bind UI hook to auto-connect checkbos
-        $('input.auto_connect').change(function () {
-            auto_connect = $(this).is(':checked');
-			chrome.storage.local.set({'auto_connect': auto_connect});
-			if (auto_connect)
-			{
-				if (!connected_port)
-				{
+		$('input.auto_connect').change(function () {
+			auto_connect = $(this).is(':checked');
+			chrome.storage.local.set({
+				'auto_connect' : auto_connect
+			});
+			if (auto_connect) {
+				if (!connected_port) {
 					connect_disconnect();
 				}
 			}
 		});
 
 	});
-
 
 	// serial datastream setup
 	port_selector = $('.datastream-serial select');
@@ -303,14 +272,14 @@ $(document).ready(function () {
 	//  https://api.jqueryui.com/slider/
 
 	function checkVersion(ver) {
-		if (ver === latest_stable_version)
+		if (ver === flybrix_app_configuration_version)
 			return true;
-		if (ver == null || latest_stable_version == null)
+		if (ver == null || flybrix_app_configuration_version == null)
 			return false;
-		if (ver.length !== latest_stable_version.length)
+		if (ver.length !== flybrix_app_configuration_version.length)
 			return false;
 		for (var i = 0; i < ver.length; ++i)
-			if (ver[i] !== latest_stable_version[i])
+			if (ver[i] !== flybrix_app_configuration_version[i])
 				return false;
 		return true;
 	}
@@ -348,7 +317,9 @@ $(document).ready(function () {
 								throw "File is missing the 'data' field";
 							if (!checkVersion(dataObject.version))
 								throw "The requested recording is made on an old firmware version";
-							replay_buffer = new Uint8Array(atob(dataObject.data).split("").map(function(c) {return c.charCodeAt(0); }));
+							replay_buffer = new Uint8Array(atob(dataObject.data).split("").map(function (c) {
+										return c.charCodeAt(0);
+									}));
 							replay_point = 0;
 						} catch (err) {
 							command_log('Read <span style="color: red;">FAILED</span>: ' + err);
@@ -397,35 +368,35 @@ $(document).ready(function () {
 
 	$('.datastream-replay #play').click(function () {
 		console.log('click play', $(this));
-			// TODO
-			// turn off serial port if necessary
-			// set mode to replay
-			// advance to slider position in replay_buffer
-			// read and feed while adjusting slider position
+		// TODO
+		// turn off serial port if necessary
+		// set mode to replay
+		// advance to slider position in replay_buffer
+		// read and feed while adjusting slider position
 
-			// drive everything via the slider value update -- send a chunk of bytes and then advance on a timer.
+		// drive everything via the slider value update -- send a chunk of bytes and then advance on a timer.
 
-			//$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
-			if (data_mode === "replay")
-				return;
-			if (data_mode === "serial")
-				connect_disconnect();
-			data_mode = "replay";
+		//$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
+		if (data_mode === "replay")
+			return;
+		if (data_mode === "serial")
+			connect_disconnect();
+		data_mode = "replay";
 
-			setTimeout(function () {
-				simulateData(replay_buffer.slice(replay_point), 50);
-			}, 100);
+		setTimeout(function () {
+			simulateData(replay_buffer.slice(replay_point), 50);
+		}, 100);
 	});
 
 	$('.datastream-replay #pause').click(function () {
-			// stop playing
-			fireOffStop();
+		// stop playing
+		fireOffStop();
 	});
 
 	$('.datastream-replay #stop').click(function () {
-			// stop playing
-			fireOffStop();
-			setReplayPosition(0);
+		// stop playing
+		fireOffStop();
+		setReplayPosition(0);
 	});
 	// TODO
 	// deal with slider related events
