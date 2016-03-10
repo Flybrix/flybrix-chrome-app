@@ -152,11 +152,15 @@ function create_vehicle_view_scene() {
   });
   var loader = new THREE.STLLoader();
   loader.load('./models/flyer_assembly_xquad_small.stl', function (geometry) {
-    vehicle_view_prism = new THREE.Mesh(geometry, modelMaterial);
-  	vehicle_view_prism.position.set(0, 0, 0);
-    vehicle_view_prism.castShadow = true;
-		vehicle_view_prism.receiveShadow = true;
-  	vehicle_view_scene.add(vehicle_view_prism);
+    var vehicle_mesh = new THREE.Mesh(geometry, modelMaterial);
+    vehicle_mesh.position.set(-24, -20, 16);
+    vehicle_mesh.rotation.y = Math.PI / 2;
+    vehicle_mesh.castShadow = true;
+    vehicle_mesh.receiveShadow = true;
+    vehicle_view_prism = new THREE.Object3D();
+    vehicle_view_prism.position.set(0, 0, 0);
+    vehicle_view_prism.add(vehicle_mesh);
+    vehicle_view_scene.add(vehicle_view_prism);
   });
 
 	// create a set of coordinate axes to help orient user
