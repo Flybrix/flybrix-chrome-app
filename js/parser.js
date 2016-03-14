@@ -275,7 +275,7 @@ function parse_data_packet(mask, message_buffer) {
 	}
 	if (0 != (mask & StateFields.STATE_KINE_ALTITUDE)) {
 		state_data_mask[26] = 1;
-		state.kinematicsAltitude[3] = data.getFloat32(b.index, 1);
+		state.kinematicsAltitude = data.getFloat32(b.index, 1);
 		b.add(4);
 	}
 	if (0 != (mask & StateFields.STATE_LOOP_COUNT)) {
