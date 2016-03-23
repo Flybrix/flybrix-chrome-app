@@ -71,10 +71,10 @@ function update_signals_view() {
         
         plotq = $("#commands-master-plot");
         if(plotq.find("#live").prop("checked")) {
-            var scaleFz = eepromConfig.thrustMasterPIDParameters[6];
-            var scaleTx = eepromConfig.pitchMasterPIDParameters[6];
-            var scaleTy = eepromConfig.rollMasterPIDParameters[6];
-            var scaleTz = eepromConfig.yawMasterPIDParameters[6];
+            var scaleFz = eepromConfig.thrustMasterPIDParameters[6]/4095;
+            var scaleTx = eepromConfig.pitchMasterPIDParameters[6]/2047;
+            var scaleTy = eepromConfig.rollMasterPIDParameters[6]/2047;
+            var scaleTz = eepromConfig.yawMasterPIDParameters[6]/2047;
 
             plotq.update_flybrix_plot_series("Fz (m)",   state.timestamp_us / 1000000, scaleFz * Fz_cmd, false);
             plotq.update_flybrix_plot_series("Tx (deg)", state.timestamp_us / 1000000, scaleTx * Tx_cmd, false);
@@ -83,10 +83,10 @@ function update_signals_view() {
         }
         plotq = $("#commands-slave-plot");
         if(plotq.find("#live").prop("checked")) {
-            var scaleFz = eepromConfig.thrustSlavePIDParameters[6];
-            var scaleTx = eepromConfig.pitchSlavePIDParameters[6];
-            var scaleTy = eepromConfig.rollSlavePIDParameters[6];
-            var scaleTz = eepromConfig.yawSlavePIDParameters[6];
+            var scaleFz = eepromConfig.thrustSlavePIDParameters[6]/4095;
+            var scaleTx = eepromConfig.pitchSlavePIDParameters[6]/2047;
+            var scaleTy = eepromConfig.rollSlavePIDParameters[6]/2047;
+            var scaleTz = eepromConfig.yawSlavePIDParameters[6]/2047;
 
             plotq.update_flybrix_plot_series("Fz (m/s)",   state.timestamp_us / 1000000, scaleFz * Fz_cmd, false);
             plotq.update_flybrix_plot_series("Tx (deg/s)", state.timestamp_us / 1000000, scaleTx * Tx_cmd, false);
