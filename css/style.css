@@ -333,12 +333,30 @@ div.label-title {
 .command-settings{
     width: 615px;
     margin-top: 10px;
-    height: 230px;
+    height: 315px;
     padding: 5px;
+}
+.command-settings-channel-midpoints{
+    height: 38px;
+    top: 0px;
+    padding-top: 10px;
+    position: relative;
+    border-color: black;
+    border-style: solid;
+    border-width: 2px;
+}
+.command-settings-channel-deadzones{
+    height: 38px;
+    top: 4px;
+    padding-top: 10px;
+    position: relative;
+    border-color: black;
+    border-style: solid;
+    border-width: 2px;
 }
 .command-settings-assigned-channels{
     height: 38px;
-    top: 0px;
+    top: 8px;
     padding-top: 10px;
     position: relative;
     border-color: black;
@@ -359,6 +377,16 @@ div.label-title {
     float: left;
     margin-left: 18px;
     font-size: 11px;
+}
+.command-settings-channelMidpoint-field{
+    width:38px;
+    float: left;
+    margin-left: -13px;
+}
+.command-settings-channelDeadzone-field{
+    width:38px;
+    float: left;
+    margin-left: -13px;
 }
 .command-settings-assignedChannel-field{
     width:20px;
@@ -386,7 +414,7 @@ div.label-title {
 }
 .command-settings-commandInversion{
     position: relative;
-    top: 11px;
+    top: 12px;
     height: 20px;
     margin-bottom: 10px;
     padding-top: 8px;
