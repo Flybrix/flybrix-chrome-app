@@ -250,6 +250,8 @@ function refresh_config_view_from_eepromConfig() {
 	loadArrayValues($("#current-config .magBias"), eepromConfig.magBias, 3);
 	loadArrayValues($("#current-config .assignedChannel"), eepromConfig.assignedChannel, 0);
 	$("#current-config .commandInversion").val((eepromConfig.commandInversion * 1.0).toFixed(0));
+    loadArrayValues($("#current-config .channelMidpoint"), eepromConfig.channelMidpoint, 0);
+    loadArrayValues($("#current-config .channelDeadzone"), eepromConfig.channelDeadzone, 0);
 	loadArrayValues($("#current-config .thrustMasterPIDParameters"), eepromConfig.thrustMasterPIDParameters, 4);
 	loadArrayValues($("#current-config .pitchMasterPIDParameters"), eepromConfig.pitchMasterPIDParameters, 4);
 	loadArrayValues($("#current-config .rollMasterPIDParameters"), eepromConfig.rollMasterPIDParameters, 4);
