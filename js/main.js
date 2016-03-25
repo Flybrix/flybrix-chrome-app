@@ -544,7 +544,7 @@ function parseUint8Array(view, destination, byteRef) {
 function parseUint16Array(view, destination, byteRef) {
 	for (var i = 0; i < destination.length; i++) {
 		destination[i] = view.getUint16(byteRef.index, 1);
-		byteRef.add(1);
+		byteRef.add(2);
 	}
 }
 function setFloat32Array(view, destination, byteRef) {
