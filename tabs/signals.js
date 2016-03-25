@@ -36,6 +36,20 @@ function refresh_signals_view_from_eepromConfig() {
 	$("#signals .command-settings-commandScaling-field.pitchSlavePIDParameters ").val(eepromConfig.pitchSlavePIDParameters[6].toFixed(4));
 	$("#signals .command-settings-commandScaling-field.rollSlavePIDParameters ").val(eepromConfig.rollSlavePIDParameters[6].toFixed(4));
 	$("#signals .command-settings-commandScaling-field.yawSlavePIDParameters ").val(eepromConfig.yawSlavePIDParameters[6].toFixed(4));
+    
+    $("#signals .command-settings-channelMidpoint-field.0 ").val(eepromConfig.channelMidpoint[0].toFixed(0));
+    $("#signals .command-settings-channelMidpoint-field.1 ").val(eepromConfig.channelMidpoint[1].toFixed(0));
+    $("#signals .command-settings-channelMidpoint-field.2 ").val(eepromConfig.channelMidpoint[2].toFixed(0));
+    $("#signals .command-settings-channelMidpoint-field.3 ").val(eepromConfig.channelMidpoint[3].toFixed(0));
+    $("#signals .command-settings-channelMidpoint-field.4 ").val(eepromConfig.channelMidpoint[4].toFixed(0));
+    $("#signals .command-settings-channelMidpoint-field.5 ").val(eepromConfig.channelMidpoint[5].toFixed(0));
+    
+    $("#signals .command-settings-channelDeadzone-field.0 ").val(eepromConfig.channelDeadzone[0].toFixed(0));
+    $("#signals .command-settings-channelDeadzone-field.1 ").val(eepromConfig.channelDeadzone[1].toFixed(0));
+    $("#signals .command-settings-channelDeadzone-field.2 ").val(eepromConfig.channelDeadzone[2].toFixed(0));
+    $("#signals .command-settings-channelDeadzone-field.3 ").val(eepromConfig.channelDeadzone[3].toFixed(0));
+    $("#signals .command-settings-channelDeadzone-field.4 ").val(eepromConfig.channelDeadzone[4].toFixed(0));
+    $("#signals .command-settings-channelDeadzone-field.5 ").val(eepromConfig.channelDeadzone[5].toFixed(0));
 }
 
 var last_signals_view_update = 0;
@@ -110,9 +124,9 @@ function update_signals_view() {
 
 		var throttle_threshold = ((RC_max - RC_min) / 10) + RC_min;
 		var Fz_cmd = Math.min(Math.max(parseInt((state.ppm[eepromConfig.assignedChannel[0]] - throttle_threshold) * 4095 / (RC_max - throttle_threshold)), 0), 4095);
-		var Tx_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 0) & 1)) * (state.ppm[eepromConfig.assignedChannel[1]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[1]) * 4095 / (RC_max - RC_min)), -2047), 2047);
-		var Ty_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 1) & 1)) * (state.ppm[eepromConfig.assignedChannel[2]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[2]) * 4095 / (RC_max - RC_min)), -2047), 2047);
-		var Tz_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 2) & 1)) * (state.ppm[eepromConfig.assignedChannel[3]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[3]) * 4095 / (RC_max - RC_min)), -2047), 2047);
+		var Tx_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 0) & 1)) * (state.ppm[eepromConfig.assignedChannel[1]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[1]]) * 4095 / (RC_max - RC_min)), -2047), 2047);
+		var Ty_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 1) & 1)) * (state.ppm[eepromConfig.assignedChannel[2]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[2]]) * 4095 / (RC_max - RC_min)), -2047), 2047);
+		var Tz_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 2) & 1)) * (state.ppm[eepromConfig.assignedChannel[3]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[3]]) * 4095 / (RC_max - RC_min)), -2047), 2047);
 
 		// dead zone
 		var RC_dead_zone_half_width = 30;
