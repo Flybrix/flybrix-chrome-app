@@ -177,17 +177,17 @@ function parse_data_packet(mask, message_buffer) {
 	}
 	if (0 != (mask & StateFields.STATE_V0)) {
 		state_data_mask[2] = 1;
-		state.V0_raw = 10 * (20.5 + 226) / 20.5 * 1.2 / 65536 * data.getUint16(b.index, 1);
+		state.V0_raw = data.getUint16(b.index, 1);
 		b.add(2);
 	}
 	if (0 != (mask & StateFields.STATE_I0)) {
 		state_data_mask[3] = 1;
-		state.I0_raw = 1000 * (1 / 50) / 0.003 * 1.2 / 65536 * data.getUint16(b.index, 1);
+		state.I0_raw = data.getUint16(b.index, 1);
 		b.add(2);
 	}
 	if (0 != (mask & StateFields.STATE_I1)) {
 		state_data_mask[4] = 1;
-		state.I1_raw = 1000 * (1 / 50) / 0.03 * 1.2 / 65536 * data.getUint16(b.index, 1);
+		state.I1_raw = data.getUint16(b.index, 1);
 		b.add(2);
 	}
 	if (0 != (mask & StateFields.STATE_ACCEL)) {

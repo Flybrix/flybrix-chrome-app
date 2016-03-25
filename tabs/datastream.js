@@ -88,9 +88,9 @@ function update_current_state() {
 	//populate fields using state data from parser
 	csq.find(".timestamp_us").val((state.timestamp_us * 1.0).toFixed(0));
 	csq.find(".status").val((state.status * 1.0).toFixed(0));
-	csq.find(".V0_raw").val((state.V0_raw * 1.0).toFixed(3));
-	csq.find(".I0_raw").val((state.I0_raw * 1.0).toFixed(3));
-	csq.find(".I1_raw").val((state.I1_raw * 1.0).toFixed(3));
+	csq.find(".V0_raw").val((state.V0_raw * 1.0).toFixed(0));
+	csq.find(".I0_raw").val((state.I0_raw * 1.0).toFixed(0));
+	csq.find(".I1_raw").val((state.I1_raw * 1.0).toFixed(0));
 	loadArrayValues(csq.find(".accel"), state.accel, 3);
 	loadArrayValues(csq.find(".gyro"), state.gyro, 3);
 	loadArrayValues(csq.find(".mag"), state.mag, 3);
