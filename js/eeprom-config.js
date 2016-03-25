@@ -55,6 +55,8 @@ DataView.prototype.parseCONFIG = function (structure) {
 	b.add(1);
 	parseFloat32Array(this, structure.stateEstimationParameters, b);
 	parseFloat32Array(this, structure.enableParameters, b);
+    
+    setTimeout(eeprom_refresh_callback_list.fire, 100);
 }
 
 DataView.prototype.setCONFIG = function (structure) {
