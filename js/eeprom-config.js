@@ -93,6 +93,11 @@ function requestCONFIG() {
 	send_message(CommandFields.COM_REQ_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, []);
 }
 
+function reinitCONFIG() {
+	command_log('Requesting factory default configuration data...');
+	send_message(CommandFields.COM_REINIT_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, []);
+}
+
 function sendCONFIG() {
 	command_log('Sending new configuration data...');
 	var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);

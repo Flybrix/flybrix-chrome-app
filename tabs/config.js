@@ -205,10 +205,16 @@ function initialize_config_view() {
 			refresh_config_view_from_eepromConfig();
 		}, 100);
 	});
-
+    
     $('#eeprom-refresh').click(function (event) {
   		event.preventDefault();
         requestCONFIG();
+        // parseCONFIG will update views subscribed to eeprom_refresh_callback_list
+    });
+    
+    $('#eeprom-reset-to-default').click(function (event) {
+  		event.preventDefault();
+        reinitCONFIG();
         // parseCONFIG will update views subscribed to eeprom_refresh_callback_list
     });
     
