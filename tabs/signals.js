@@ -89,18 +89,18 @@ function update_signals_view() {
 		/*
 
 		uint16_t throttle_threshold = ((throttle.max - throttle.min) / 10) + throttle.min;
-		 *throttle_command = constrain((throttle.val - throttle_threshold) * 4095 / (throttle.max - throttle_threshold), 0, 4095);
-		 *pitch_command =    constrain((1-2*((CONFIG.data.commandInversion >> 0) & 1))*(pitch.val - pitch.mid) * 4095 / (pitch.max - pitch.min), -2047, 2047);
-		 *roll_command =     constrain((1-2*((CONFIG.data.commandInversion >> 1) & 1))*( roll.val - roll.mid ) * 4095 / (roll.max - roll.min), -2047, 2047);
-		 *yaw_command =      constrain((1-2*((CONFIG.data.commandInversion >> 2) & 1))*(  yaw.val - yaw.mid  ) * 4095 / (yaw.max - yaw.min), -2047, 2047);
-
-		// in some cases it is impossible to get a ppm channel to be exactly 1500 usec because the controller trim is too coarse to correct a small error
-		// we can get around by creating a small dead zone on the commands that are potentially effected
-
-		int16_t dead_zone_half_width = 30;
-		 *pitch_command = *pitch_command > 0 ? max(0, *pitch_command - dead_zone_half_width) : min(*pitch_command + dead_zone_half_width, 0);
-		 *roll_command  = *roll_command > 0  ? max(0, *roll_command  - dead_zone_half_width) : min(*roll_command  + dead_zone_half_width, 0);
-		 *yaw_command   = *yaw_command > 0   ? max(0, *yaw_command   - dead_zone_half_width) : min(*yaw_command   + dead_zone_half_width, 0);
+        *throttle_command = constrain((throttle.val - throttle_threshold) * 4095 / (throttle.max - throttle_threshold), 0, 4095);
+        *pitch_command =    constrain((1-2*((CONFIG.data.commandInversion >> 0) & 1))*(pitch.val - CONFIG.data.channelMidpoint[CONFIG.data.assignedChannel[1]]) * 4095 / (pitch.max - pitch.min), -2047, 2047);
+        *roll_command =     constrain((1-2*((CONFIG.data.commandInversion >> 1) & 1))*( roll.val - CONFIG.data.channelMidpoint[CONFIG.data.assignedChannel[2]]) * 4095 / (roll.max - roll.min), -2047, 2047);
+        *yaw_command =      constrain((1-2*((CONFIG.data.commandInversion >> 2) & 1))*(  yaw.val - CONFIG.data.channelMidpoint[CONFIG.data.assignedChannel[3]]) * 4095 / (yaw.max - yaw.min), -2047, 2047);
+        
+        //
+        // in some cases it is impossible to get a ppm channel to be exactly 1500 usec because the controller trim is too coarse to correct a small error
+        // we can get around by creating a small dead zone on the commands that are potentially effected
+        
+        *pitch_command = *pitch_command > 0 ? max(0, *pitch_command - CONFIG.data.channelDeadzone[CONFIG.data.assignedChannel[1]]) : min(*pitch_command + CONFIG.data.channelDeadzone[CONFIG.data.assignedChannel[1]], 0);
+        *roll_command  = *roll_command > 0  ? max(0, *roll_command  - CONFIG.data.channelDeadzone[CONFIG.data.assignedChannel[2]]) : min(*roll_command  + CONFIG.data.channelDeadzone[CONFIG.data.assignedChannel[2]], 0);
+        *yaw_command   = *yaw_command > 0   ? max(0, *yaw_command   - CONFIG.data.channelDeadzone[CONFIG.data.assignedChannel[3]]) : min(*yaw_command   + CONFIG.data.channelDeadzone[CONFIG.data.assignedChannel[3]], 0);
 
 		 */
 
@@ -110,15 +110,15 @@ function update_signals_view() {
 
 		var throttle_threshold = ((RC_max - RC_min) / 10) + RC_min;
 		var Fz_cmd = Math.min(Math.max(parseInt((state.ppm[eepromConfig.assignedChannel[0]] - throttle_threshold) * 4095 / (RC_max - throttle_threshold)), 0), 4095);
-		var Tx_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 0) & 1)) * (state.ppm[eepromConfig.assignedChannel[1]] - RC_mid) * 4095 / (RC_max - RC_min)), -2047), 2047);
-		var Ty_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 1) & 1)) * (state.ppm[eepromConfig.assignedChannel[2]] - RC_mid) * 4095 / (RC_max - RC_min)), -2047), 2047);
-		var Tz_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 2) & 1)) * (state.ppm[eepromConfig.assignedChannel[3]] - RC_mid) * 4095 / (RC_max - RC_min)), -2047), 2047);
+		var Tx_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 0) & 1)) * (state.ppm[eepromConfig.assignedChannel[1]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[1]) * 4095 / (RC_max - RC_min)), -2047), 2047);
+		var Ty_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 1) & 1)) * (state.ppm[eepromConfig.assignedChannel[2]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[2]) * 4095 / (RC_max - RC_min)), -2047), 2047);
+		var Tz_cmd = Math.min(Math.max(parseInt((1 - 2 * ((eepromConfig.commandInversion >> 2) & 1)) * (state.ppm[eepromConfig.assignedChannel[3]] - eepromConfig.channelMidpoint[eepromConfig.assignedChannel[3]) * 4095 / (RC_max - RC_min)), -2047), 2047);
 
 		// dead zone
 		var RC_dead_zone_half_width = 30;
-		Tx_cmd = (Tx_cmd > 0) ? Math.max(0, Tx_cmd - RC_dead_zone_half_width) : Math.min(Tx_cmd + RC_dead_zone_half_width, 0);
-		Ty_cmd = (Ty_cmd > 0) ? Math.max(0, Ty_cmd - RC_dead_zone_half_width) : Math.min(Ty_cmd + RC_dead_zone_half_width, 0);
-		Tz_cmd = (Tz_cmd > 0) ? Math.max(0, Tz_cmd - RC_dead_zone_half_width) : Math.min(Tz_cmd + RC_dead_zone_half_width, 0);
+		Tx_cmd = (Tx_cmd > 0) ? Math.max(0, Tx_cmd - eepromConfig.channelDeadzone[eepromConfig.assignedChannel[1]]) : Math.min(Tx_cmd + eepromConfig.channelDeadzone[eepromConfig.assignedChannel[1]], 0);
+		Ty_cmd = (Ty_cmd > 0) ? Math.max(0, Ty_cmd - eepromConfig.channelDeadzone[eepromConfig.assignedChannel[2]]) : Math.min(Ty_cmd + eepromConfig.channelDeadzone[eepromConfig.assignedChannel[2]], 0);
+		Tz_cmd = (Tz_cmd > 0) ? Math.max(0, Tz_cmd - eepromConfig.channelDeadzone[eepromConfig.assignedChannel[3]]) : Math.min(Tz_cmd + eepromConfig.channelDeadzone[eepromConfig.assignedChannel[3]], 0);
 
 		plotq = $("#commands-master-plot");
 		if (plotq.find("#live").prop("checked")) {
