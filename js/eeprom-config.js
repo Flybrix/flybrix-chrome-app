@@ -1,4 +1,4 @@
-var flybrix_app_configuration_version = [1,1,0]; //checked at startup!
+var flybrix_app_configuration_version = [1,2,0]; //checked at startup!
 
 var eepromConfig = {
 	version : [0.0, 0.0, 0.0],
@@ -11,6 +11,8 @@ var eepromConfig = {
     magBias : [0.0, 0.0, 0.0],
 	assignedChannel : [0, 0, 0, 0, 0, 0],
     commandInversion : 0,
+    channelMidpoint : [0, 0, 0, 0, 0, 0],
+    channelDeadzone: [0, 0, 0, 0, 0, 0],
 	thrustMasterPIDParameters : [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
 	pitchMasterPIDParameters : [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
 	rollMasterPIDParameters : [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -38,7 +40,9 @@ DataView.prototype.parseCONFIG = function (structure) {
     parseFloat32Array(this, structure.magBias, b);
 	parseUint8Array(this, structure.assignedChannel, b);
     structure.commandInversion = this.getUint8(b.index);
-	b.add(1);
+    b.add(1);
+    parseUint16Array(this, structure.channelMidpoint, b);
+    parseUint16Array(this, structure.channelDeadzone, b);
 	parseFloat32Array(this, structure.thrustMasterPIDParameters, b);
 	parseFloat32Array(this, structure.pitchMasterPIDParameters, b);
 	parseFloat32Array(this, structure.rollMasterPIDParameters, b);
@@ -66,6 +70,8 @@ DataView.prototype.setCONFIG = function (structure) {
 	setUint8Array(this, structure.assignedChannel, b);
     this.setUint8(b.index, structure.commandInversion);
 	b.add(1);
+    setUint16Array(this, structure.channelMidpoint, b);
+    setUint16Array(this, structure.channelDeadzone, b);
 	setFloat32Array(this, structure.thrustMasterPIDParameters, b);
 	setFloat32Array(this, structure.pitchMasterPIDParameters, b);
 	setFloat32Array(this, structure.rollMasterPIDParameters, b);
