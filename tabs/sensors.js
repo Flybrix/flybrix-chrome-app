@@ -6,7 +6,7 @@ function initialize_sensors_view() {
     $('#magnetometer-plot').create_plot(["x (Ga)", "y (Ga)", "z (Ga)"]);
     $('#barometer-plot').create_plot(["pressure (Pa)"]);
     $('#temperature-plot').create_plot(["temperature (C)"]);
-    $('#battery-plot').create_plot(["voltage (V)", "total current (A)", "electronics current (A)", "total power (W)", "electronics power (W)"]);
+    $('#battery-plot').create_plot(["voltage (V)", "total current (mA)", "electronics current (mA)", "total power (mW)", "electronics power (mW)"]);
 
     parser_callback_list.add(update_sensors_view);
 
@@ -50,15 +50,15 @@ function update_sensors_view(){
         }
         plotq = $("#battery-plot");
         if(plotq.find("#live").prop("checked")) {
-            var kV0 = 1;
-            var kI0 = 1;
-            var kI1 = 1;
+            var kV0 = (20.5 + 226) / 20.5 * 1.2 / 65536;
+            var kI0 = 1000 * (1 / 50) / 0.003 * 1.2 / 65536;
+            var kI1 = 1000 * (1 / 50) / 0.03 * 1.2 / 65536;
 
-            plotq.update_flybrix_plot_series("voltage (V)",             state.timestamp_us / 1000000, kV0*state.V0_raw, false);
-            plotq.update_flybrix_plot_series("total current (A)",       state.timestamp_us / 1000000, kI0*state.I0_raw, false);
-            plotq.update_flybrix_plot_series("electronics current (A)", state.timestamp_us / 1000000, kI1*state.I1_raw, false);
-            plotq.update_flybrix_plot_series("total power (W)",         state.timestamp_us / 1000000, kI0*kV0*state.V0_raw*state.I0_raw, false);
-            plotq.update_flybrix_plot_series("electronics power (W)",   state.timestamp_us / 1000000, kI1*kV0*state.V0_raw*state.I1_raw);
+            plotq.update_flybrix_plot_series("voltage (V)",              state.timestamp_us / 1000000, kV0*state.V0_raw, false);
+            plotq.update_flybrix_plot_series("total current (mA)",       state.timestamp_us / 1000000, kI0*state.I0_raw, false);
+            plotq.update_flybrix_plot_series("electronics current (mA)", state.timestamp_us / 1000000, kI1*state.I1_raw, false);
+            plotq.update_flybrix_plot_series("total power (mW)",         state.timestamp_us / 1000000, kI0*kV0*state.V0_raw*state.I0_raw, false);
+            plotq.update_flybrix_plot_series("electronics power (mW)",   state.timestamp_us / 1000000, kI1*kV0*state.V0_raw*state.I1_raw);
         }
         last_sensors_view_update = now;
     }

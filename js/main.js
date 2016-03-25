@@ -541,6 +541,12 @@ function parseUint8Array(view, destination, byteRef) {
 		byteRef.add(1);
 	}
 }
+function parseUint16Array(view, destination, byteRef) {
+	for (var i = 0; i < destination.length; i++) {
+		destination[i] = view.getUint16(byteRef.index, 1);
+		byteRef.add(2);
+	}
+}
 function setFloat32Array(view, destination, byteRef) {
 	for (var i = 0; i < destination.length; i++) {
 		view.setFloat32(byteRef.index, destination[i], 1);
@@ -557,6 +563,12 @@ function setUint8Array(view, destination, byteRef) {
 	for (var i = 0; i < destination.length; i++) {
 		view.setUint8(byteRef.index, destination[i], 1);
 		byteRef.add(1);
+	}
+}
+function setUint16Array(view, destination, byteRef) {
+	for (var i = 0; i < destination.length; i++) {
+		view.setUint16(byteRef.index, destination[i], 1);
+		byteRef.add(2);
 	}
 }
 
