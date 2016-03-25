@@ -56,7 +56,7 @@ DataView.prototype.parseCONFIG = function (structure) {
 	parseFloat32Array(this, structure.stateEstimationParameters, b);
 	parseFloat32Array(this, structure.enableParameters, b);
     
-    setTimeout(eeprom_refresh_callback_list.fire, 100);
+    setTimeout(eeprom_refresh_callback_list.fire, 1000);
 }
 
 DataView.prototype.setCONFIG = function (structure) {
@@ -91,11 +91,14 @@ DataView.prototype.setCONFIG = function (structure) {
 function requestCONFIG() {
 	command_log('Requesting current configuration data...');
 	send_message(CommandFields.COM_REQ_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, []);
+    
 }
 
 function reinitCONFIG() {
 	command_log('Requesting factory default configuration data...');
 	send_message(CommandFields.COM_REINIT_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, []);
+    
+    setTimeout(requestCONFIG, 100);
 }
 
 function sendCONFIG() {
@@ -105,6 +108,8 @@ function sendCONFIG() {
 	view.setCONFIG(eepromConfig);
 	var data = new Uint8Array(eepromConfigBytes);
 	send_message(CommandFields.COM_SET_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, data);
+
+    setTimeout(requestCONFIG, 100);
 }
 
 var eeprom_refresh_callback_list = $.Callbacks('unique');

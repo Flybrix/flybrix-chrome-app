@@ -201,9 +201,6 @@ function initialize_config_view() {
 	$('#configuration-filehandler #button2').unbind().click(function (event) { // load button
 		event.preventDefault();
 		$('#configuration-filehandler').read_eepromConfig_from_filehandler();
-		setTimeout(function () {
-			refresh_config_view_from_eepromConfig();
-		}, 100);
 	});
     
     $('#eeprom-refresh').click(function (event) {
