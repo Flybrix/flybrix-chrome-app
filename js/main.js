@@ -598,6 +598,7 @@ function setArrayValues(fields, source) {
 		parser_callback_list.add(function () {
 			$rootScope.$apply(function () {
 				$rootScope.state = state;
+				$rootScope.stateUpdateRate = serial_update_rate_Hz;
 			});
 		})
 	}

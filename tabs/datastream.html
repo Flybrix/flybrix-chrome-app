@@ -1,4 +1,4 @@
-<div>
+<div ng-controller="datastreamController">
 
     <div class="flybrix-plot-holder">
         <div class="flybrix-plot-title">DATA RATE</div>
@@ -14,7 +14,7 @@
         <output type="number" id="target-rate" style="float:left; width:100px; height: 16px; margin-right: 10px; background-color:#ffffff"></output>
 
         <span style="float:left; min-width:100px; margin-right: 10px">Actual Rate (Hz)</span>
-        <output type="number" id="actual-rate" style="float:left; width:100px; height: 16px; margin-right: 10px; background-color:#ffffff"></output>
+        <output type="number" style="float:left; width:100px; height: 16px; margin-right: 10px; background-color:#ffffff">{{slowStateUpdateRate|number:5}}</output>
     </div>
 
     <p style="margin-bottom: 10px; margin-top: 50px;font-weight: bold;">State data:</p>
@@ -22,205 +22,205 @@
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="0" value="value"></input>
             <span class="model-entry-title">timestamp_us</span>
-            <label class="model-entry-label">mpu usec counter<input class="model-entry-field timestamp_us"/></label>
+            <label class="model-entry-label">mpu usec counter<input class="model-entry-field" readonly ng-model="slowState.timestamp_us|number:0"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="1" value="value"></input>
             <span class="model-entry-title">status</span>
-            <label class="model-entry-label">state status bitfield<input class="model-entry-field status"/></label>
+            <label class="model-entry-label">state status bitfield<input class="model-entry-field" readonly ng-model="slowState.status|number:0"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="2" value="value"></input>
             <span class="model-entry-title">V0_raw</span>
-            <label class="model-entry-label">battery voltage<input class="model-entry-field V0_raw"/></label>
+            <label class="model-entry-label">battery voltage<input class="model-entry-field" readonly ng-model="slowState.V0_raw|number:0"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="3" value="value"></input>
             <span class="model-entry-title">I0_raw</span>
-            <label class="model-entry-label">total current<input class="model-entry-field I0_raw"/></label>
+            <label class="model-entry-label">total current<input class="model-entry-field" readonly ng-model="slowState.I0_raw|number:0"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="4" value="value"></input>
             <span class="model-entry-title">I1_raw</span>
-            <label class="model-entry-label">electronics current<input class="model-entry-field I1_raw"/></label>
+            <label class="model-entry-label">electronics current<input class="model-entry-field" readonly ng-model="slowState.I1_raw|number:0"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="5" value="value"></input>
             <span class="model-entry-title">accel</span>
-            <label class="model-entry-label">x-axis<input class="model-entry-field accel 0"/></label>
-            <label class="model-entry-label">y-axis<input class="model-entry-field accel 1"/></label>
-            <label class="model-entry-label">z-axis<input class="model-entry-field accel 2"/></label>
+            <label class="model-entry-label">x-axis<input class="model-entry-field" readonly ng-model="slowState.accel[0]|number:3"/></label>
+            <label class="model-entry-label">y-axis<input class="model-entry-field" readonly ng-model="slowState.accel[1]|number:3"/></label>
+            <label class="model-entry-label">z-axis<input class="model-entry-field" readonly ng-model="slowState.accel[2]|number:3"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="6" value="value"></input>
             <span class="model-entry-title">gyro</span>
-            <label class="model-entry-label">x-axis<input class="model-entry-field gyro 0"/></label>
-            <label class="model-entry-label">y-axis<input class="model-entry-field gyro 1"/></label>
-            <label class="model-entry-label">z-axis<input class="model-entry-field gyro 2"/></label>
+            <label class="model-entry-label">x-axis<input class="model-entry-field" readonly ng-model="slowState.gyro[0]|number:3"/></label>
+            <label class="model-entry-label">y-axis<input class="model-entry-field" readonly ng-model="slowState.gyro[1]|number:3"/></label>
+            <label class="model-entry-label">z-axis<input class="model-entry-field" readonly ng-model="slowState.gyro[2]|number:3"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="7" value="value"></input>
             <span class="model-entry-title">mag</span>
-            <label class="model-entry-label">x-axis<input class="model-entry-field mag 0"/></label>
-            <label class="model-entry-label">y-axis<input class="model-entry-field mag 1"/></label>
-            <label class="model-entry-label">z-axis<input class="model-entry-field mag 2"/></label>
-        </div>                         
+            <label class="model-entry-label">x-axis<input class="model-entry-field" readonly ng-model="slowState.mag[0]|number:3"/></label>
+            <label class="model-entry-label">y-axis<input class="model-entry-field" readonly ng-model="slowState.mag[1]|number:3"/></label>
+            <label class="model-entry-label">z-axis<input class="model-entry-field" readonly ng-model="slowState.mag[2]|number:3"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="8" value="value"></input>
             <span class="model-entry-title">temperature</span>
-            <label class="model-entry-label">BMP280 T<input class="model-entry-field temperature"/></label>
+            <label class="model-entry-label">BMP280 T<input class="model-entry-field" readonly ng-model="slowState.temperature|number:3"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="9" value="value"></input>
             <span class="model-entry-title">pressure</span>
-            <label class="model-entry-label">BMP280 P<input class="model-entry-field pressure"/></label>
+            <label class="model-entry-label">BMP280 P<input class="model-entry-field" readonly ng-model="slowState.pressure|number:3"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="10" value="value"></input>
             <span class="model-entry-title">ppm</span>
-            <label class="model-entry-label">CH0<input class="model-entry-field ppm 0"/></label>
-            <label class="model-entry-label">CH1<input class="model-entry-field ppm 1"/></label>
-            <label class="model-entry-label">CH2<input class="model-entry-field ppm 2"/></label>
-            <label class="model-entry-label">CH3<input class="model-entry-field ppm 3"/></label>
-            <label class="model-entry-label">CH4<input class="model-entry-field ppm 4"/></label>
-            <label class="model-entry-label">CH5<input class="model-entry-field ppm 5"/></label>
-        </div>               
+            <label class="model-entry-label">CH0<input class="model-entry-field" readonly ng-model="slowState.ppm[0]|number:0"/></label>
+            <label class="model-entry-label">CH1<input class="model-entry-field" readonly ng-model="slowState.ppm[1]|number:0"/></label>
+            <label class="model-entry-label">CH2<input class="model-entry-field" readonly ng-model="slowState.ppm[2]|number:0"/></label>
+            <label class="model-entry-label">CH3<input class="model-entry-field" readonly ng-model="slowState.ppm[3]|number:0"/></label>
+            <label class="model-entry-label">CH4<input class="model-entry-field" readonly ng-model="slowState.ppm[4]|number:0"/></label>
+            <label class="model-entry-label">CH5<input class="model-entry-field" readonly ng-model="slowState.ppm[5]|number:0"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="11" value="value"></input>
             <span class="model-entry-title">AUX_chan_mask</span>
-            <label class="model-entry-label">bitfield<input class="model-entry-field AUX_chan_mask"/></label>
+            <label class="model-entry-label">bitfield<input class="model-entry-field" readonly ng-model="slowState.AUX_chan_mask|number:0"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="12" value="value"></input>
             <span class="model-entry-title">command</span>
-            <label class="model-entry-label">thrust<input class="model-entry-field command 0"/></label>
-            <label class="model-entry-label">pitch<input class="model-entry-field command 1"/></label>
-            <label class="model-entry-label">roll<input class="model-entry-field command 2"/></label>
-            <label class="model-entry-label">yaw<input class="model-entry-field command 3"/></label>
-        </div>      
+            <label class="model-entry-label">thrust<input class="model-entry-field" readonly ng-model="slowState.command[0]|number:0"/></label>
+            <label class="model-entry-label">pitch<input class="model-entry-field" readonly ng-model="slowState.command[1]|number:0"/></label>
+            <label class="model-entry-label">roll<input class="model-entry-field" readonly ng-model="slowState.command[2]|number:0"/></label>
+            <label class="model-entry-label">yaw<input class="model-entry-field" readonly ng-model="slowState.command[3]|number:0"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="13" value="value"></input>
             <span class="model-entry-title">control</span>
-            <label class="model-entry-label">Fz<input class="model-entry-field control 0"/></label>
-            <label class="model-entry-label">Tx<input class="model-entry-field control 1"/></label>
-            <label class="model-entry-label">Ty<input class="model-entry-field control 2"/></label>
-            <label class="model-entry-label">Tz<input class="model-entry-field control 3"/></label>
-        </div>      
+            <label class="model-entry-label">Fz<input class="model-entry-field" readonly ng-model="slowState.control[0]|number:3"/></label>
+            <label class="model-entry-label">Tx<input class="model-entry-field" readonly ng-model="slowState.control[1]|number:3"/></label>
+            <label class="model-entry-label">Ty<input class="model-entry-field" readonly ng-model="slowState.control[2]|number:3"/></label>
+            <label class="model-entry-label">Tz<input class="model-entry-field" readonly ng-model="slowState.control[3]|number:3"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="15" value="value"></input>
             <span class="model-entry-title">pid_master_Fz</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Fz 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_master_Fz 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Fz 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Fz 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Fz 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Fz 5"/></label>
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_master_Fz[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_master_Fz[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_master_Fz[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Fz[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Fz[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Fz[5]|number:2"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="16" value="value"></input>
             <span class="model-entry-title">pid_master_Tx</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Tx 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_master_Tx 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Tx 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Tx 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Tx 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Tx 5"/></label>
-        </div>        
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tx[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tx[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tx[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tx[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tx[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tx[5]|number:2"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="17" value="value"></input>
             <span class="model-entry-title">pid_master_Ty</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Ty 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_master_Ty 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Ty 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Ty 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Ty 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Ty 5"/></label>
-        </div>        
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_master_Ty[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_master_Ty[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_master_Ty[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Ty[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Ty[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Ty[5]|number:2"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="18" value="value"></input>
             <span class="model-entry-title">pid_master_Tz</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_master_Tz 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_master_Tz 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_master_Tz 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_master_Tz 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_master_Tz 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_master_Tz 5"/></label>
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tz[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tz[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tz[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tz[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tz[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_master_Tz[5]|number:2"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="19" value="value"></input>
             <span class="model-entry-title">pid_slave_Fz</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Fz 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Fz 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Fz 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Fz 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Fz 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Fz 5"/></label>
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Fz[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Fz[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Fz[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Fz[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Fz[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Fz[5]|number:2"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="20" value="value"></input>
             <span class="model-entry-title">pid_slave_Tx</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Tx 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Tx 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Tx 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Tx 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Tx 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Tx 5"/></label>
-        </div>        
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tx[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tx[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tx[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tx[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tx[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tx[5]|number:2"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="21" value="value"></input>
             <span class="model-entry-title">pid_slave_Ty</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Ty 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Ty 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Ty 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Ty 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Ty 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Ty 5"/></label>
-        </div>        
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Ty[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Ty[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Ty[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Ty[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Ty[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Ty[5]|number:2"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="22" value="value"></input>
             <span class="model-entry-title">pid_slave_Tz</span>
-            <label class="model-entry-label">update time<input class="model-entry-field pid_slave_Tz 0"/></label>
-            <label class="model-entry-label">input<input class="model-entry-field pid_slave_Tz 1"/></label>
-            <label class="model-entry-label">setpoint<input class="model-entry-field pid_slave_Tz 2"/></label>
-            <label class="model-entry-label">p_term<input class="model-entry-field pid_slave_Tz 3"/></label>
-            <label class="model-entry-label">i_term<input class="model-entry-field pid_slave_Tz 4"/></label>
-            <label class="model-entry-label">d_term<input class="model-entry-field pid_slave_Tz 5"/></label>
-        </div>                                        
+            <label class="model-entry-label">update time<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tz[0]|number:0"/></label>
+            <label class="model-entry-label">input<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tz[1]|number:2"/></label>
+            <label class="model-entry-label">setpoint<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tz[2]|number:2"/></label>
+            <label class="model-entry-label">p_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tz[3]|number:2"/></label>
+            <label class="model-entry-label">i_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tz[4]|number:2"/></label>
+            <label class="model-entry-label">d_term<input class="model-entry-field" readonly ng-model="slowState.pid_slave_Tz[5]|number:2"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="23" value="value"></input>
             <span class="model-entry-title">MotorOut</span>
-            <label class="model-entry-label">CH0<input class="model-entry-field MotorOut 0"/></label>
-            <label class="model-entry-label">CH1<input class="model-entry-field MotorOut 1"/></label>
-            <label class="model-entry-label">CH2<input class="model-entry-field MotorOut 2"/></label>
-            <label class="model-entry-label">CH3<input class="model-entry-field MotorOut 3"/></label>
-            <label class="model-entry-label">CH4<input class="model-entry-field MotorOut 4"/></label>
-            <label class="model-entry-label">CH5<input class="model-entry-field MotorOut 5"/></label>
-            <label class="model-entry-label">CH6<input class="model-entry-field MotorOut 6"/></label>
-            <label class="model-entry-label">CH7<input class="model-entry-field MotorOut 7"/></label>
-        </div>    
+            <label class="model-entry-label">CH0<input class="model-entry-field" readonly ng-model="slowState.MotorOut[0]|number:0"/></label>
+            <label class="model-entry-label">CH1<input class="model-entry-field" readonly ng-model="slowState.MotorOut[1]|number:0"/></label>
+            <label class="model-entry-label">CH2<input class="model-entry-field" readonly ng-model="slowState.MotorOut[2]|number:0"/></label>
+            <label class="model-entry-label">CH3<input class="model-entry-field" readonly ng-model="slowState.MotorOut[3]|number:0"/></label>
+            <label class="model-entry-label">CH4<input class="model-entry-field" readonly ng-model="slowState.MotorOut[4]|number:0"/></label>
+            <label class="model-entry-label">CH5<input class="model-entry-field" readonly ng-model="slowState.MotorOut[5]|number:0"/></label>
+            <label class="model-entry-label">CH6<input class="model-entry-field" readonly ng-model="slowState.MotorOut[6]|number:0"/></label>
+            <label class="model-entry-label">CH7<input class="model-entry-field" readonly ng-model="slowState.MotorOut[7]|number:0"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="24" value="value"></input>
             <span class="model-entry-title">kinematicsAngle</span>
-            <label class="model-entry-label">pitch<input class="model-entry-field kinematicsAngle 0"/></label>
-            <label class="model-entry-label">roll<input class="model-entry-field kinematicsAngle 1"/></label>
-            <label class="model-entry-label">yaw<input class="model-entry-field kinematicsAngle 2"/></label>
-        </div>  
+            <label class="model-entry-label">pitch<input class="model-entry-field" readonly ng-model="slowState.kinematicsAngle[0]|number:5"/></label>
+            <label class="model-entry-label">roll<input class="model-entry-field" readonly ng-model="slowState.kinematicsAngle[1]|number:5"/></label>
+            <label class="model-entry-label">yaw<input class="model-entry-field" readonly ng-model="slowState.kinematicsAngle[2]|number:5"/></label>
+        </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="25" value="value"></input>
             <span class="model-entry-title">kinematicsRate</span>
-            <label class="model-entry-label">pitch rate<input class="model-entry-field kinematicsRate 0"/></label>
-            <label class="model-entry-label">roll rate<input class="model-entry-field kinematicsRate 1"/></label>
-            <label class="model-entry-label">yaw rate<input class="model-entry-field kinematicsRate 2"/></label>
+            <label class="model-entry-label">pitch rate<input class="model-entry-field" readonly ng-model="slowState.kinematicsRate[0]|number:5"/></label>
+            <label class="model-entry-label">roll rate<input class="model-entry-field" readonly ng-model="slowState.kinematicsRate[1]|number:5"/></label>
+            <label class="model-entry-label">yaw rate<input class="model-entry-field" readonly ng-model="slowState.kinematicsRate[2]|number:5"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="26" value="value"></input>
             <span class="model-entry-title">kinematicsAltitude</span>
-            <label class="model-entry-label">altitude<input class="model-entry-field kinematicsAltitude"/></label>
+            <label class="model-entry-label">altitude<input class="model-entry-field" readonly ng-model="slowState.kinematicsAltitude|number:3"/></label>
         </div>
         <div class="model-entry">
             <input type="checkbox" class="model-change-mask" id="27" value="value"></input>
             <span class="model-entry-title">loopCount</span>
-            <label class="model-entry-label">iterations<input class="model-entry-field loopCount"/></label>
+            <label class="model-entry-label">iterations<input class="model-entry-field" readonly ng-model="slowState.loopCount|number:0"/></label>
         </div>
     </div>
 
