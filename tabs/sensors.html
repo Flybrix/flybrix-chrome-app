@@ -1,33 +1,8 @@
 <div>
-
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Gyroscope</div>
-        <div id="gyroscope-plot" class="gyroscope-plot"></div>
-    </div>
-    
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Accelerometer</div>
-        <div id="accelerometer-plot" class="accelerometer-plot"></div>
-    </div>
-    
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Magnetometer</div>
-        <div id="magnetometer-plot" class="magnetometer-plot"></div>
-    </div>
-    
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Barometer</div>
-        <div id="barometer-plot" class="barometer-plot"></div>
-    </div>
-    
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Temperature</div>
-        <div id="temperature-plot" class="temperature-plot"></div>
-    </div>
-    
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Battery</div>
-        <div id="battery-plot" class="battery-plot"></div>
-    </div>
-    
+    <div plot-series value="{x:state.timestamp_us, y:state.gyro}" labels="x (deg/sec)|y (deg/sec)|z (deg/sec)" title="Gyroscope"/>
+    <div plot-series value="{x:state.timestamp_us, y:state.accel}" labels="x (g)|y (g)|z (g)" title="Accelerometer"/>
+    <div plot-series value="{x:state.timestamp_us, y:state.mag}" labels="x (Ga)|y (Ga)|z (Ga)" title="Magnetometer"/>
+    <div plot-series value="{x:state.timestamp_us, y:[state.pressure]}" labels="pressure (Pa)" title="Barometer"/>
+    <div plot-series value="{x:state.timestamp_us, y:[state.temperature]}" labels="temperature (C)" title="Temperature"/>
+    <div plot-series value="{x:state.timestamp_us, y:batteryData}" labels="voltage (V)|total current (mA)|electronics current (mA)|total power (mW)|electronics power (mW)" title="Battery"/>
 </div>

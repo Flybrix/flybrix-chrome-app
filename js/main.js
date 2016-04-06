@@ -599,6 +599,18 @@ function setArrayValues(fields, source) {
 			$rootScope.$apply(function () {
 				$rootScope.state = state;
 				$rootScope.stateUpdateRate = serial_update_rate_Hz;
+
+				var kV0 = (20.5 + 226) / 20.5 * 1.2 / 65536;
+				var kI0 = 1000 * (1 / 50) / 0.003 * 1.2 / 65536;
+				var kI1 = 1000 * (1 / 50) / 0.03 * 1.2 / 65536;
+
+				$rootScope.batteryData = [
+					kV0 * state.V0_raw,
+					kI0 * state.I0_raw,
+					kI1 * state.I1_raw,
+					kI0 * kV0 * state.V0_raw * state.I0_raw,
+					kI1 * kV0 * state.V0_raw * state.I1_raw,
+				];
 			});
 		})
 	}
