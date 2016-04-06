@@ -424,3 +424,39 @@
 
 }
 	(jQuery));
+
+(function() {
+		'use strict';
+
+		angular.module('flybrixApp').directive('plotSeries', function () {
+				var link = function (scope, element, attrs) {
+						var labels = attrs.labels.split('|');
+
+						element.addClass('flybrix-plot-holder');
+						element.append($('<div/>').addClass('flybrix-plot-title').text(attrs.title));
+						var plotHolder = $('<div/>');
+						element.append(plotHolder);
+						plotHolder.create_plot(labels);
+
+						var lastTime = new Date();
+
+						scope.$watch(attrs.value, function(value) {
+								if (!plotHolder.find("#live").prop("checked"))
+										return;
+								var newTime = new Date();
+								if (newTime - lastTime < 50)  // limit plots to 20Hz
+										return;
+								lastTime = newTime;
+								var x = value.x / 1000000;
+								var last_idx = value.y.length - 1;
+								value.y.forEach(function (y, idx) {
+										plotHolder.update_flybrix_plot_series(labels[idx], x, y, idx === last_idx);
+								});
+						}, true);
+				};
+
+				return {
+						link: link
+				};
+		});
+}());

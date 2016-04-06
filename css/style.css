@@ -128,7 +128,19 @@ div.label-title {
     display:none;
 }
 
+.rate-display-label{
+		float:left;
+		min-width:100px;
+		margin-right: 10px;
+}
 
+.rate-display-field{
+		float: left;
+		width: 100px;
+		height: 16px;
+		margin-right: 10px;
+		background-color:#ffffff;
+}
 
 .model-entry-field{
     background-color: #FFFFFF;

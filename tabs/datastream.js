@@ -65,8 +65,6 @@ function initialize_datastream_view() {
 		send_message(CommandFields.COM_SET_STATE_MASK | CommandFields.COM_REQ_RESPONSE, new Uint8Array(bytes));
 	});
 
-	parser_callback_list.add(update_datastream_view);
-
     eeprom_refresh_callback_list.add(refresh_datastream_view_from_eepromConfig);
     refresh_datastream_view_from_eepromConfig();
 };
@@ -75,20 +73,6 @@ function refresh_datastream_view_from_eepromConfig() {
     //nothing yet
 };
 
-var last_datastream_view_update = 0;
-var last_datastream_number_update = 0;
-function update_datastream_view() {
-	var now = Date.now();
-	if ((now - last_datastream_view_update) > graph_update_delay) { //throttle redraw to 20Hz
-		var drpq = $('#data-rate-plot');
-		if (drpq.find("#live").prop("checked")) {
-			drpq.update_flybrix_plot_series("update rate (Hz)", state.timestamp_us / 1000000, serial_update_rate_Hz, false);
-			drpq.update_flybrix_plot_series("target rate (Hz)", state.timestamp_us / 1000000, target_rate_Hz);
-		}
-		last_datastream_view_update = now;
-	}
-}
-
 (function() {
 		'use strict';
 
@@ -96,6 +80,8 @@ function update_datastream_view() {
 				$interval(function () {
 						$scope.slowState = Object.assign({}, $rootScope.state);
 						$scope.slowStateUpdateRate = $rootScope.stateUpdateRate;
+						$scope.targetRate = target_rate_Hz;
+						$scope.serialUpdateRate = serial_update_rate_Hz;
 				}, 150);  // throttle redraw to 6-7Hz
 		};
 
