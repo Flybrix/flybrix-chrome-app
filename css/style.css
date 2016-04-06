@@ -138,6 +138,16 @@ div.label-title {
     left: -1px;
     top: 12px;
 }
+
+.model-entry output{
+    background-color: #FFFFFF;
+    width: 90px;
+    height: 10px;
+    position: absolute;
+    left: -1px;
+    top: 12px;
+}
+
 .model-entry{
     font-size: 9px;
     height: 20px;
