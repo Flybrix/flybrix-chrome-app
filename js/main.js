@@ -612,7 +612,7 @@ function setArrayValues(fields, source) {
 					kI1 * kV0 * state.V0_raw * state.I1_raw,
 				];
 			});
-		})
+		});
 	}
 
 	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', mainController])
