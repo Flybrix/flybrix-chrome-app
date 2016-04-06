@@ -579,8 +579,8 @@ function setArrayValues(fields, source) {
 
 		$scope.tabs = [
 			{url:'tuning', label:'Tuning'},
-			{url:'sensors', label:'R/C Signals'},
-			{url:'signals', label:'Sensor Data'},
+			{url:'sensors', label:'Sensor Data'},
+			{url:'signals', label:'R/C Signals'},
 			{url:'vehicle', label:'Vehicle View'},
 			{url:'motors', label:'Motors'},
 			{url:'led', label:'LED'},
