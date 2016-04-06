@@ -36,7 +36,6 @@ var tab_view_init_functions = [initialize_tuning_view, initialize_sensors_view, 
 var tab_view_eeprom_refresh_functions = [refresh_tuning_view_from_eepromConfig, refresh_sensors_view_from_eepromConfig, refresh_signals_view_from_eepromConfig,
 	refresh_vehicle_view_from_eepromConfig, refresh_motors_view_from_eepromConfig, refresh_led_view_from_eepromConfig, refresh_datastream_view_from_eepromConfig,
 	refresh_config_view_from_eepromConfig];
-var tab_hrefs = ['#tuning', '#sensors', '#signals', '#vehicle', '#motors', '#led', '#datastream', '#config'];
 var port_selector;
 var port_selector_refresh_callback;
 var discovered_ports = false;
@@ -401,82 +400,6 @@ $(document).ready(function () {
 	// TODO
 	// deal with slider related events
 
-
-	// UI
-	$('#tuning').load("./tabs/tuning.html");
-	$('#sensors').load("./tabs/sensors.html");
-	$('#signals').load("./tabs/signals.html");
-	$('#vehicle').load("./tabs/vehicle.html");
-	$('#motors').load("./tabs/motors.html");
-	$('#led').load("./tabs/led.html");
-	$('#datastream').load("./tabs/datastream.html");
-	$('#config').load("./tabs/config.html");
-
-	$('a.tab-button').click(function (event) {
-		event.preventDefault();
-
-		var titlestr = $(this).html();
-		var href = $(this).attr('href');
-		var tab_index = tab_hrefs.indexOf(href);
-
-		if (!tab_id_initialized[tab_index]) {
-			tab_view_init_functions[tab_index]();
-			tab_id_initialized[tab_index] = true;
-
-			$(href).dialog({
-				modal : false,
-				height : 800,
-				width : 1100,
-				title : titlestr,
-				position : {
-					my : "top",
-					at : "bottom",
-					of : $('#menu.tab-button-bar'),
-				}
-			});
-
-			$(href).parent().draggable({
-				containment : [0, 0, 2000, 2000],
-			});
-
-			var close_button_selector = $(href).parent().children('.ui-dialog-titlebar').children('button');
-			$(close_button_selector).click(function (event) {
-				console.log('hide dialog', href, tab_dialog_open, tab_index);
-				event.preventDefault();
-				setTimeout(function () {
-					$(href).parent().css({
-						display : "none"
-					});
-					tab_dialog_open[tab_index] = false;
-				}, 1);
-			});
-
-			//start by showing dialog
-			tab_dialog_open[tab_index] = true;
-			//jquery ui starts out with the close button focused...
-			$('.ui-dialog :button').blur();
-		}
-
-		if (!tab_dialog_open[tab_index]) { //dialog is hidden, show now
-			var parent_selector = $(href).parent();
-			console.log('show dialog', href);
-			setTimeout(function () {
-				$(href).parent().css({
-					display : "block"
-				});
-				tab_dialog_open[tab_index] = true;
-			}, 1);
-		}
-
-		tab_view_eeprom_refresh_functions[tab_index]();
-
-		//bring tab to the front
-		setTimeout(function () {
-			$(href).parent().children('.ui-dialog-titlebar').mousedown()
-		}, 20);
-
-	});
-
 	setTimeout(function () {
 		$("[href='#datastream']").click()
 	}, 10);
@@ -586,3 +509,98 @@ function setArrayValues(fields, source) {
 		source[i] = $(f).val();
 	});
 }
+
+(function() {
+	'use strict';
+
+	var mainController = function ($scope, $rootScope) {
+		var tabClick = function (tab) {
+			var titlestr = tab.label;
+			var href = '#' + tab.url;
+
+			if (!tab.initialized) {
+				tab.init();
+				tab.initialized = true;
+				tab.open = false;
+
+				$(href).dialog({
+					modal : false,
+					height : 800,
+					width : 1100,
+					title : titlestr,
+					position : {
+						my : "top",
+						at : "bottom",
+						of : $('#menu.tab-button-bar'),
+					}
+				});
+
+				$(href).parent().draggable({
+					containment : [0, 0, 2000, 2000],
+				});
+
+				var close_button_selector = $(href).parent().children('.ui-dialog-titlebar').children('button');
+				$(close_button_selector).click(function (event) {
+					console.log('hide dialog', href, tab.open);
+					event.preventDefault();
+					setTimeout(function () {
+						$(href).parent().css({
+							display : "none"
+						});
+						tab.open = false;
+					}, 1);
+				});
+
+				//start by showing dialog
+				tab.open = true;
+				//jquery ui starts out with the close button focused...
+				$('.ui-dialog :button').blur();
+			}
+
+			if (!tab.open) { //dialog is hidden, show now
+				var parent_selector = $(href).parent();
+				console.log('show dialog', href);
+				setTimeout(function () {
+					$(href).parent().css({
+						display : "block"
+					});
+					tab.open = true;
+				}, 1);
+			}
+
+			tab.refresh();
+
+			//bring tab to the front
+			setTimeout(function () {
+				$(href).parent().children('.ui-dialog-titlebar').mousedown()
+			}, 20);
+
+		};
+
+		$scope.tabs = [
+			{url:'tuning', label:'Tuning'},
+			{url:'sensors', label:'R/C Signals'},
+			{url:'signals', label:'Sensor Data'},
+			{url:'vehicle', label:'Vehicle View'},
+			{url:'motors', label:'Motors'},
+			{url:'led', label:'LED'},
+			{url:'datastream', label:'Datastream'},
+			{url:'config', label:'Configuration'}
+		];
+
+		$scope.tabs.forEach(function (element, index, array) {
+			element.init = tab_view_init_functions[index];
+			element.refresh = tab_view_eeprom_refresh_functions[index];
+		});
+
+		$scope.tabClick = tabClick;
+
+		parser_callback_list.add(function () {
+			$rootScope.$apply(function () {
+				$rootScope.state = state;
+			});
+		})
+	}
+
+	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', mainController])
+}());

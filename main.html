@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="flybrixApp">
     <head>
         <title>Configurator</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -18,6 +18,9 @@
         <script type="text/javascript" src="./js/lib/three-libs/OrbitControls.js"></script>
         <script type="text/javascript" src="./js/lib/firebase.js"></script>
         <script type="text/javascript" src="./js/lib/spectrum.js"></script>
+        <script type="text/javascript" src="./js/lib/angular.js"></script>
+
+        <script type="text/javascript" src="./js/module.js"></script>
 
         <script type="text/javascript" src="./js/parser.js"></script>
         <script type="text/javascript" src="./js/serial.js"></script>
@@ -40,7 +43,7 @@
 
         <script type="text/javascript" src="./js/main.js"></script>
     </head>
-    <body>
+    <body ng-cloak ng-controller='mainController'>
         <div style="padding: 5px;">
             <div class="datastream-serial">
                 <select id="port-selector"></select>
@@ -71,24 +74,10 @@
             <div class="command-log" id='command-log'></div>
 
             <div id="menu" class="tab-button-bar">
-                <a class="tab-button" href="#tuning" title="">Tuning</a>
-                <a class="tab-button" href="#signals" title="">R/C Signals</a>
-                <a class="tab-button" href="#sensors" title="">Sensor Data</a>
-                <a class="tab-button" href="#vehicle" title="">Vehicle View</a>
-                <a class="tab-button" href="#motors" title="">Motors</a>
-                <a class="tab-button" href="#led" title="">LED</a>
-                <a class="tab-button" href="#datastream" title="">Datastream</a>
-                <a class="tab-button" href="#config" title="">Configuration</a>
+                <a class="tab-button" ng-repeat="tab in tabs" ng-click="tabClick(tab)" title="">{{tab.label}}</a>
             </div>
             <div class="tab-content">
-                <div id="tuning"></div>
-                <div id="signals"></div>
-                <div id="sensors"></div>
-                <div id="vehicle"></div>
-                <div id="motors"></div>
-                <div id="led"></div>
-                <div id="datastream"></div>
-                <div id="config"></div>
+                <div ng-repeat="tab in tabs" id="{{tab.url}}" ng-include="'tabs/' + tab.url + '.html'"></div>
             </div>
 
         </div>
