@@ -79,7 +79,6 @@ function refresh_datastream_view_from_eepromConfig() {
 						$scope.slowState = Object.assign({}, $rootScope.state);
 						$scope.slowStateUpdateRate = $rootScope.stateUpdateRate;
 						$scope.targetRate = target_rate_Hz;
-						$scope.serialUpdateRate = serial_update_rate_Hz;
 				}, 150);  // throttle redraw to 6-7Hz
 		};
 
