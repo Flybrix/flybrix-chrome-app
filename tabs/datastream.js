@@ -13,8 +13,6 @@ var old_data_mode;
 
 function initialize_datastream_view() {
 
-	$('#data-rate-plot').create_plot(["update rate (Hz)", "target rate (Hz)"]);
-
 	$('#capture-mode-filehandler').create_filehandler("start", "stop");
 
 	$('#capture-mode-filehandler #button1').unbind().click(function (event) { // start button
