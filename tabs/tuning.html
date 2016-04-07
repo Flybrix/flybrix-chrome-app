@@ -1,23 +1,23 @@
-<div>
+<div ng-controller="tuningController">
 
     <div style="margin-bottom:20px">
     Each of our four control vectors (thrust and three torques) is controlled using a cascaded PID controller.
     <br>
         <br>It is possible to bypass the master or slave PID loop to match common R/C "flight modes":
             <ul class="flight-mode-list">
-                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Angle" or "Rate" Mode [31]</span> 
+                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Angle" or "Rate" Mode [31]</span>
                     <div class="flight-mode-text">Bypass all master controllers and the Fz slave. This allows you to control the pitch, roll, and yaw rates using a feedback loop that compares the pilot setpoint to the gyroscope values.
                     </div></li>
-                <li class="flight-mode-list-item"><span class="flight-mode-title"> "AHRS" or "Horizon" Mode [25]</span> 
+                <li class="flight-mode-list-item"><span class="flight-mode-title"> "AHRS" or "Horizon" Mode [25]</span>
                     <div class="flight-mode-text">Bypass Fz master and slave and Tz master. This allows you to control the pitch and roll angles using the estimated pose of the flyer, while yaw input is interpreted as a target rotation rate.
                     </div></li>
-                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Yaw Stabilized" Mode [17]</span> 
+                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Yaw Stabilized" Mode [17]</span>
                     <div class="flight-mode-text">Bypass Fz master and slave only. This allows you to contorl the pitch and roll angles using the estimated pose of the flyer, while yaw input is interpreted as a target rotation rate.
                     </div></li>
-                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Ascent/Descent" Mode [1]</span> 
+                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Ascent/Descent" Mode [1]</span>
                     <div class="flight-mode-text">We don't support this mode because the pilot input for thrust is considered to always be positive (and our kit controller has no thrust stick spring!) -- Feel free to code this up yourself!
                     </div></li>
-                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Altitude Hold" Mode [0]</span> 
+                <li class="flight-mode-list-item"><span class="flight-mode-title"> "Altitude Hold" Mode [0]</span>
                     <div class="flight-mode-text">Enable all controllers.
                     </div></li>
             </ul>
@@ -36,10 +36,7 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Fz MASTER PID</div>
-            <div id="Fz-master-plot" class="Fz-master-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_master_Fz[0], y:getPidValues(state.pid_master_Fz)}" labels="setpoint|input|P|I|D|output" title="Fz MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
@@ -54,10 +51,7 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Fz SLAVE PID</div>
-            <div id="Fz-slave-plot" class="Fz-slave-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_slave_Fz[0], y:getPidValues(state.pid_slave_Fz)}" labels="setpoint|input|P|I|D|output" title="Fz SLAVE PID"/>
     </div>
 
 
@@ -74,10 +68,7 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Tx MASTER PID</div>
-            <div id="Tx-master-plot" class="Tx-master-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_master_Tx[0], y:getPidValues(state.pid_master_Tx)}" labels="setpoint|input|P|I|D|output" title="Tx MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
@@ -92,10 +83,7 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Tx SLAVE PID</div>
-            <div id="Tx-slave-plot" class="Tx-slave-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_slave_Tx[0], y:getPidValues(state.pid_slave_Tx)}" labels="setpoint|input|P|I|D|output" title="Tx SLAVE PID"/>
     </div>
 
 
@@ -111,11 +99,8 @@
             <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field rollMasterPIDParameters 3"/>
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field rollMasterPIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field rollMasterPIDParameters 5"/>
-        </div> 
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Ty MASTER PID</div>
-            <div id="Ty-master-plot" class="Ty-master-plot"></div>
         </div>
+        <div plot-series value="{x:state.pid_master_Ty[0], y:getPidValues(state.pid_master_Ty)}" labels="setpoint|input|P|I|D|output" title="Ty MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
@@ -130,10 +115,7 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field rollSlavePIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field rollSlavePIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Ty SLAVE PID</div>
-            <div id="Ty-slave-plot" class="Ty-slave-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_slave_Ty[0], y:getPidValues(state.pid_slave_Ty)}" labels="setpoint|input|P|I|D|output" title="Ty SLAVE PID"/>
     </div>
 
 
@@ -150,10 +132,7 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field yawMasterPIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field yawMasterPIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Tz MASTER PID</div>
-            <div id="Tz-master-plot" class="Tz-master-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_master_Tz[0], y:getPidValues(state.pid_master_Tz)}" labels="setpoint|input|P|I|D|output" title="Tz MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
@@ -168,9 +147,6 @@
             <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field yawSlavePIDParameters 4"/>
             <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field yawSlavePIDParameters 5"/>
         </div>
-        <div class="flybrix-plot-holder">
-            <div class="flybrix-plot-title">Tz SLAVE PID</div>
-            <div id="Tz-slave-plot" class="Tz-slave-plot"></div>
-        </div>
+        <div plot-series value="{x:state.pid_slave_Tz[0], y:getPidValues(state.pid_slave_Tz)}" labels="setpoint|input|P|I|D|output" title="Tz SLAVE PID"/>
     </div>
 </div>

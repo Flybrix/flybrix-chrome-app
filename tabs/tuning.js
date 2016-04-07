@@ -38,8 +38,6 @@ function initialize_tuning_view() {
 		}
 	});
 
-	parser_callback_list.add(update_tuning_view);
-
 	$('#tuning .pid-tuner-entry-field').connect_to_eeprom();
 	$('#tuning .pid-tuner-checkbox-bypass').connect_to_eeprom();
     eeprom_refresh_callback_list.add(refresh_tuning_view_from_eepromConfig);
@@ -69,28 +67,23 @@ function refresh_tuning_view_from_eepromConfig() {
 	$('#tuning input.bitfield.7').prop("checked", ((eepromConfig.pidBypass >> 7) & 1))
 }
 
+(function() {
+		'use strict';
 
-var pids = ['Fz-master', 'Tx-master', 'Ty-master', 'Tz-master', 'Fz-slave', 'Tx-slave', 'Ty-slave', 'Tz-slave'];
-var stageobjs = [state.pid_master_Fz, state.pid_master_Tx, state.pid_master_Ty, state.pid_master_Tz,
-    state.pid_slave_Fz, state.pid_slave_Tx, state.pid_slave_Ty, state.pid_slave_Tz];
-var types = ['Fz', 'Tx', 'Ty', 'Tz'];
+		var tuningController = function ($scope) {
+				$scope.getPidValues = function (value) {
+						if (!value)
+								return [];
+						return [
+								value[2],
+								value[1],
+								value[3],
+								value[4],
+								value[5],
+								value[3] + value[4] + value[5],
+						];
+				};
+		};
 
-var last_tuning_view_update = 0;
-function update_tuning_view() {
-    var now = Date.now();
-    if ( (now - last_tuning_view_update) > graph_update_delay ) { //throttle redraw to 20Hz
-        for (var i = 0; i < pids.length; i++) {
-            var selector = $("#" + pids[i] + "-plot");
-            if (selector.find('#live').prop("checked")) {
-                //console.log(selector, (stageobjs[i])[0] / 1000000, (stageobjs[i])[2]);
-                selector.update_flybrix_plot_series("setpoint", (stageobjs[i])[0] / 1000000, (stageobjs[i])[2], false);
-                selector.update_flybrix_plot_series("input", (stageobjs[i])[0] / 1000000, (stageobjs[i])[1], false);
-                selector.update_flybrix_plot_series("P", (stageobjs[i])[0] / 1000000, (stageobjs[i])[3], false);
-                selector.update_flybrix_plot_series("I", (stageobjs[i])[0] / 1000000, (stageobjs[i])[4], false);
-                selector.update_flybrix_plot_series("D", (stageobjs[i])[0] / 1000000, (stageobjs[i])[5], false);
-                selector.update_flybrix_plot_series("output", (stageobjs[i])[0] / 1000000, (stageobjs[i])[3] + (stageobjs[i])[4] + (stageobjs[i])[5]);
-            }
-        }
-        last_tuning_view_update = now;
-    }
-};
+		angular.module('flybrixApp').controller('tuningController', ['$scope', tuningController]);
+}());
