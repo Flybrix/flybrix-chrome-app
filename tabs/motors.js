@@ -16,7 +16,7 @@ function initialize_motors_view() {
 
     $('#motor-view-motors-enabled').css('background-color', '#000000'); //start off
 	$('#motor-view-enable-motors').click(function() {
-        
+
         var style_str = $('#motor-view-motors-enabled').attr('style');
         if (style_str && ($.inArray('background-color', style_str.split(':')) >= 0)) {
             console.log('enabling motors');
@@ -42,25 +42,7 @@ function initialize_motors_view() {
         console.log(motor_n);
         var motor_v = parseInt($(this).val()); // motor value
         setTimeout(function(){send_message(CommandFields.COM_MOTOR_OVERRIDE_SPEED_0 << motor_n, [motor_v % 256, motor_v / 256]); }, 1);
-    }).keydown(function (e) {
-        // Allow: backspace, delete, tab, escape, enter, and '.' (no '-' on motor levels!)
-        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
-			// Allow: Ctrl+A
-			(e.keyCode == 65 && e.ctrlKey === true) ||
-			// Allow: Ctrl+C
-			(e.keyCode == 67 && e.ctrlKey === true) ||
-			// Allow: Ctrl+X
-			(e.keyCode == 88 && e.ctrlKey === true) ||
-			// Allow: home, end, left, right
-			(e.keyCode >= 35 && e.keyCode <= 39)) {
-			// let it happen, don't do anything
-			return;
-		}
-		// Ensure that it is a number and stop the keypress
-		if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-			e.preventDefault();
-		}
-	});
+    }).attr('step', 'any').attr('type', 'number').attr('min', 0);
 
     $('#motors .mixtable-entry-field.mixTableFz').connect_to_eeprom();
     $('#motors .mixtable-entry-field.mixTableTx').connect_to_eeprom();
@@ -71,7 +53,7 @@ function initialize_motors_view() {
 	refresh_motors_view_from_eepromConfig();
 
     parser_callback_list.add(update_motors_view);
-    
+
     $('#motors .motor-view-level-value').blur();
 };
 
