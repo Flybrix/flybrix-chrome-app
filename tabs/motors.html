@@ -119,7 +119,7 @@
                 <div class="motor-view-level-bar-Tz"/>
                 <div class="motor-view-level-bar-sum"/>
             </div>
-        </div>        
+        </div>
     </div>
 
     <div class="mixtable-factors">
@@ -166,9 +166,9 @@
             <div class="mixtable-entry-label">CH5</div><input class="mixtable-entry-field mixTableTz 5"/>
             <div class="mixtable-entry-label">CH6</div><input class="mixtable-entry-field mixTableTz 6"/>
             <div class="mixtable-entry-label">CH7</div><input class="mixtable-entry-field mixTableTz 7"/>
-        </div>  
+        </div>
     </div>
-    
+
     <div style="height: 85px;">
         <div style="float: left;">
             <div class="led-red" id="motor-view-motors-enabled"><div class="led-label">MOTORS ENABLED</div></div>
@@ -180,10 +180,6 @@
             <div class='button view-button' id="motor-view-zero-motors">zero all motors now</div>
         </div>
     </div>
-    
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Control Vectors</div>
-        <div id="control-plot" class="control-plot"></div>
-    </div>
-    
+
+    <div plot-series value="{x:state.timestamp_us, y:state.control}" labels="CH0 (usec)|CH1 (usec)|CH2 (usec)|CH3 (usec)|CH4 (usec)|CH5 (usec)" title="Control Vectors"/>
 </div>

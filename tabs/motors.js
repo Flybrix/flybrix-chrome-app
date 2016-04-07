@@ -1,8 +1,5 @@
 
 function initialize_motors_view() {
-
-    $('#control-plot').create_plot(["Fz (pwm counts)", "Tx (pwm counts)", "Ty (pwm counts)", "Tz (pwm counts)"]);
-
     $('#motor-view-motors-override').css('background-color', '#000000'); //start off
 	$('#motor-view-override-pilot').click(function() {
         var style_str = $('#motor-view-motors-override').attr('style');
@@ -100,15 +97,6 @@ function update_motors_view() {
             if (!$('.'+ i +' .motor-view-level-value').is(":focus")){
                 $('.'+ i +' .motor-view-level-value').val(state.MotorOut[i].toFixed(0));
             }
-        }
-
-        var cpq = $("#control-plot");
-
-        if(cpq.find("#live").prop("checked")) {
-            cpq.update_flybrix_plot_series("Fz (pwm counts)", state.timestamp_us / 1000000, state.control[0], false);
-            cpq.update_flybrix_plot_series("Tx (pwm counts)", state.timestamp_us / 1000000, state.control[1], false);
-            cpq.update_flybrix_plot_series("Ty (pwm counts)", state.timestamp_us / 1000000, state.control[2], false);
-            cpq.update_flybrix_plot_series("Tz (pwm counts)", state.timestamp_us / 1000000, state.control[3]);
         }
 
         last_motors_view_update = now;
