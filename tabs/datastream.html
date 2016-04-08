@@ -5,7 +5,7 @@
     <p style="margin-bottom: 10px; margin-top: 10px; font-weight: bold;">Data transfer:</p>
     <div>
         <span class="rate-display-label">Target delay factor</span>
-        <input type="number" min="0" max="1001" step="1" value="500" id="target-delay" style="float:left; min-width:100px; margin-right: 10px"></input>
+        <input type="number" min="0" max="1001" step="1" value="500" style="float:left; min-width:100px; margin-right: 10px" ng-model="targetDelay" ng-model-options="{updateOn:'change'}"></input>
 
         <span class="rate-display-label">Target Rate (Hz)</span>
         <output type="number" class="rate-display-field">{{targetRate|number:5}}</output>

@@ -118,9 +118,7 @@ function serialConnectCallback(connectionInfo) {
 					send_message(CommandFields.COM_SET_STATE_MASK | CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE,
 						new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
                     //update fields in datastream tab
-                    $('#datastream #target-delay').val(default_delay_msec);
-                    target_rate_Hz = rate_from_delay($('#target-delay').val());
-                    $('#datastream #target-rate').val((1000/default_delay_msec).toFixed(3));
+                    setTargetDelay(default_delay_msec);
                     $('#datastream #current-state .model-change-mask').prop('checked', true);
 				}, 100);
 
@@ -166,8 +164,7 @@ function port_usage() {
 
         //throttle back datastream when the UI lags behind to keep things usable
         if (ui_update_rate > 1020) {
-            command_log('UI is falling behind -- <span style="color: red;">SLOWING DOWN SERIAL CONNECTION</span>');
-            console.log("UI is lagging ("+ui_update_rate+" > 1020msec), setting target-delay to " + $('#target-delay').val() * 1.02);
+            command_log('UI is falling behind -- <span style="color: red;">SLOWING DOWN GRAPH UPDATES</span>');
             graph_update_delay *= 2.0;
         }
         var port_speed_kbps = char_counter / ui_update_rate;
@@ -187,6 +184,9 @@ function byteNinNum(data, n) {
 
 function send_message(mask, data, log_send) {
     log_send = typeof log_send !== 'undefined' ? log_send : true;
+
+		if (backgroundPage.serialConnectionId < 0)  // if there is no serial connection
+				return;
 
 	var checksum = 0;
 	var bufferOut,

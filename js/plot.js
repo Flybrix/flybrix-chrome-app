@@ -444,7 +444,7 @@
 								if (!plotHolder.find("#live").prop("checked"))
 										return;
 								var newTime = new Date();
-								if (newTime - lastTime < 50)  // limit plots to 20Hz
+								if (newTime - lastTime < graph_update_delay)  // limit plots to 20Hz
 										return;
 								lastTime = newTime;
 								var x = value.x / 1000000;

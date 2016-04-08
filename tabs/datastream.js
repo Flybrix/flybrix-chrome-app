@@ -8,7 +8,7 @@ function rate_from_delay(delay) {
 	return 1000 / delay;
 }
 
-var target_rate_Hz;
+var setTargetDelay;
 var old_data_mode;
 
 function initialize_datastream_view() {
@@ -41,14 +41,6 @@ function initialize_datastream_view() {
 		}
 	});
 
-	$('#target-delay').change(function () {
-		target_rate_Hz = rate_from_delay($('#target-delay').val());
-		$('#target-rate').val(target_rate_Hz.toFixed(5));
-		var bytes = [$('#target-delay').val() % 256, $('#target-delay').val() / 256]; //little endian
-		send_message(CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE, new Uint8Array(bytes));
-
-	});
-
 	$("#current-state .model-change-mask").each(function f() {
 		$(this).prop("checked", state_data_mask[parseInt($(this).attr('id'))]);
 	});
@@ -78,8 +70,21 @@ function refresh_datastream_view_from_eepromConfig() {
 				$interval(function () {
 						$scope.slowState = Object.assign({}, $rootScope.state);
 						$scope.slowStateUpdateRate = $rootScope.stateUpdateRate;
-						$scope.targetRate = target_rate_Hz;
 				}, 150);  // throttle redraw to 6-7Hz
+
+				$scope.$watch('targetDelay', function (value) {
+						if (value === undefined)
+								return;
+						$scope.targetRate = rate_from_delay(value);
+						var bytes = [value % 256, value / 256]; //little endian
+						send_message(CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE, new Uint8Array(bytes));
+				});
+
+				setTargetDelay = function (delay) {
+						$scope.$apply(function () {
+								$scope.targetDelay = delay;
+						});
+				};
 		};
 
 		angular.module('flybrixApp').controller('datastreamController', ['$scope', '$rootScope', '$interval', datastreamController]);
