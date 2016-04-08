@@ -8,22 +8,8 @@ function initialize_vehicle_view() {
     create_vehicle_view_scene();
     animate_vehicle_view_scene();
 
-    parser_callback_list.add(update_vehicle_view);
-
     eeprom_refresh_callback_list.add(refresh_vehicle_view_from_eepromConfig);
     refresh_vehicle_view_from_eepromConfig();
-
-    $('#vehicle-render').find('#update_mag_bias').click(function (e) {
-        e.preventDefault();
-        adjust_magnetometer_estimate();
-    });
-
-    $('#vehicle-render').find('#apply_bias_fix').click(function (e) {
-        e.preventDefault();
-        eepromConfig.magBias = magnetometer_estimate.slice(0, 3).map(function (v) {return -v;});
-        refresh_config_view_from_eepromConfig();
-        setTimeout(function(){sendCONFIG(); setTimeout(eeprom_refresh_callback_list.fire, 100);}, 1);
-    });
 
     for (var i = 0; i < 16; ++i)
         vehicle_signal_lights.push({
@@ -35,31 +21,6 @@ function initialize_vehicle_view() {
 function refresh_vehicle_view_from_eepromConfig() {
     //nothing yet
 };
-
-var last_vehicle_view_update = 0;
-function update_vehicle_view() {
-    var now = Date.now();
-    if ( $('#vehicle-render').find('#active').prop("checked") && (now - last_vehicle_view_update) > graph_update_delay ) { //throttle redraw to 20Hz
-
-        // update prism with latest data
-        var pitch = state.kinematicsAngle[0];
-        var roll  = state.kinematicsAngle[1];
-        var yaw   = state.kinematicsAngle[2];
-
-        update_vehicle_view_scene(pitch,roll,yaw);
-
-        // indicate status
-        vehicle_signal_lights.forEach(function(v) {
-            if (!(state.status & v.mask)) {
-                v.selector.css('background-color', '#000000');
-            } else {
-                v.selector.css('background-color', '');
-            }
-        });
-
-        last_vehicle_view_update = now;
-    }
-}
 
 var vertexShaderGLSL = [
     'void main() {',
@@ -86,25 +47,6 @@ var vehicle_view_pointcloud_geometry;
 var vehicle_view_points;
 var vehicle_view_points_index = 0;
 var MAX_POINTS = 10000;
-
-function adjust_magnetometer_estimate() {
-  var pointLimit = 500;
-  if (magnetometer_estimate_points.length > pointLimit)
-    magnetometer_estimate_points = magnetometer_estimate_points.slice(-pointLimit);
-  for (var i = 0; i < 10000; ++i) {
-    magnetometer_estimate = sphereMinimize(magnetometer_estimate, magnetometer_estimate_points);
-    iterate = magnetometer_estimate.improved;
-    magnetometer_estimate = magnetometer_estimate.value;
-    if (magnetometer_estimate[3] < 1e-3)
-      magnetometer_estimate[3] = 1e-3;
-    if (!iterate)
-      break;
-  }
-  var magscale = 5;
-  vehicle_view_sphere.position.set(magnetometer_estimate[0] / magscale, magnetometer_estimate[1] / magscale, magnetometer_estimate[2] / magscale);
-  var scaling = (magnetometer_estimate[3] < 1e-3) ? 1e-3 : (magnetometer_estimate[3] / magscale);
-  vehicle_view_sphere.scale.set(scaling, scaling, scaling);
-}
 
 function create_vehicle_view_scene() {
 	vehicle_view_scene = new THREE.Scene();
@@ -221,38 +163,99 @@ function animate_vehicle_view_scene() {
     vehicle_view_stats.end();
 }
 
-function update_vehicle_view_scene() {
+(function() {
+    'use strict';
 
-    var pitch = state.kinematicsAngle[0];
-    var roll  = state.kinematicsAngle[1];
-    var yaw   = state.kinematicsAngle[2];
-    var magx  = state.mag[0] + eepromConfig.magBias[0];
-    var magy  = state.mag[1] + eepromConfig.magBias[1];
-    var magz  = state.mag[2] + eepromConfig.magBias[2];
+    function update_vehicle_view_scene(state) {
+        var pitch = state.kinematicsAngle[0];
+        var roll  = state.kinematicsAngle[1];
+        var yaw   = state.kinematicsAngle[2];
+        var magx  = state.mag[0] + eepromConfig.magBias[0];
+        var magy  = state.mag[1] + eepromConfig.magBias[1];
+        var magz  = state.mag[2] + eepromConfig.magBias[2];
 
-    //change to three.js coordinate system
-    // The X axis is red. The Y axis is green. The Z axis is blue.
-	vehicle_view_prism.rotation.x = -pitch;
-	vehicle_view_prism.rotation.y = yaw
-	vehicle_view_prism.rotation.z = roll;
-  vehicle_view_prism.rotation.order = 'YZX';
-	vehicle_view_controls.update();
-	vehicle_view_stats.update();
+        //change to three.js coordinate system
+        // The X axis is red. The Y axis is green. The Z axis is blue.
+        vehicle_view_prism.rotation.x = -pitch;
+        vehicle_view_prism.rotation.y = yaw
+        vehicle_view_prism.rotation.z = roll;
+        vehicle_view_prism.rotation.order = 'YZX';
+        vehicle_view_controls.update();
+        vehicle_view_stats.update();
 
-    var magscale = 5;
-    vehicle_view_points[vehicle_view_points_index*3+0] = magx/magscale;
-    vehicle_view_points[vehicle_view_points_index*3+1] = magy/magscale;
-    vehicle_view_points[vehicle_view_points_index*3+2] = magz/magscale;
+        var magscale = 5;
+        vehicle_view_points[vehicle_view_points_index*3+0] = magx/magscale;
+        vehicle_view_points[vehicle_view_points_index*3+1] = magy/magscale;
+        vehicle_view_points[vehicle_view_points_index*3+2] = magz/magscale;
 
-    vehicle_view_pointcloud_geometry.attributes.position.updateRange.offset = vehicle_view_points_index*3;
-    vehicle_view_pointcloud_geometry.attributes.position.updateRange.count = (vehicle_view_points_index+1)*3;
-    vehicle_view_pointcloud_geometry.attributes.position.needsUpdate = true;
+        vehicle_view_pointcloud_geometry.attributes.position.updateRange.offset = vehicle_view_points_index*3;
+        vehicle_view_pointcloud_geometry.attributes.position.updateRange.count = (vehicle_view_points_index+1)*3;
+        vehicle_view_pointcloud_geometry.attributes.position.needsUpdate = true;
 
-    magnetometer_estimate_points.push([magx, magy, magz]);
+        magnetometer_estimate_points.push([magx, magy, magz]);
 
-    vehicle_view_points_index++;
+        vehicle_view_points_index++;
 
-    if (vehicle_view_points_index == MAX_POINTS){
-        vehicle_view_points_index = 0;
+        if (vehicle_view_points_index == MAX_POINTS) {
+            vehicle_view_points_index = 0;
+        }
     }
-}
+
+    var vehicleController = function ($scope, $rootScope, $timeout) {
+
+        $scope.adjustMagnetometerEstimate = function () {
+            var pointLimit = 500;
+            if (magnetometer_estimate_points.length > pointLimit)
+                magnetometer_estimate_points = magnetometer_estimate_points.slice(-pointLimit);
+            for (var i = 0; i < 10000; ++i) {
+                magnetometer_estimate = sphereMinimize(magnetometer_estimate, magnetometer_estimate_points);
+                var iterate = magnetometer_estimate.improved;
+                magnetometer_estimate = magnetometer_estimate.value;
+                if (magnetometer_estimate[3] < 1e-3)
+                    magnetometer_estimate[3] = 1e-3;
+                if (!iterate)
+                    break;
+            }
+            var magscale = 5;
+            vehicle_view_sphere.position.set(magnetometer_estimate[0] / magscale, magnetometer_estimate[1] / magscale, magnetometer_estimate[2] / magscale);
+            var scaling = (magnetometer_estimate[3] < 1e-3) ? 1e-3 : (magnetometer_estimate[3] / magscale);
+            vehicle_view_sphere.scale.set(scaling, scaling, scaling);
+        };
+
+        $scope.applyBiasFix = function () {
+            eepromConfig.magBias = magnetometer_estimate.slice(0, 3).map(function (v) {return -v;});
+            refresh_config_view_from_eepromConfig();
+            $timeout(function(){
+                sendCONFIG();
+                $timeout(eeprom_refresh_callback_list.fire, 100);
+            }, 1);
+        };
+
+        var last_time = new Date();
+        $rootScope.$watch('state', function (state) {
+            if (state === undefined)
+                return;
+            var new_time = new Date();
+            if (new_time - last_time < graph_update_delay)
+                return;
+            last_time = new_time;
+            if (!$scope.drawVehicle)
+                return;
+            update_vehicle_view_scene(state);
+
+            vehicle_signal_lights.forEach(function(v) {
+                if (!(state.status & v.mask)) {
+                    v.selector.css('background-color', '#000000');
+                } else {
+                    v.selector.css('background-color', '');
+                }
+            });
+        }, true);
+
+        $scope.drawVehicle = false;
+    };
+
+    var app = angular.module('flybrixApp');
+
+    app.controller('vehicleController', ['$scope', '$rootScope', '$timeout', vehicleController]);
+}());
