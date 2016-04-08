@@ -15,7 +15,7 @@ var data_mode = "idle"; // valid modes: 'serial','replay','capture', and 'idle'
 var replay_buffer;
 var replay_point;
 
-var cobsReader = new cobs.Reader(2000);
+var cobsReader;
 
 // Get access to the background window object
 // This object is used to pass current serial port connectionId to the backround page
@@ -513,7 +513,7 @@ function setArrayValues(fields, source) {
 (function() {
 	'use strict';
 
-	var mainController = function ($scope, $rootScope) {
+	var mainController = function ($scope, $rootScope, cobs) {
 		var tabClick = function (tab) {
 			var titlestr = tab.label;
 			var href = '#' + tab.url;
@@ -595,6 +595,9 @@ function setArrayValues(fields, source) {
 
 		$scope.tabClick = tabClick;
 
+		cobsReader = new cobs.Reader(2000);
+		cobsTEMPORARY = cobs;
+
 		parser_callback_list.add(function () {
 			$rootScope.$apply(function () {
 				$rootScope.state = state;
@@ -615,5 +618,5 @@ function setArrayValues(fields, source) {
 		});
 	}
 
-	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', mainController])
+	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', 'cobs', mainController])
 }());

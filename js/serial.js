@@ -182,6 +182,8 @@ function byteNinNum(data, n) {
 	return (data >> (8 * n)) & 0xFF;
 }
 
+var cobsTEMPORARY;
+
 function send_message(mask, data, log_send) {
     log_send = typeof log_send !== 'undefined' ? log_send : true;
 
@@ -211,7 +213,7 @@ function send_message(mask, data, log_send) {
 	bufView[0] = checksum; // crc
 	bufView[bufView.length - 1] = 0;
 
-	setTimeout(function(){chrome.serial.send(backgroundPage.serialConnectionId, cobs.encode(bufView), function (writeInfo) {});},1);
+	setTimeout(function(){chrome.serial.send(backgroundPage.serialConnectionId, cobsTEMPORARY.encode(bufView), function (writeInfo) {});},1);
 
     if (log_send){
         command_log('Sending command <span style="color:blue">'+ MessageType.Command +'</blue>');
