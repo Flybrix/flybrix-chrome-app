@@ -219,3 +219,13 @@ function send_message(mask, data, log_send) {
         command_log('Sending command <span style="color:blue">'+ MessageType.Command +'</blue>');
     }
 }
+
+(function() {
+		'use strict';
+
+		angular.module('flybrixApp').factory('serial', function () {
+				return {
+					send: send_message,
+				};
+		});
+}());
