@@ -51,12 +51,7 @@
     </div>
 
     <div class="command-settings-aux-levels">
- 		<div class="led-green" id="auxbit00"><div class="led-label">AUX1 LOW</div></div>
-		<div class="led-green" id="auxbit01"><div class="led-label">AUX1 MID</div></div>
-		<div class="led-green" id="auxbit02"><div class="led-label">AUX1 HIGH</div></div>
-		<div class="led-green" id="auxbit03"><div class="led-label">AUX2 LOW</div></div>
-		<div class="led-green" id="auxbit04"><div class="led-label">AUX2 MID</div></div>
-		<div class="led-green" id="auxbit05"><div class="led-label">AUX2 HIGH</div></div>
+      <div class="led-green" ng-repeat="label in ['AUX1 LOW', 'AUX1 MID', 'AUX1 HIGH', 'AUX2 LOW', 'AUX2 MID', 'AUX2 HIGH']" ng-class="{'black-bg': auxBits[$index]}"><div class="led-label">{{label}}</div></div>
     </div>
 
     <p style="margin-top:20px">The master pid loop will be driven with these scaled command setpoints (target state values):</p>

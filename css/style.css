@@ -733,3 +733,7 @@ div.led-label {
     position: inline;
     display: table;
 }
+
+.black-bg {
+	background-color: #000000;
+}
