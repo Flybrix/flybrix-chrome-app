@@ -90,7 +90,7 @@ var StateFields = {
 	STATE_LOOP_COUNT : 1 << 27,
 };
 
-var parser_callback_list = $.Callbacks('unique');
+var parser_callback = function () {};
 
 function parse_pid_data(data, destination, byteRef) {
 	destination[0] = data.getUint32(byteRef.index, 1); //time
@@ -283,5 +283,5 @@ function parse_data_packet(mask, message_buffer) {
 		state.loopCount = data.getUint32(b.index, 1);
 		b.add(4);
 	}
-	parser_callback_list.fire();
+	parser_callback();
 }

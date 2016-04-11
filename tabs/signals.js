@@ -93,7 +93,7 @@ function refresh_signals_view_from_eepromConfig() {
 						$scope.slaveSetpoints = [scaleFz * Fz_cmd, scaleTx * Tx_cmd, scaleTy * Ty_cmd, scaleTz * Tz_cmd];
 
 						$scope.outputLevels = [Fz_cmd, Tx_cmd, Ty_cmd, Tz_cmd];
-				}, true);  // TODO: compare by reference rather than equality once we modify state to be swapped rather than mutated
+				});
 		};
 
 		angular.module('flybrixApp').controller('signalsController', ['$scope', '$rootScope', signalsController]);

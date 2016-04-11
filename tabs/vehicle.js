@@ -250,7 +250,7 @@ function animate_vehicle_view_scene() {
                     v.selector.css('background-color', '');
                 }
             });
-        }, true);
+        });
 
         $scope.drawVehicle = false;
     };

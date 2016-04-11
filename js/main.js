@@ -598,9 +598,16 @@ function setArrayValues(fields, source) {
 		cobsReader = new cobs.Reader(2000);
 		cobsTEMPORARY = cobs;
 
-		parser_callback_list.add(function () {
-			$rootScope.$apply(function () {
-				$rootScope.state = state;
+		parser_callback = function () {
+				$rootScope.$apply(function () {
+						$rootScope.state = Object.assign({}, state);
+				})
+		}
+
+		$rootScope.$watch('state', function () {
+				if (!$rootScope.state)
+						return;
+
 				$rootScope.stateUpdateRate = serial_update_rate_Hz;
 
 				var kV0 = (20.5 + 226) / 20.5 * 1.2 / 65536;
@@ -608,15 +615,14 @@ function setArrayValues(fields, source) {
 				var kI1 = 1000 * (1 / 50) / 0.03 * 1.2 / 65536;
 
 				$rootScope.batteryData = [
-					kV0 * state.V0_raw,
-					kI0 * state.I0_raw,
-					kI1 * state.I1_raw,
-					kI0 * kV0 * state.V0_raw * state.I0_raw,
-					kI1 * kV0 * state.V0_raw * state.I1_raw,
+						kV0 * $rootScope.state.V0_raw,
+						kI0 * $rootScope.state.I0_raw,
+						kI1 * $rootScope.state.I1_raw,
+						kI0 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I0_raw,
+						kI1 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I1_raw,
 				];
-			});
 		});
-	}
+	};
 
 	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', 'cobs', mainController])
 }());

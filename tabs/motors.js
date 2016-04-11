@@ -101,7 +101,7 @@ function update_bar_css(index, type, val){
               last_motors_view_update = now;
           }
 
-      }, true);  // TODO: compare by reference rather than equality once we modify state to be swapped rather than mutated
+      });
 
       $scope.motorsEnabledNeg = true;
       $scope.motorsOverrideNeg = true;
