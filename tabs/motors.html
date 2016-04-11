@@ -1,4 +1,4 @@
-<div>
+<div ng-controller="motorsController">
     <div class="motor-view-levels">
         <div class="motor-view-level 0">
             <div class="motor-view-level-title">CH0</div>
@@ -171,8 +171,8 @@
 
     <div style="height: 85px;">
         <div style="float: left;">
-            <div class="led-red" id="motor-view-motors-enabled"><div class="led-label">MOTORS ENABLED</div></div>
-            <div class="led-red" id="motor-view-motors-override"><div class="led-label">OVERRIDE MODE</div></div>
+            <div class="led-red" ng-class="{'black-bg': motorsEnabledNeg}" id="motor-view-motors-enabled"><div class="led-label">MOTORS ENABLED</div></div>
+            <div class="led-red" ng-class="{'black-bg': motorsOverrideNeg}" id="motor-view-motors-override"><div class="led-label">OVERRIDE MODE</div></div>
         </div>
         <div style="float: left;">
             <div class='button view-button' id="motor-view-enable-motors">enable motors</div>
