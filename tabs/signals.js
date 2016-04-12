@@ -60,7 +60,7 @@ function refresh_signals_view_from_eepromConfig() {
 						//update AUX mask led indicators
 						$scope.auxBits = [];
 						for (var mask = 0; mask < 6; ++mask)
-								$scope.auxBits.push(!(state.AUX_chan_mask & (1 << mask)));
+								$scope.auxBits.push(!($rootScope.state.AUX_chan_mask & (1 << mask)));
 
 						var RC_min = 1100;
 						var RC_max = 1900;
