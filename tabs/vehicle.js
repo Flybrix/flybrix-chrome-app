@@ -154,7 +154,8 @@ function refresh_vehicle_view_from_eepromConfig(){
             // change to three.js coordinate system
             // The X axis is red. The Y axis is green. The Z axis is blue.
             vehicle_view_prism.rotation.x = -pitch;
-            vehicle_view_prism.rotation.y = yaw vehicle_view_prism.rotation.z = roll;
+            vehicle_view_prism.rotation.y = yaw;
+            vehicle_view_prism.rotation.z = roll;
             vehicle_view_prism.rotation.order = 'YZX';
             vehicle_view_controls.update();
             vehicle_view_stats.update();
