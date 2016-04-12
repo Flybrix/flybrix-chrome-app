@@ -85,7 +85,6 @@
             });
 
             ngModel.$render(function() {
-                console.log("YAAAY");
                 element.spectrum('set', ngModel.$viewValue);
             });
         };
