@@ -42,7 +42,8 @@ function initialize_datastream_view() {
 	});
 
 	$("#current-state .model-change-mask").each(function f() {
-		$(this).prop("checked", state_data_mask[parseInt($(this).attr('id'))]);
+		//$(this).prop("checked", state_data_mask[parseInt($(this).attr('id'))]);
+		// TODO: fix this!!
 	});
 
 	$("#current-state .model-change-mask").change(function () {
@@ -68,7 +69,7 @@ function refresh_datastream_view_from_eepromConfig() {
 
 		var datastreamController = function ($scope, $rootScope, $interval) {
 				$interval(function () {
-						$scope.slowState = Object.assign({}, $rootScope.state);
+						$scope.slowState = $rootScope.state;
 						$scope.slowStateUpdateRate = $rootScope.stateUpdateRate;
 				}, 150);  // throttle redraw to 6-7Hz
 

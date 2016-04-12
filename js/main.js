@@ -510,10 +510,12 @@ function setArrayValues(fields, source) {
 	});
 }
 
+var process_binary_datastream;
+
 (function() {
 	'use strict';
 
-	var mainController = function ($scope, $rootScope, cobs) {
+	var mainController = function ($scope, $rootScope, cobs, serialParser) {
 		var tabClick = function (tab) {
 			var titlestr = tab.label;
 			var href = '#' + tab.url;
@@ -598,11 +600,15 @@ function setArrayValues(fields, source) {
 		cobsReader = new cobs.Reader(2000);
 		cobsTEMPORARY = cobs;
 
-		parser_callback = function () {
+		process_binary_datastream = function (command, mask, message_buffer) {
+
+		serialParser.processBinaryDatastream(command, mask, message_buffer, function (state, state_data_mask) {
 				$rootScope.$apply(function () {
-						$rootScope.state = Object.assign({}, state);
-				})
-		}
+						$rootScope.state = state;
+						$rootScope.stateDataMask = state_data_mask;
+				});
+		});
+	};
 
 		$rootScope.$watch('state', function () {
 				if (!$rootScope.state)
@@ -624,5 +630,11 @@ function setArrayValues(fields, source) {
 		});
 	};
 
-	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', 'cobs', mainController])
+	var app = angular.module('flybrixApp');
+
+	app.factory('commandLog', function () {
+			return command_log;
+	});
+
+	app.controller('mainController', ['$scope', '$rootScope', 'cobs', 'serialParser', mainController]);
 }());
