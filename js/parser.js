@@ -95,6 +95,8 @@
             }
         }
 
+        var last_timestamp_us = 0;
+
         function callbackStateHelper(mask, message_buffer, cb_state) {
             var state = $.extend(true, {}, state_base);
             var state_data_mask = [];
@@ -105,13 +107,12 @@
                 state_data_mask.push(0);
 
             if (0 != (mask & StateFields.STATE_MICROS)) {
-                var last_timestamp_us = state.timestamp_us;
-
                 state_data_mask[0] = 1;
                 state.timestamp_us = data.getUint32(b.index, 1);
                 b.add(4);
 
                 serial_update_rate_Hz = 1000000 / (state.timestamp_us - last_timestamp_us);
+                last_timestamp_us = state.timestamp_us;
             }
             if (0 != (mask & StateFields.STATE_STATUS)) {
                 state_data_mask[1] = 1;

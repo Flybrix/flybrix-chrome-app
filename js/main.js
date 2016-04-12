@@ -598,7 +598,6 @@ var process_binary_datastream;
 		$scope.tabClick = tabClick;
 
 		cobsReader = new cobs.Reader(2000);
-		cobsTEMPORARY = cobs;
 
 		process_binary_datastream = function (command, mask, message_buffer) {
 

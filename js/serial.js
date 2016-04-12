@@ -182,8 +182,6 @@ function byteNinNum(data, n) {
 	return (data >> (8 * n)) & 0xFF;
 }
 
-var cobsTEMPORARY;
-
 var send_message;
 
 (function() {
