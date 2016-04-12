@@ -1,26 +1,19 @@
-var magnetometer_estimate = [0, 0, 0, 0];
-var magnetometer_estimate_points = [];
-
-var vehicle_signal_lights = [];
-
 function initialize_vehicle_view() {
-
-    create_vehicle_view_scene();
-    animate_vehicle_view_scene();
-
     eeprom_refresh_callback_list.add(refresh_vehicle_view_from_eepromConfig);
     refresh_vehicle_view_from_eepromConfig();
-
-    for (var i = 0; i < 16; ++i)
-        vehicle_signal_lights.push({
-            mask: (1 << i),
-            selector: $('#bit' + ("00" + i).slice(-2)),
-        });
 };
 
 function refresh_vehicle_view_from_eepromConfig() {
     //nothing yet
 };
+
+(function() {
+    'use strict';
+
+    var vehicleController = function ($scope, $rootScope, $timeout) {
+
+var magnetometer_estimate = [0, 0, 0, 0];
+var magnetometer_estimate_points = [];
 
 var vertexShaderGLSL = [
     'void main() {',
@@ -152,7 +145,7 @@ function create_vehicle_view_scene() {
         vertexShader: vertexShaderGLSL,
         fragmentShader: fragmentShaderGLSL,
     } );
-    particles = new THREE.Points( vehicle_view_pointcloud_geometry, material );
+    var particles = new THREE.Points( vehicle_view_pointcloud_geometry, material );
     vehicle_view_scene.add( particles );
 }
 
@@ -162,9 +155,6 @@ function animate_vehicle_view_scene() {
 	vehicle_view_renderer.render(vehicle_view_scene, vehicle_view_camera);
     vehicle_view_stats.end();
 }
-
-(function() {
-    'use strict';
 
     function update_vehicle_view_scene(state) {
         var pitch = state.kinematicsAngle[0];
@@ -200,8 +190,6 @@ function animate_vehicle_view_scene() {
             vehicle_view_points_index = 0;
         }
     }
-
-    var vehicleController = function ($scope, $rootScope, $timeout) {
 
         $scope.adjustMagnetometerEstimate = function () {
             var pointLimit = 500;
@@ -243,16 +231,33 @@ function animate_vehicle_view_scene() {
                 return;
             update_vehicle_view_scene(state);
 
-            vehicle_signal_lights.forEach(function(v) {
-                if (!(state.status & v.mask)) {
-                    v.selector.css('background-color', '#000000');
-                } else {
-                    v.selector.css('background-color', '');
-                }
+            $scope.vehicleSignalLights.forEach(function(v) {
+                v.off = !(state.status & v.mask);
             });
         });
 
         $scope.drawVehicle = false;
+        $scope.vehicleSignalLights = [
+            {mask: 1 << 0, label: 'BOOT', off: true},
+            {mask: 1 << 1, label: 'MPU FAIL', off: true},
+            {mask: 1 << 2, label: 'BMP FAIL', off: true},
+            {mask: 1 << 3, label: 'RX FAIL', off: true},
+            {mask: 1 << 4, label: 'IDLE', off: true},
+            {mask: 1 << 5, label: 'ENABLING', off: true},
+            {mask: 1 << 6, label: 'CLEAR MPU BIAS', off: true},
+            {mask: 1 << 7, label: 'SET MPU BIAS', off: true},
+            {mask: 1 << 8, label: 'STABILITY FAIL', off: true},
+            {mask: 1 << 9, label: 'ANGLE FAIL', off: true},
+            {mask: 1 << 10, label: 'ENABLED', off: true},
+            {mask: 1 << 11, label: 'LOW BATTERY', off: true},
+            {mask: 1 << 12, label: 'TEMP WARNING', off: true},
+            {mask: 1 << 13, label: 'LOG IS FULL', off: true},
+            {mask: 1 << 14, label: 'UNPAIRED', off: true},
+            {mask: 1 << 15, label: 'OVERRIDE', off: true},
+        ];
+
+        create_vehicle_view_scene();
+        animate_vehicle_view_scene();
     };
 
     var app = angular.module('flybrixApp');
