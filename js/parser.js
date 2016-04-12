@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var serialParser = function(commandLog, serial) {
+    var parser = function(commandLog) {
         var state_base = {
             timestamp_us: 0,
             status: 0,
@@ -230,7 +230,7 @@
             cb_state(state, state_data_mask);
         }
 
-        function dispatch(command, mask, message_buffer, cb_state, cb_command) {
+        function dispatch(command, mask, message_buffer, cb_state, cb_command, cb_ack) {
             switch (command) {
                 case MessageType.State:
                     cb_state(mask, message_buffer);
@@ -249,17 +249,17 @@
                     break;
                 case MessageType.Response:
                     var data = new DataView(message_buffer, 0);
-                    serial.acknowledge(mask, data.getUint32(0, 1));
+                    cb_ack(mask, data.getUint32(0, 1));
                     break;
                 default:
                     break;
             }
         }
 
-        var processBinaryDatastream = function(command, mask, message_buffer, cb_state) {
+        var processBinaryDatastream = function(command, mask, message_buffer, cb_state, cb_ack) {
             dispatch(command, mask, message_buffer, function() {
                 callbackStateHelper(mask, message_buffer, cb_state)
-            }, callbackCommand);
+            }, callbackCommand, cb_ack);
         };
 
         return {
@@ -267,5 +267,5 @@
         };
     };
 
-    angular.module('flybrixApp').factory('serialParser', ['commandLog', 'serial', serialParser]);
+    angular.module('flybrixApp').factory('parser', ['commandLog', parser]);
 }());

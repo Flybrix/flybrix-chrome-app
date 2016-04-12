@@ -15,8 +15,6 @@ var data_mode = "idle"; // valid modes: 'serial','replay','capture', and 'idle'
 var replay_buffer;
 var replay_point;
 
-var cobsReader;
-
 // Get access to the background window object
 // This object is used to pass current serial port connectionId to the backround page
 // so the onClosed event can close the port for us if it was left opened, without this
@@ -205,6 +203,8 @@ function connect_disconnect() {
 	}
 }
 
+var serialReadTEMPORARY = function () {};
+
 $(document).ready(function () {
 
 	chrome.app.window.current().outerBounds.maxHeight = 0;
@@ -353,7 +353,7 @@ $(document).ready(function () {
 			return;
 		}
 		var dataLength = Math.ceil(data_rate_field.val() * (tickDelay / 8));
-		cobsReader.AppendToBuffer(inputData.slice(0, dataLength), process_binary_datastream);
+		serialReadTEMPORARY(inputData.slice(0, dataLength));
 		setReplayPosition(replay_point + dataLength);
 
 		setTimeout(function () {
@@ -510,12 +510,10 @@ function setArrayValues(fields, source) {
 	});
 }
 
-var process_binary_datastream;
-
 (function() {
 	'use strict';
 
-	var mainController = function ($scope, $rootScope, cobs, serialParser) {
+	var mainController = function ($scope, $rootScope, serial) {
 		var tabClick = function (tab) {
 			var titlestr = tab.label;
 			var href = '#' + tab.url;
@@ -597,17 +595,12 @@ var process_binary_datastream;
 
 		$scope.tabClick = tabClick;
 
-		cobsReader = new cobs.Reader(2000);
-
-		process_binary_datastream = function (command, mask, message_buffer) {
-
-		serialParser.processBinaryDatastream(command, mask, message_buffer, function (state, state_data_mask) {
+		serial.setStateCallback(function (state, state_data_mask) {
 				$rootScope.$apply(function () {
 						$rootScope.state = state;
 						$rootScope.stateDataMask = state_data_mask;
 				});
 		});
-	};
 
 		$rootScope.$watch('state', function () {
 				if (!$rootScope.state)
@@ -627,6 +620,8 @@ var process_binary_datastream;
 						kI1 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I1_raw,
 				];
 		});
+
+		serialReadTEMPORARY = serial.read;
 	};
 
 	var app = angular.module('flybrixApp');
@@ -635,5 +630,5 @@ var process_binary_datastream;
 			return command_log;
 	});
 
-	app.controller('mainController', ['$scope', '$rootScope', 'cobs', 'serialParser', mainController]);
+	app.controller('mainController', ['$scope', '$rootScope', 'serial', mainController]);
 }());

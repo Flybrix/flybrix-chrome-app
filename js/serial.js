@@ -31,30 +31,6 @@ var CommandFields = {
 var serial_update_rate_Hz = 0;
 var char_counter = 0; //used to keep track of serial port data rate
 
-var onSerialRead = function (readInfo) {
-	if (readInfo && (readInfo.connectionId === backgroundPage.serialConnectionId) && readInfo.data) {
-		var data = new Uint8Array(readInfo.data);
-		char_counter += data.length;
-
-        if (data_mode === "serial") {
-            cobsReader.AppendToBuffer(data, process_binary_datastream);
-        }
-        else if (data_mode === "capture") {
-            capture_mode_callback(data);
-        }
-        else if (data_mode === "replay"){
-            console.log("ERROR: serial port should be closed in 'replay' mode");
-        }
-        else if (data_mode === "idle"){
-            console.log("ERROR: serial port should be closed if we're in 'idle' mode");
-        }
-        else {
-            console.log("ERROR: unknown data_mode");
-        }
-	}
-};
-chrome.serial.onReceive.addListener(onSerialRead);
-
 var onSerialReadError = function (readInfo) {
 	if (readInfo){
         console.log("SERIAL ERROR:", readInfo.connectionId, readInfo.error);
@@ -177,18 +153,17 @@ function port_usage() {
 
 var capture_mode_callback = function(data){console.log("ERROR: capture mode callback not set!")};
 
-
-function byteNinNum(data, n) {
-	return (data >> (8 * n)) & 0xFF;
-}
-
 var send_message;
 
 (function() {
 		'use strict';
 
-		var serialFactory = function ($q, $timeout, cobs, commandLog) {
+		var serialFactory = function ($q, $timeout, cobs, commandLog, parser) {
 				var acknowledges = [];
+
+				function byteNinNum(data, n) {
+						return (data >> (8 * n)) & 0xFF;
+				}
 
 				function sendMessage(mask, data, log_send) {
 						if (log_send === undefined)
@@ -258,13 +233,59 @@ var send_message;
 						}
 				}
 
+				var onStateListener = function () {};
+				var onCommandListener = function () {};
+
+				function onState(callback) {
+						onStateListener = callback;
+				}
+
+				function onCommand(callback) {
+						onCommandListener = callback;
+				}
+
+				var cobsReader = new cobs.Reader(2000);
+
+				function processData(command, mask, message_buffer) {
+						parser.processBinaryDatastream(command, mask, message_buffer, onStateListener, acknowledge);
+				};
+
+				function onSerialReadData(data) {
+						char_counter += data.length;
+
+						if (data_mode === "serial") {
+								cobsReader.AppendToBuffer(data, processData);
+						}
+						else if (data_mode === "capture") {
+								capture_mode_callback(data);
+						}
+						else if (data_mode === "replay"){
+								cobsReader.AppendToBuffer(data, processData);
+						}
+						else if (data_mode === "idle"){
+								console.log("ERROR: serial port should be closed if we're in 'idle' mode");
+						}
+						else {
+								console.log("ERROR: unknown data_mode");
+						}
+				}
+
+				function onSerialRead(readInfo) {
+						if (readInfo && (readInfo.connectionId === backgroundPage.serialConnectionId) && readInfo.data)
+								onSerialReadData(new Uint8Array(readInfo.data));
+				}
+
+				chrome.serial.onReceive.addListener(onSerialRead);
+
 				send_message = sendMessage;  // TODO: gradually remove any non-AngularJS serial use
 
 				return {
 						send: sendMessage,
-						acknowledge: acknowledge,
+						read: onSerialReadData,
+						setStateCallback: onState,
+						setCommandCallback: onCommand,  // TODO: still unused, should be fixed in the future
 				};
 		};
 
-		angular.module('flybrixApp').factory('serial', ['$q', '$timeout', 'cobs', 'commandLog', serialFactory]);
+		angular.module('flybrixApp').factory('serial', ['$q', '$timeout', 'cobs', 'commandLog', 'parser', serialFactory]);
 }());
