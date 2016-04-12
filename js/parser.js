@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var serialParser = function(commandLog) {
+    var serialParser = function(commandLog, serial) {
         var state_base = {
             timestamp_us: 0,
             status: 0,
@@ -248,8 +248,7 @@
                     break;
                 case MessageType.Response:
                     var data = new DataView(message_buffer, 0);
-                    console.log("Response mask:", mask, "with ack of", data.getUint32(0, 1));
-                    commandLog('Received <span style="color: green">ACK</span>: ' + data.getUint32(0, 1));
+                    serial.acknowledge(mask, data.getUint32(0, 1));
                     break;
                 default:
                     break;
@@ -267,5 +266,5 @@
         };
     };
 
-    angular.module('flybrixApp').factory('serialParser', ['commandLog', serialParser]);
+    angular.module('flybrixApp').factory('serialParser', ['commandLog', 'serial', serialParser]);
 }());

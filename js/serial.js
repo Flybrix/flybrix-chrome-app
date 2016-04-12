@@ -184,48 +184,89 @@ function byteNinNum(data, n) {
 
 var cobsTEMPORARY;
 
-function send_message(mask, data, log_send) {
-    log_send = typeof log_send !== 'undefined' ? log_send : true;
-
-		if (backgroundPage.serialConnectionId < 0)  // if there is no serial connection
-				return;
-
-	var checksum = 0;
-	var bufferOut,
-	bufView;
-	// always reserve 1 byte for protocol overhead !
-	if (typeof data === 'object') {
-		var size = 7 + data.length;
-		bufView = new Uint8Array(size);
-		checksum ^= bufView[1] = MessageType.Command;
-		for (var i = 0; i < 4; ++i)
-			checksum ^= bufView[i + 2] = byteNinNum(mask, i);
-		for (var i = 0; i < data.length; i++)
-			checksum ^= bufView[i + 6] = data[i];
-	} else {
-		bufferOut = new ArrayBuffer(8);
-		bufView = new Uint8Array(bufferOut);
-		checksum ^= bufView[1] = MessageType.Command;
-		for (var i = 0; i < 4; ++i)
-			checksum ^= bufView[i + 2] = byteNinNum(mask, i);
-		checksum ^= bufView[6] = data; // payload
-	}
-	bufView[0] = checksum; // crc
-	bufView[bufView.length - 1] = 0;
-
-	setTimeout(function(){chrome.serial.send(backgroundPage.serialConnectionId, cobsTEMPORARY.encode(bufView), function (writeInfo) {});},1);
-
-    if (log_send){
-        command_log('Sending command <span style="color:blue">'+ MessageType.Command +'</blue>');
-    }
-}
+var send_message;
 
 (function() {
 		'use strict';
 
-		angular.module('flybrixApp').factory('serial', function () {
+		var serialFactory = function ($q, $timeout, cobs, commandLog) {
+				var acknowledges = [];
+
+				function sendMessage(mask, data, log_send) {
+						if (log_send === undefined)
+								log_send = true;
+
+						var response = $q.defer();
+
+						if (backgroundPage.serialConnectionId < 0) {  // if there is no serial connection
+								response.reject('No serial connection established');
+								return response.promise;
+						}
+
+						mask |= CommandFields.COM_REQ_RESPONSE;  // force responses
+
+						var checksum = 0;
+						var bufferOut, bufView;
+
+						// always reserve 1 byte for protocol overhead !
+						if (typeof data === 'object') {
+								var size = 7 + data.length;
+								bufView = new Uint8Array(size);
+								checksum ^= bufView[1] = MessageType.Command;
+								for (var i = 0; i < 4; ++i)
+										checksum ^= bufView[i + 2] = byteNinNum(mask, i);
+								for (var i = 0; i < data.length; i++)
+										checksum ^= bufView[i + 6] = data[i];
+						} else {
+								bufferOut = new ArrayBuffer(8);
+								bufView = new Uint8Array(bufferOut);
+								checksum ^= bufView[1] = MessageType.Command;
+								for (var i = 0; i < 4; ++i)
+										checksum ^= bufView[i + 2] = byteNinNum(mask, i);
+								checksum ^= bufView[6] = data; // payload
+						}
+						bufView[0] = checksum; // crc
+						bufView[bufView.length - 1] = 0;
+
+						acknowledges.push({
+								mask: mask,
+								response: response,
+						});
+
+						$timeout(function(){
+								chrome.serial.send(backgroundPage.serialConnectionId, cobs.encode(bufView), function (writeInfo) {});
+						}, 1);
+
+						if (log_send) {
+								commandLog('Sending command <span style="color:blue">' + MessageType.Command + '</blue>');
+						}
+
+						return response.promise;
+				}
+
+				function acknowledge(mask, value) {
+						while (acknowledges.length > 0) {
+								var v = acknowledges.shift();
+								if (v.mask !== mask) {
+										v.response.reject('Missing ACK');
+										continue;
+								}
+								if ((mask & ~CommandFields.COM_REQ_RESPONSE) !== value) {
+										v.response.reject('Request was not fully processed');
+										break;
+								}
+								v.response.resolve();
+								break;
+						}
+				}
+
+				send_message = sendMessage;  // TODO: gradually remove any non-AngularJS serial use
+
 				return {
-					send: send_message,
+						send: sendMessage,
+						acknowledge: acknowledge,
 				};
-		});
+		};
+
+		angular.module('flybrixApp').factory('serial', ['$q', '$timeout', 'cobs', 'commandLog', serialFactory]);
 }());

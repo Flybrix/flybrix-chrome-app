@@ -31,7 +31,12 @@
                 $scope.led.indicator.red,
                 $scope.led.indicator.green,
             ]);
-            serial.send(CommandFields.COM_SET_LED, message, false);
+            serial.send(CommandFields.COM_SET_LED | CommandFields.COM_REQ_RESPONSE, message, false)
+                .then(function () {
+                    console.log("Successful serial message");
+                }, function (value) {
+                    console.log("Failed serial message", "PROBLEM:", value);
+                });
         }
 
         $scope.ledModes = [
