@@ -9,7 +9,7 @@ var send_message;
 (function() {
     'use strict';
 
-    var serialFactory = function($q, $timeout, $interval, cobs, commandLog, parser, deviceConfig) {
+    var serialFactory = function($q, $timeout, $interval, cobs, commandLog, parser) {
         var last_port_usage_update = 0;
         var char_counter = 0;  // used to keep track of serial port data rate
         var portUsageInterval = null;
@@ -76,8 +76,6 @@ var send_message;
             chrome.storage.local.set({'last_used_port': serialPort}, function() {});
             chrome.serial.flush(backgroundPage.serialConnectionId, function() {});
 
-            // request configuration data (so we have something to work with)
-            deviceConfig.request();
             response.resolve();
         }
 
@@ -188,7 +186,8 @@ var send_message;
                     v.response.reject('Missing ACK');
                     continue;
                 }
-                if ((mask & ~parser.CommandFields.COM_REQ_RESPONSE) !== value) {
+                var relaxedMask = mask & ~parser.CommandFields.COM_REQ_RESPONSE;
+                if (relaxedMask !== value) {
                     v.response.reject('Request was not fully processed');
                     break;
                 }
@@ -211,7 +210,7 @@ var send_message;
         var cobsReader = new cobs.Reader(2000);
 
         function processData(command, mask, message_buffer) {
-            parser.processBinaryDatastream(command, mask, message_buffer, onStateListener, acknowledge);
+            parser.processBinaryDatastream(command, mask, message_buffer, onStateListener, onCommandListener, acknowledge);
         };
 
         function onSerialReadData(data) {
@@ -259,9 +258,9 @@ var send_message;
             field: parser.CommandFields,
             read: onSerialReadData,
             setStateCallback: onState,
-            setCommandCallback: onCommand,  // TODO: still unused, should be fixed in the future
+            setCommandCallback: onCommand,
         };
     };
 
-    angular.module('flybrixApp').factory('serial', ['$q', '$timeout', '$interval', 'cobs', 'commandLog', 'parser', 'deviceConfig', serialFactory]);
+    angular.module('flybrixApp').factory('serial', ['$q', '$timeout', '$interval', 'cobs', 'commandLog', 'parser', serialFactory]);
 }());

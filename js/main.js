@@ -201,6 +201,9 @@ function connect_disconnect() {
 					data_mode = "serial";
 
 					initial_config_request = setTimeout(function() {
+							// request configuration data (so we have something to work with)
+							requestCONFIG();
+
 	            // set the state message mask and frequency
 	            setTimeout(function() {
 
@@ -539,7 +542,7 @@ function setArrayValues(fields, source) {
 (function() {
 	'use strict';
 
-	var mainController = function ($scope, $rootScope, serial) {
+	var mainController = function ($scope, $rootScope, serial, commandLog, deviceConfig) {
 		var tabClick = function (tab) {
 			var titlestr = tab.label;
 			var href = '#' + tab.url;
@@ -629,6 +632,12 @@ function setArrayValues(fields, source) {
 				});
 		});
 
+		deviceConfig.setConfigCallback(function () {
+				$rootScope.$apply(function () {
+						$rootScope.eepromConfig = deviceConfig.getConfig();
+				});
+		})
+
 		$rootScope.$watch('state', function () {
 				if (!$rootScope.state)
 						return;
@@ -655,5 +664,5 @@ function setArrayValues(fields, source) {
 			return command_log;
 	});
 
-	app.controller('mainController', ['$scope', '$rootScope', 'serial', mainController]);
+	app.controller('mainController', ['$scope', '$rootScope', 'serial', 'commandLog', 'deviceConfig', mainController]);
 }());

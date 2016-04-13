@@ -96,24 +96,6 @@ var CommandFields;  // TODO: wrap this into the IIFE as well
             STATE_LOOP_COUNT: 1 << 27,
         };
 
-        var callbackCommand = function(mask, message_buffer) {
-            if (mask == CommandFields.COM_SET_EEPROM_DATA) {
-                console.log("RECEIVED CONFIG!");
-                var data = new DataView(message_buffer, 0);
-                data.parseCONFIG(eepromConfig);
-
-                if ((flybrix_app_configuration_version[0] != eepromConfig.version[0]) || (flybrix_app_configuration_version[1] != eepromConfig.version[1])) {
-                    commandLog('<span style="color: red">WARNING: Configuration MAJOR or MINOR version mismatch!</span>');
-                    commandLog(
-                        'eeprom version: <strong>' + eepromConfig.version[0] + '.' + eepromConfig.version[1] + '.' + eepromConfig.version[2] + '</strong>' +
-                        ' - app expected version: <strong>' + flybrix_app_configuration_version.version[0] + '.' + flybrix_app_configuration_version.version[1] + '.' +
-                        flybrix_app_configuration_version.version[2] + '</strong>');
-                } else {
-                    commandLog('Recieved configuration version:  <span style="color: green">' + eepromConfig.version[0] + '.' + eepromConfig.version[1] + '.' + eepromConfig.version[2] + '</span>');
-                }
-            }
-        };
-
         function arraybuffer2string(buf) {
             return String.fromCharCode.apply(null, new Uint8Array(buf));
         }
@@ -289,10 +271,10 @@ var CommandFields;  // TODO: wrap this into the IIFE as well
             }
         }
 
-        var processBinaryDatastream = function(command, mask, message_buffer, cb_state, cb_ack) {
+        var processBinaryDatastream = function(command, mask, message_buffer, cb_state, cb_command, cb_ack) {
             dispatch(command, mask, message_buffer, function() {
                 callbackStateHelper(mask, message_buffer, cb_state)
-            }, callbackCommand, cb_ack);
+            }, cb_command, cb_ack);
         };
 
         CommandFields = CommandField;

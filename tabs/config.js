@@ -203,18 +203,6 @@ function initialize_config_view() {
 		$('#configuration-filehandler').read_eepromConfig_from_filehandler();
 	});
 
-    $('#eeprom-refresh').click(function (event) {
-  		event.preventDefault();
-        requestCONFIG();
-        // parseCONFIG will update views subscribed to eeprom_refresh_callback_list
-    });
-
-    $('#eeprom-reset-to-default').click(function (event) {
-  		event.preventDefault();
-        reinitCONFIG();
-        // parseCONFIG will update views subscribed to eeprom_refresh_callback_list
-    });
-
 	// accept only numeric input on model-entry-fields
 	$("#current-config .model-entry-field").attr('step', 'any').attr('type', 'number');
 
@@ -250,3 +238,19 @@ function refresh_config_view_from_eepromConfig() {
 	loadArrayValues($("#current-config .stateEstimationParameters"), eepromConfig.stateEstimationParameters, 5);
 	loadArrayValues($("#current-config .enableParameters"), eepromConfig.enableParameters, 5);
 }
+
+(function() {
+    'use strict';
+
+    var configController = function($scope, $rootScope, deviceConfig) {
+        $scope.eepromRefresh = function() {
+            deviceConfig.request();
+        };
+
+        $scope.eepromReinit = function() {
+            deviceConfig.reinit();
+        };
+    };
+
+    angular.module('flybrixApp').controller('configController', ['$scope', '$rootScope', 'deviceConfig', configController]);
+}());
