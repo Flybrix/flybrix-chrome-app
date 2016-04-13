@@ -1,7 +1,39 @@
+var CommandFields;  // TODO: wrap this into the IIFE as well
+
 (function() {
     'use strict';
 
     var parser = function(commandLog) {
+        var MessageType = {
+            State: 0,
+            Command: 1,
+            DebugString: 3,
+            HistoryData: 4,
+            Response: 255,
+        };
+
+        var CommandField = {
+            COM_REQ_RESPONSE: 1 << 0,
+            COM_SET_EEPROM_DATA: 1 << 1,
+            COM_REINIT_EEPROM_DATA: 1 << 2,
+            COM_REQ_EEPROM_DATA: 1 << 3,
+            COM_REQ_ENABLE_ITERATION: 1 << 4,
+            COM_MOTOR_OVERRIDE_SPEED_0: 1 << 5,
+            COM_MOTOR_OVERRIDE_SPEED_1: 1 << 6,
+            COM_MOTOR_OVERRIDE_SPEED_2: 1 << 7,
+            COM_MOTOR_OVERRIDE_SPEED_3: 1 << 8,
+            COM_MOTOR_OVERRIDE_SPEED_4: 1 << 9,
+            COM_MOTOR_OVERRIDE_SPEED_5: 1 << 10,
+            COM_MOTOR_OVERRIDE_SPEED_6: 1 << 11,
+            COM_MOTOR_OVERRIDE_SPEED_7: 1 << 12,
+            COM_MOTOR_OVERRIDE_SPEED_ALL: (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 10) | (1 << 11) | (1 << 12),
+            COM_SET_COMMAND_OVERRIDE: 1 << 13,
+            COM_SET_STATE_MASK: 1 << 14,
+            COM_SET_STATE_DELAY: 1 << 15,
+            COM_REQ_HISTORY: 1 << 16,
+            COM_SET_LED: 1 << 17,
+        };
+
         var state_base = {
             timestamp_us: 0,
             status: 0,
@@ -102,6 +134,7 @@
             var state_data_mask = [];
             var data = new DataView(message_buffer, 0);
             var b = new byteRef();
+            var serial_update_rate_Hz = 0;
 
             for (var i = 0; i < state_data_mask.length; i++)
                 state_data_mask.push(0);
@@ -227,7 +260,7 @@
                 state.loopCount = data.getUint32(b.index, 1);
                 b.add(4);
             }
-            cb_state(state, state_data_mask);
+            cb_state(state, state_data_mask, serial_update_rate_Hz);
         }
 
         function dispatch(command, mask, message_buffer, cb_state, cb_command, cb_ack) {
@@ -262,8 +295,12 @@
             }, callbackCommand, cb_ack);
         };
 
+        CommandFields = CommandField;
+
         return {
             processBinaryDatastream: processBinaryDatastream,
+            MessageType: MessageType,
+            CommandFields: CommandField,
         };
     };
 

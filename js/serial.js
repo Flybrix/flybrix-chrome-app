@@ -1,150 +1,4 @@
-var MessageType = {
-    State: 0,
-    Command: 1,
-    DebugString: 3,
-    HistoryData: 4,
-    Response: 255,
-};
-
-var CommandFields = {
-    COM_REQ_RESPONSE: 1 << 0,
-    COM_SET_EEPROM_DATA: 1 << 1,
-    COM_REINIT_EEPROM_DATA: 1 << 2,
-    COM_REQ_EEPROM_DATA: 1 << 3,
-    COM_REQ_ENABLE_ITERATION: 1 << 4,
-    COM_MOTOR_OVERRIDE_SPEED_0: 1 << 5,
-    COM_MOTOR_OVERRIDE_SPEED_1: 1 << 6,
-    COM_MOTOR_OVERRIDE_SPEED_2: 1 << 7,
-    COM_MOTOR_OVERRIDE_SPEED_3: 1 << 8,
-    COM_MOTOR_OVERRIDE_SPEED_4: 1 << 9,
-    COM_MOTOR_OVERRIDE_SPEED_5: 1 << 10,
-    COM_MOTOR_OVERRIDE_SPEED_6: 1 << 11,
-    COM_MOTOR_OVERRIDE_SPEED_7: 1 << 12,
-    COM_MOTOR_OVERRIDE_SPEED_ALL: (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 10) | (1 << 11) | (1 << 12),
-    COM_SET_COMMAND_OVERRIDE: 1 << 13,
-    COM_SET_STATE_MASK: 1 << 14,
-    COM_SET_STATE_DELAY: 1 << 15,
-    COM_REQ_HISTORY: 1 << 16,
-    COM_SET_LED: 1 << 17,
-};
-
-var serial_update_rate_Hz = 0;
-var char_counter = 0;  // used to keep track of serial port data rate
-
-var onSerialReadError = function(readInfo) {
-    if (readInfo)
-        console.log("SERIAL ERROR:", readInfo.connectionId, readInfo.error);
-    chrome.serial.disconnect(backgroundPage.serialConnectionId, onSerialClose);
-};
-chrome.serial.onReceiveError.addListener(onSerialReadError);
-
-function serialConnectCallback(connectionInfo) {
-    if (connectionInfo) {
-        $('.datastream-serial #connect').text('Disconnect');
-        data_mode = "serial";
-
-        backgroundPage.serialConnectionId = connectionInfo.connectionId;
-        port_selector = $('.datastream-serial select');
-        var selected_port = String($(port_selector).val());
-
-        console.log('Connection was opened with ID: ' + backgroundPage.serialConnectionId);
-        command_log('Connection to: ' + selected_port + ' was opened with ID: ' + backgroundPage.serialConnectionId);
-
-        // save selected port with chrome.storage if the port differs
-        chrome.storage.local.get('last_used_port', function(result) {
-            if (typeof result.last_used_port != 'undefined') {
-                if (result.last_used_port != selected_port) {
-                    // last used port doesn't match the one found in local db, we will store the new one
-                    chrome.storage.local.set({'last_used_port': selected_port}, function() {
-                        // Debug message is currently disabled (we dont need to spam the console log with that)
-                        // console.log('Last selected port was saved in chrome.storage.');
-                    });
-                }
-            } else {
-                // variable isn't stored yet, saving
-                chrome.storage.local.set({'last_used_port': selected_port}, function() {
-                    // Debug message is currently disabled (we dont need to spam the console log with that)
-                    // console.log('Last selected port was saved in chrome.storage.');
-                });
-            }
-        });
-
-        chrome.serial.flush(backgroundPage.serialConnectionId, function() {});
-        // setup callback for receiving data
-        // onSerialRead is a callback in serial_backend.js
-
-        initial_config_request = setTimeout(function() {
-            // start logging port usage
-            port_usage();  // calls recursively using setTimeout to act as a watchdog
-
-            // request configuration data (so we have something to work with)
-            requestCONFIG();
-
-            // set the state message mask and frequency
-            setTimeout(function() {
-
-                var default_delay_msec = 50;
-
-                send_message(
-                    CommandFields.COM_SET_STATE_MASK | CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE,
-                    new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
-                // update fields in datastream tab
-                setTargetDelay(default_delay_msec);
-                $('#datastream #current-state .model-change-mask').prop('checked', true);
-            }, 100);
-
-        }, 500);
-
-    } else {
-        $('div.datastream-serial a.connect').click();  // reset the connect button back to "disconnected" state
-        console.log('There was a problem while opening the connection.');
-        command_log('Could not join the serial bus -- <span style="color: red;">ERROR</span>');
-    }
-}
-
-function onSerialClose(result) {
-    if (result) {  // All went as expected
-        console.log('Connection closed successfully.');
-        command_log('Connection closed -- <span style="color: green;">OK</span>');
-
-        backgroundPage.serialConnectionId = -1;  // reset connection id
-
-        $('#content').empty();                     // empty content
-        $('#tabs > ul li').removeClass('active');  // de-select any selected tabs
-
-    } else {  // Something went wrong
-        if (backgroundPage.serialConnectionId > 0) {
-            console.log('There was an error that happened during "connection-close" procedure.');
-            command_log('Connection closed -- <span style="color: red;">ERROR</span>');
-        }
-    }
-};
-
-var last_port_usage_update = 0;
 var graph_update_delay = 50;
-function port_usage() {
-    var now = Date.now();
-
-    graph_update_delay *= 0.8;
-    if (graph_update_delay < 50) {
-        graph_update_delay = 50;
-    }
-
-    if (last_port_usage_update > 0) {
-        var ui_update_rate = now - last_port_usage_update;  // should be 1000 msec, as per setTimeout above
-
-        // throttle back datastream when the UI lags behind to keep things usable
-        if (ui_update_rate > 1020) {
-            command_log('UI is falling behind -- <span style="color: red;">SLOWING DOWN GRAPH UPDATES</span>');
-            graph_update_delay *= 2.0;
-        }
-        var port_speed_kbps = char_counter / ui_update_rate;
-        $('#port-usage').html(port_speed_kbps.toFixed(3) + ' kbps');
-    };
-    char_counter = 0;
-    last_port_usage_update = now;
-    setTimeout(port_usage, 1000);
-}
 
 var capture_mode_callback = function(data) {
     console.log("ERROR: capture mode callback not set!")
@@ -155,8 +9,121 @@ var send_message;
 (function() {
     'use strict';
 
-    var serialFactory = function($q, $timeout, cobs, commandLog, parser) {
+    var serialFactory = function($q, $timeout, $interval, cobs, commandLog, parser, deviceConfig) {
+        var last_port_usage_update = 0;
+        var char_counter = 0;  // used to keep track of serial port data rate
+        var portUsageInterval = null;
+
+        function portUsageStop() {
+            if (!portUsageInterval)
+                return;
+            $interval.cancel(portUsageInterval);
+        }
+
+        function portUsageStart() {
+            portUsageStop();
+            portUsageInterval = $interval(portUsage, 1000);
+        }
+
+        function portUsage() {
+            var now = Date.now();
+
+            graph_update_delay *= 0.8;
+            if (graph_update_delay < 50) {
+                graph_update_delay = 50;
+            }
+
+            if (last_port_usage_update > 0) {
+                var ui_update_rate = now - last_port_usage_update;  // should be 1000 msec, as per setTimeout that calls
+
+                // throttle back datastream when the UI lags behind to keep things usable
+                if (ui_update_rate > 1020) {
+                    command_log('UI is falling behind -- <span style="color: red;">SLOWING DOWN GRAPH UPDATES</span>');
+                    graph_update_delay *= 2.0;
+                }
+                var port_speed_kbps = char_counter / ui_update_rate;
+                $('#port-usage').html(port_speed_kbps.toFixed(3) + ' kbps');
+            };
+            char_counter = 0;
+            last_port_usage_update = now;
+        }
+
         var acknowledges = [];
+        // Get access to the background window object
+        // This object is used to pass current serial port connectionId to the backround page
+        // so the onClosed event can close the port for us if it was left opened, without this
+        // users can experience weird behavior if they would like to access the serial bus afterwards.
+        var backgroundPage = null;
+
+        chrome.runtime.getBackgroundPage(function(result) {
+            backgroundPage = result;
+            backgroundPage.serialConnectionId = -1;
+        });
+
+        function onConnectCallback(connectionInfo, serialPort, response) {
+            if (!connectionInfo) {
+                console.log('There was a problem while opening the connection.');
+                commandLog('Could not join the serial bus -- <span style="color: red;">ERROR</span>');
+                response.reject();
+                return;
+            }
+            portUsageStart();
+
+            backgroundPage.serialConnectionId = connectionInfo.connectionId;
+            console.log('Connection was opened with ID: ' + backgroundPage.serialConnectionId);
+            commandLog('Connection to: ' + serialPort + ' was opened with ID: ' + backgroundPage.serialConnectionId);
+
+            chrome.storage.local.set({'last_used_port': serialPort}, function() {});
+            chrome.serial.flush(backgroundPage.serialConnectionId, function() {});
+
+            // request configuration data (so we have something to work with)
+            deviceConfig.request();
+            response.resolve();
+        }
+
+        function connect(serialPort) {
+            var response = $q.defer();
+            chrome.serial.connect(
+                serialPort, {
+                    bufferSize: 4096 * 5,
+                    bitrate: 230400  // doesn't matter for USB
+                },
+                function(connectionInfo) {
+                    onConnectCallback(connectionInfo, serialPort, response);
+                });
+            return response.promise;
+        }
+
+        function onDisconnectCallback(result, response) {
+            if (result) {  // All went as expected
+                console.log('Connection closed successfully.');
+                command_log('Connection closed -- <span style="color: green;">OK</span>');
+
+                backgroundPage.serialConnectionId = -1;  // reset connection id
+
+                portUsageStop();
+
+                response.resolve();
+            } else {  // Something went wrong
+                if (backgroundPage.serialConnectionId > 0) {
+                    console.log('There was an error that happened during "connection-close" procedure.');
+                    command_log('Connection closed -- <span style="color: red;">ERROR</span>');
+                }
+                response.reject();
+            }
+        }
+
+        function disconnect() {
+            var response = $q.defer();
+            if (backgroundPage.serialConnectionId > 0) {
+                chrome.serial.disconnect(backgroundPage.serialConnectionId, function(result) {
+                    onDisconnectCallback(result, response);
+                });
+            } else {
+                response.reject();
+            }
+            return response.promise;
+        }
 
         function byteNinNum(data, n) {
             return (data >> (8 * n)) & 0xFF;
@@ -173,7 +140,7 @@ var send_message;
                 return response.promise;
             }
 
-            mask |= CommandFields.COM_REQ_RESPONSE;  // force responses
+            mask |= parser.CommandFields.COM_REQ_RESPONSE;  // force responses
 
             var checksum = 0;
             var bufferOut, bufView;
@@ -182,7 +149,7 @@ var send_message;
             if (typeof data === 'object') {
                 var size = 7 + data.length;
                 bufView = new Uint8Array(size);
-                checksum ^= bufView[1] = MessageType.Command;
+                checksum ^= bufView[1] = parser.MessageType.Command;
                 for (var i = 0; i < 4; ++i)
                     checksum ^= bufView[i + 2] = byteNinNum(mask, i);
                 for (var i = 0; i < data.length; i++)
@@ -190,7 +157,7 @@ var send_message;
             } else {
                 bufferOut = new ArrayBuffer(8);
                 bufView = new Uint8Array(bufferOut);
-                checksum ^= bufView[1] = MessageType.Command;
+                checksum ^= bufView[1] = parser.MessageType.Command;
                 for (var i = 0; i < 4; ++i)
                     checksum ^= bufView[i + 2] = byteNinNum(mask, i);
                 checksum ^= bufView[6] = data;  // payload
@@ -208,7 +175,7 @@ var send_message;
             }, 1);
 
             if (log_send) {
-                commandLog('Sending command <span style="color:blue">' + MessageType.Command + '</blue>');
+                commandLog('Sending command <span style="color:blue">' + parser.MessageType.Command + '</blue>');
             }
 
             return response.promise;
@@ -221,7 +188,7 @@ var send_message;
                     v.response.reject('Missing ACK');
                     continue;
                 }
-                if ((mask & ~CommandFields.COM_REQ_RESPONSE) !== value) {
+                if ((mask & ~parser.CommandFields.COM_REQ_RESPONSE) !== value) {
                     v.response.reject('Request was not fully processed');
                     break;
                 }
@@ -267,18 +234,34 @@ var send_message;
             if (readInfo && (readInfo.connectionId === backgroundPage.serialConnectionId) && readInfo.data)
                 onSerialReadData(new Uint8Array(readInfo.data));
         }
-
         chrome.serial.onReceive.addListener(onSerialRead);
+
+        function onSerialReadError(readInfo) {
+            if (readInfo)
+                console.log("SERIAL ERROR:", readInfo.connectionId, readInfo.error);
+            disconnect();
+        };
+        chrome.serial.onReceiveError.addListener(onSerialReadError);
 
         send_message = sendMessage;  // TODO: gradually remove any non-AngularJS serial use
 
+        function getDevices() {
+            return $q(function(resolve, reject) {
+                chrome.serial.getDevices(resolve);
+            });
+        }
+
         return {
+            getDevices: getDevices,
+            connect: connect,
+            disconnect: disconnect,
             send: sendMessage,
+            field: parser.CommandFields,
             read: onSerialReadData,
             setStateCallback: onState,
             setCommandCallback: onCommand,  // TODO: still unused, should be fixed in the future
         };
     };
 
-    angular.module('flybrixApp').factory('serial', ['$q', '$timeout', 'cobs', 'commandLog', 'parser', serialFactory]);
+    angular.module('flybrixApp').factory('serial', ['$q', '$timeout', '$interval', 'cobs', 'commandLog', 'parser', 'deviceConfig', serialFactory]);
 }());

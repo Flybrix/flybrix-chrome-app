@@ -55,7 +55,7 @@ DataView.prototype.parseCONFIG = function (structure) {
 	b.add(1);
 	parseFloat32Array(this, structure.stateEstimationParameters, b);
 	parseFloat32Array(this, structure.enableParameters, b);
-    
+
     setTimeout(eeprom_refresh_callback_list.fire, 1000);
 }
 
@@ -91,13 +91,13 @@ DataView.prototype.setCONFIG = function (structure) {
 function requestCONFIG() {
 	command_log('Requesting current configuration data...');
 	send_message(CommandFields.COM_REQ_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, []);
-    
+
 }
 
 function reinitCONFIG() {
 	command_log('Requesting factory default configuration data...');
 	send_message(CommandFields.COM_REINIT_EEPROM_DATA | CommandFields.COM_REQ_RESPONSE, []);
-    
+
     setTimeout(requestCONFIG, 100);
 }
 
@@ -115,7 +115,7 @@ function sendCONFIG() {
 var eeprom_refresh_callback_list = $.Callbacks('unique');
 
 (function ($) {
-    
+
 	$.fn.connect_to_eeprom = function () {
 		this.each(function () {
 
@@ -125,7 +125,7 @@ var eeprom_refresh_callback_list = $.Callbacks('unique');
                     window["eepromConfig"][class_strings[1]] = parseFloat($(this).val());
                 }
                 else if (class_strings.length == 3){
-                    window["eepromConfig"][class_strings[1]][class_strings[2]] = parseFloat($(this).val()); 
+                    window["eepromConfig"][class_strings[1]][class_strings[2]] = parseFloat($(this).val());
                 }
                 else if (class_strings.length == 4) {
                     var bitfield = window["eepromConfig"][class_strings[2]];
@@ -146,3 +146,17 @@ var eeprom_refresh_callback_list = $.Callbacks('unique');
 	};
 }
 	(jQuery));
+
+(function() {
+		'use strict';
+
+		var deviceConfigFactory = function () {
+				return {
+						request: requestCONFIG,
+						reinit: reinitCONFIG,
+						send: sendCONFIG,
+				};
+		};
+
+		angular.module('flybrixApp').factory('deviceConfig', deviceConfigFactory);
+}());
