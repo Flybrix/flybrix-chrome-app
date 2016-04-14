@@ -158,6 +158,18 @@ div.label-title {
     top: 12px;
 }
 
+.pid-tuner .model-entry-field{
+		margin-left: 0px;
+		background-color: #FFFFFF;
+		width: 115px;
+		height: 15px;
+		margin-bottom: 5px;
+		float: left;
+		border-style: solid;
+		border-color: black;
+		border-width: 1px;
+}
+
 .config-fields .model-entry-label{
     position: relative;
     top: -6px;
@@ -174,6 +186,14 @@ div.label-title {
     width: 95px;
     font-size: 9px;
     color: blue;
+}
+
+.pid-tuner .model-entry-label{
+		font-size: 10px;
+		width: 100px;
+		margin-top: 0px;
+		margin-left: 10px;
+		display:block;
 }
 
 .model-entry output{
@@ -332,23 +352,6 @@ div.label-title {
     border-style: solid;
     border-width: 2px;
     padding: 10px;
-}
-.pid-tuner-label{
-    font-size: 10px;
-    width: 100px;
-    margin-top: 0px;
-    margin-left: 10px;
-}
-.pid-tuner-entry-field{
-    margin-left: 10px;
-    background-color: #FFFFFF;
-    width: 115px;
-    height: 15px;
-    margin-bottom: 5px;
-    float: left;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
 }
 .pid-tuner-bypass{
     background-color: #FFC0A9;

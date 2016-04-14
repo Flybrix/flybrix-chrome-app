@@ -26,30 +26,20 @@
    <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 0"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[0]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field thrustMasterPIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.thrustMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_master_Fz[0], y:getPidValues(state.pid_master_Fz)}" labels="setpoint|input|P|I|D|output" title="Fz MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 4"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[4]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field thrustSlavePIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.thrustSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_slave_Fz[0], y:getPidValues(state.pid_slave_Fz)}" labels="setpoint|input|P|I|D|output" title="Fz SLAVE PID"/>
     </div>
@@ -58,30 +48,20 @@
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 1"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[1]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field pitchMasterPIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.pitchMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_master_Tx[0], y:getPidValues(state.pid_master_Tx)}" labels="setpoint|input|P|I|D|output" title="Tx MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 5"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[5]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field pitchSlavePIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.pitchSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_slave_Tx[0], y:getPidValues(state.pid_slave_Tx)}" labels="setpoint|input|P|I|D|output" title="Tx SLAVE PID"/>
     </div>
@@ -90,30 +70,20 @@
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 2"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[2]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field rollMasterPIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field rollMasterPIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field rollMasterPIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field rollMasterPIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field rollMasterPIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field rollMasterPIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.rollMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_master_Ty[0], y:getPidValues(state.pid_master_Ty)}" labels="setpoint|input|P|I|D|output" title="Ty MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 6"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[6]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field rollSlavePIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field rollSlavePIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field rollSlavePIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field rollSlavePIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field rollSlavePIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field rollSlavePIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.rollSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_slave_Ty[0], y:getPidValues(state.pid_slave_Ty)}" labels="setpoint|input|P|I|D|output" title="Ty SLAVE PID"/>
     </div>
@@ -122,30 +92,20 @@
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 3"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[3]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field yawMasterPIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field yawMasterPIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field yawMasterPIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field yawMasterPIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field yawMasterPIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field yawMasterPIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.yawMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_master_Tz[0], y:getPidValues(state.pid_master_Tz)}" labels="setpoint|input|P|I|D|output" title="Tz MASTER PID"/>
     </div>
     <div class="pid-tuner">
         <div class="pid-tuner-parameters">
             <div class="pid-tuner-bypass">
-                <input type='checkbox' class="pid-tuner-checkbox-bypass bitfield pidBypass 7"/>
-                <div class="pid-tuner-label bypass"/>
+                <input type="checkbox" class="pid-tuner-checkbox-bypass" ng-model="bypasses[7]" ng-change="onBypassChange()"/>
+                <div class="model-entry-label">Bypass Controller</div>
             </div>
-            <div class="pid-tuner-label 0"/><input class="pid-tuner-entry-field yawSlavePIDParameters 0"/>
-            <div class="pid-tuner-label 1"/><input class="pid-tuner-entry-field yawSlavePIDParameters 1"/>
-            <div class="pid-tuner-label 2"/><input class="pid-tuner-entry-field yawSlavePIDParameters 2"/>
-            <div class="pid-tuner-label 3"/><input class="pid-tuner-entry-field yawSlavePIDParameters 3"/>
-            <div class="pid-tuner-label 4"/><input class="pid-tuner-entry-field yawSlavePIDParameters 4"/>
-            <div class="pid-tuner-label 5"/><input class="pid-tuner-entry-field yawSlavePIDParameters 5"/>
+            <eeprom-input ng-model="$root.eepromConfig.yawSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in tunerLabels"/>
         </div>
         <div plot-series value="{x:state.pid_slave_Tz[0], y:getPidValues(state.pid_slave_Tz)}" labels="setpoint|input|P|I|D|output" title="Tz SLAVE PID"/>
     </div>
