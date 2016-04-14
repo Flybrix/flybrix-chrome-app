@@ -142,13 +142,38 @@ div.label-title {
 		background-color:#ffffff;
 }
 
-.model-entry-field{
+.mixtable-row .model-entry-field{
+    background-color: #FFFFFF;
+		width: 28px;
+    margin-left: 5px;
+		margin-right: 15px;
+}
+
+.config-fields .model-entry-field{
     background-color: #FFFFFF;
     width: 90px;
     height: 10px;
     position: absolute;
     left: -1px;
     top: 12px;
+}
+
+.config-fields .model-entry-label{
+    position: relative;
+    top: -6px;
+    display: inline-block;
+    width: 95px;
+    font-size: 9px;
+    color: blue;
+}
+
+.datastream-fields .model-entry-label{
+    position: relative;
+    top: -6px;
+    display: inline-block;
+    width: 95px;
+    font-size: 9px;
+    color: blue;
 }
 
 .model-entry output{
@@ -179,14 +204,6 @@ div.label-title {
     width: 12px;
     height: 12px;
     margin-right: 10px;
-}
-.model-entry-label{
-    position: relative;
-    top: -6px;
-    display: inline-block;
-    width: 95px;
-    font-size: 9px;
-    color: blue;
 }
 .future{
     display: none;
@@ -570,7 +587,7 @@ div.label-title {
 
 .mixtable-factors{}
 .mixtable-row{
-    height: 42px;
+    height: 52px;
     width: 787px;
     padding-top: 10px;
     border-color: black;
@@ -590,19 +607,6 @@ div.label-title {
     font-size: 14px;
     color: #5901FF;
 }
-.mixtable-entry-label{
-    width: 40px;
-    float: left;
-    font-size: 11px;
-}
-.mixtable-entry-field{
-    width: 28px;
-    float: left;
-    margin-right: 20px;
-    margin-left: -17px;
-}
-
-
 
 .led-green {
 	float: left;
@@ -732,4 +736,8 @@ div.led-label {
 .flight-mode-text{
     position: inline;
     display: table;
+}
+
+.black-bg {
+	background-color: #000000;
 }

@@ -1,4 +1,4 @@
-<div>
+<div ng-controller="configController">
     <div class='firmware-list-title'>Recommended firmware</div>
     <div id="hex-recommended">
       <p style="color: red;">
@@ -25,204 +25,105 @@
         <div id="configuration-filehandler" class="configuration-filehandler"></div>
     </div>
 
-    <div class='button view-button' id="eeprom-refresh">refresh from flyer</div>
+    <div class='button view-button' ng-click="eepromRefresh()">refresh from flyer</div>
 
-    <div class='button view-button' id="eeprom-reset-to-default">reset factory configuration</div>
+    <div class='button view-button' ng-click="eepromReinit()">reset factory configuration</div>
 
+    <div ng-show="$root.eepromConfig">
     <p style="margin-bottom: 10px; margin-top: 50px;font-weight: bold;">Configuration data:</p>
-    <div id="current-config">
+    <div class="config-fields" id="current-config">
         <div class="model-entry">
             <span class="model-entry-title">version</span>
-            <label class="model-entry-label">major (read-only)<output class="model-entry-field version 0"/></label>
-            <label class="model-entry-label">minor (read-only)<output class="model-entry-field version 1"/></label>
-            <label class="model-entry-label">build (read-only)<output class="model-entry-field version 2"/></label>
+            <label class="model-entry-label" ng-repeat="n in ['major','minor','build']">{{n}} (read-only)<output class="model-entry-field">{{$root.eepromConfig.version[$index]}}</output></label>
         </div>
         <div class="model-entry future">
             <span class="model-entry-title">pcbOrientation</span>
-            <label class="model-entry-label">pitch angle<input class="model-entry-field pcbOrientation 0"/></label>
-            <label class="model-entry-label">roll angle<input class="model-entry-field pcbOrientation 1"/></label>
-            <label class="model-entry-label">yaw angle<input class="model-entry-field pcbOrientation 2"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.pcbOrientation[$index]" precision="1" label="{{n}} angle" ng-repeat="n in ['pitch','roll','yaw']"/>
         </div>
         <div class="model-entry future">
             <span class="model-entry-title">pcbTranslation</span>
-            <label class="model-entry-label">x offset<input class="model-entry-field pcbTranslation 0"/></label>
-            <label class="model-entry-label">y offset<input class="model-entry-field pcbTranslation 1"/></label>
-            <label class="model-entry-label">z offset<input class="model-entry-field pcbTranslation 2"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.pcbTranslation[$index]" precision="3" label="{{n}} offset" ng-repeat="n in ['x','y','z']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">mixTableFz</span>
-            <label class="model-entry-label">CH0<input class="model-entry-field mixTableFz 0"/></label>
-            <label class="model-entry-label">CH1<input class="model-entry-field mixTableFz 1"/></label>
-            <label class="model-entry-label">CH2<input class="model-entry-field mixTableFz 2"/></label>
-            <label class="model-entry-label">CH3<input class="model-entry-field mixTableFz 3"/></label>
-            <label class="model-entry-label">CH4<input class="model-entry-field mixTableFz 4"/></label>
-            <label class="model-entry-label">CH5<input class="model-entry-field mixTableFz 5"/></label>
-            <label class="model-entry-label">CH6<input class="model-entry-field mixTableFz 6"/></label>
-            <label class="model-entry-label">CH7<input class="model-entry-field mixTableFz 7"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableFz[$index]" label="CH{{$index}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
          <div class="model-entry">
             <span class="model-entry-title">mixTableTx</span>
-            <label class="model-entry-label">CH0<input class="model-entry-field mixTableTx 0"/></label>
-            <label class="model-entry-label">CH1<input class="model-entry-field mixTableTx 1"/></label>
-            <label class="model-entry-label">CH2<input class="model-entry-field mixTableTx 2"/></label>
-            <label class="model-entry-label">CH3<input class="model-entry-field mixTableTx 3"/></label>
-            <label class="model-entry-label">CH4<input class="model-entry-field mixTableTx 4"/></label>
-            <label class="model-entry-label">CH5<input class="model-entry-field mixTableTx 5"/></label>
-            <label class="model-entry-label">CH6<input class="model-entry-field mixTableTx 6"/></label>
-            <label class="model-entry-label">CH7<input class="model-entry-field mixTableTx 7"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableTx[$index]" label="CH{{n}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">mixTableTy</span>
-            <label class="model-entry-label">CH0<input class="model-entry-field mixTableTy 0"/></label>
-            <label class="model-entry-label">CH1<input class="model-entry-field mixTableTy 1"/></label>
-            <label class="model-entry-label">CH2<input class="model-entry-field mixTableTy 2"/></label>
-            <label class="model-entry-label">CH3<input class="model-entry-field mixTableTy 3"/></label>
-            <label class="model-entry-label">CH4<input class="model-entry-field mixTableTy 4"/></label>
-            <label class="model-entry-label">CH5<input class="model-entry-field mixTableTy 5"/></label>
-            <label class="model-entry-label">CH6<input class="model-entry-field mixTableTy 6"/></label>
-            <label class="model-entry-label">CH7<input class="model-entry-field mixTableTy 7"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableTy[$index]" label="CH{{n}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">mixTableTz</span>
-            <label class="model-entry-label">CH0<input class="model-entry-field mixTableTz 0"/></label>
-            <label class="model-entry-label">CH1<input class="model-entry-field mixTableTz 1"/></label>
-            <label class="model-entry-label">CH2<input class="model-entry-field mixTableTz 2"/></label>
-            <label class="model-entry-label">CH3<input class="model-entry-field mixTableTz 3"/></label>
-            <label class="model-entry-label">CH4<input class="model-entry-field mixTableTz 4"/></label>
-            <label class="model-entry-label">CH5<input class="model-entry-field mixTableTz 5"/></label>
-            <label class="model-entry-label">CH6<input class="model-entry-field mixTableTz 6"/></label>
-            <label class="model-entry-label">CH7<input class="model-entry-field mixTableTz 7"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableTz[$index]" label="CH{{n}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">magBias</span>
-            <label class="model-entry-label">x offset<input class="model-entry-field magBias 0"/></label>
-            <label class="model-entry-label">y offset<input class="model-entry-field magBias 1"/></label>
-            <label class="model-entry-label">z offset<input class="model-entry-field magBias 2"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.magBias[$index]" precision="3" label="{{n}} offset" ng-repeat="n in ['x','y','z']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">assignedChannel</span>
-            <label class="model-entry-label">throttle<input class="model-entry-field assignedChannel 0"/></label>
-            <label class="model-entry-label">pitch<input class="model-entry-field assignedChannel 1"/></label>
-            <label class="model-entry-label">roll<input class="model-entry-field assignedChannel 2"/></label>
-            <label class="model-entry-label">yaw<input class="model-entry-field assignedChannel 3"/></label>
-            <label class="model-entry-label">AUX1 (bind)<input class="model-entry-field assignedChannel 4"/></label>
-            <label class="model-entry-label">AUX2 (arm) <input class="model-entry-field assignedChannel 5"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.assignedChannel[$index]" label="{{n}}" ng-repeat="n in ['throttle','pitch','roll','yaw','AUX1 (bind)','AUX2 (arm)']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">commandInversion</span>
-            <label class="model-entry-label">bitfield<input class="model-entry-field commandInversion"/>
+            <eeprom-input ng-model="$root.eepromConfig.commandInversion" label="bitfield"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">channelMidpoint</span>
-            <label class="model-entry-label">CH0 midpoint<input class="model-entry-field channelMidpoint 0"/></label>
-            <label class="model-entry-label">CH1 midpoint<input class="model-entry-field channelMidpoint 1"/></label>
-            <label class="model-entry-label">CH2 midpoint<input class="model-entry-field channelMidpoint 2"/></label>
-            <label class="model-entry-label">CH3 midpoint<input class="model-entry-field channelMidpoint 3"/></label>
-            <label class="model-entry-label">CH4 midpoint<input class="model-entry-field channelMidpoint 4"/></label>
-            <label class="model-entry-label">CH5 midpoint<input class="model-entry-field channelMidpoint 5"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.channelMidpoint[$index]" label="CH{{n}} midpoint" ng-repeat="n in [0,1,2,3,4,5]"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">channelDeadzone</span>
-            <label class="model-entry-label">CH0 deadzone<input class="model-entry-field channelDeadzone 0"/></label>
-            <label class="model-entry-label">CH1 deadzone<input class="model-entry-field channelDeadzone 1"/></label>
-            <label class="model-entry-label">CH2 deadzone<input class="model-entry-field channelDeadzone 2"/></label>
-            <label class="model-entry-label">CH3 deadzone<input class="model-entry-field channelDeadzone 3"/></label>
-            <label class="model-entry-label">CH4 deadzone<input class="model-entry-field channelDeadzone 4"/></label>
-            <label class="model-entry-label">CH5 deadzone<input class="model-entry-field channelDeadzone 5"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.channelDeadzone[$index]" label="CH{{n}} deadzone" ng-repeat="n in [0,1,2,3,4,5]"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">thrustMasterPID</span>
-            <label class="model-entry-label">P<input class="model-entry-field thrustMasterPIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field thrustMasterPIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field thrustMasterPIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field thrustMasterPIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field thrustMasterPIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field thrustMasterPIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field thrustMasterPIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.thrustMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">pitchMasterPID</span>
-            <label class="model-entry-label">P<input class="model-entry-field pitchMasterPIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field pitchMasterPIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field pitchMasterPIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field pitchMasterPIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field pitchMasterPIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field pitchMasterPIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field pitchMasterPIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.pitchMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">rollMasterPID</span>
-            <label class="model-entry-label">P<input class="model-entry-field rollMasterPIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field rollMasterPIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field rollMasterPIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field rollMasterPIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field rollMasterPIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field rollMasterPIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field rollMasterPIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.rollMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">yawMasterPID</span>
-            <label class="model-entry-label">P<input class="model-entry-field yawMasterPIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field yawMasterPIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field yawMasterPIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field yawMasterPIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field yawMasterPIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field yawMasterPIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field yawMasterPIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.yawMasterPIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">thrustSlavePID</span>
-            <label class="model-entry-label">P<input class="model-entry-field thrustSlavePIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field thrustSlavePIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field thrustSlavePIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field thrustSlavePIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field thrustSlavePIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field thrustSlavePIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field thrustSlavePIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.thrustSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">pitchSlavePID</span>
-            <label class="model-entry-label">P<input class="model-entry-field pitchSlavePIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field pitchSlavePIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field pitchSlavePIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field pitchSlavePIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field pitchSlavePIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field pitchSlavePIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field pitchSlavePIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.pitchSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">rollSlavePID</span>
-            <label class="model-entry-label">P<input class="model-entry-field rollSlavePIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field rollSlavePIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field rollSlavePIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field rollSlavePIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field rollSlavePIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field rollSlavePIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field rollSlavePIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.rollSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">yawSlavePID</span>
-            <label class="model-entry-label">P<input class="model-entry-field yawSlavePIDParameters 0"/></label>
-            <label class="model-entry-label">I<input class="model-entry-field yawSlavePIDParameters 1"/></label>
-            <label class="model-entry-label">D<input class="model-entry-field yawSlavePIDParameters 2"/></label>
-            <label class="model-entry-label">windup guard<input class="model-entry-field yawSlavePIDParameters 3"/></label>
-            <label class="model-entry-label">D IIR (sec) <input class="model-entry-field yawSlavePIDParameters 4"/></label>
-            <label class="model-entry-label">setpoint IIR (sec)<input class="model-entry-field yawSlavePIDParameters 5"/></label>
-            <label class="model-entry-label">scale factor<input class="model-entry-field yawSlavePIDParameters 6"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.yawSlavePIDParameters[$index]" precision="4" label="{{n}}" ng-repeat="n in ['P','I','D','windup guard','D IIR (sec)','setpoint IIR (sec)','scale factor']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">pidBypass</span>
-            <label class="model-entry-label">bitfield<input class="model-entry-field pidBypass"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.pidBypass" label="bitfield"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">stateEstimation</span>
-            <label class="model-entry-label">2*Kp or beta<input class="model-entry-field stateEstimationParameters 0"/></label>
-            <label class="model-entry-label">2*Ki<input class="model-entry-field stateEstimationParameters 1"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.stateEstimationParameters[$index]" precision="5" label="{{n}}" ng-repeat="n in ['2*Kp or beta','2*Ki']"/>
         </div>
         <div class="model-entry">
             <span class="model-entry-title">enable</span>
-            <label class="model-entry-label">vibration<input class="model-entry-field enableParameters 0"/></label>
-            <label class="model-entry-label">angle<input class="model-entry-field enableParameters 1"/></label>
+            <eeprom-input ng-model="$root.eepromConfig.enableParameters[$index]" precision="5" label="{{n}}" ng-repeat="n in ['vibration','angle']"/>
         </div>
+    </div>
     </div>
 </div>

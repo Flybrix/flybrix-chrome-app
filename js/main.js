@@ -15,17 +15,6 @@ var data_mode = "idle"; // valid modes: 'serial','replay','capture', and 'idle'
 var replay_buffer;
 var replay_point;
 
-var cobsReader = new cobs.Reader(2000);
-
-// Get access to the background window object
-// This object is used to pass current serial port connectionId to the backround page
-// so the onClosed event can close the port for us if it was left opened, without this
-// users can experience weird behavior if they would like to access the serial bus afterwards.
-var backgroundPage;
-chrome.runtime.getBackgroundPage(function (result) {
-	backgroundPage = result;
-	backgroundPage.serialConnectionId = -1;
-});
 
 // keep track of tabs (fix this with something less hacky someday)
 var tab_id_initialized = [false, false, false, false, false, false, false];
@@ -59,8 +48,11 @@ function diff(A, B) {
 
 }
 
+var serialHelper;  // TODO: remove this once we achieve full AngularJS integration
+
 function refresh_port_selector() {
-	chrome.serial.getDevices(function (ports) {
+	serialHelper.getDevices()
+			.then(function (ports) {
 		var devices = [];
 		ports.forEach(function (device) {
 			devices.push(device.path);
@@ -164,6 +156,8 @@ function refresh_port_selector() {
 	port_selector_refresh_callback = setTimeout(refresh_port_selector, 200);
 }
 
+var initial_config_request = null;
+
 function connect_disconnect() {
 	console.log('connect/disconnect');
 	var connect_button = $('.datastream-serial #connect');
@@ -175,9 +169,17 @@ function connect_disconnect() {
 		if (connected) {
 
 			console.log('Disconnecting from: ' + selected_port);
-			if (backgroundPage.serialConnectionId > 0) {
-				chrome.serial.disconnect(backgroundPage.serialConnectionId, onSerialClose);
-			}
+
+			var onSuccess = function () {
+				$('#content').empty();                     // empty content
+        $('#tabs > ul li').removeClass('active');  // de-select any selected tabs
+			};
+
+			var onFailure = function () {
+			};
+
+			serialHelper.disconnect()
+					.then(onSuccess, onFailure);
 
 			// if we disconnect before we ask for initial config data
 			if (initial_config_request) {
@@ -194,10 +196,37 @@ function connect_disconnect() {
 		} else {
 			console.log('Connecting to: ' + selected_port);
 
-			chrome.serial.connect(selected_port, {
-				bufferSize : 4096 * 5, //???
-				bitrate : 250000 //doesn't matter for USB
-			}, serialConnectCallback);
+			var onSuccess = function () {
+					$('.datastream-serial #connect').text('Disconnect');
+					data_mode = "serial";
+
+					initial_config_request = setTimeout(function() {
+							// request configuration data (so we have something to work with)
+							requestCONFIG();
+
+	            // set the state message mask and frequency
+	            setTimeout(function() {
+
+	                var default_delay_msec = 50;
+
+	                send_message(
+	                    CommandFields.COM_SET_STATE_MASK | CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE,
+	                    new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
+	                // update fields in datastream tab
+	                setTargetDelay(default_delay_msec);
+	                $('#datastream #current-state .model-change-mask').prop('checked', true);
+	            }, 100);
+
+	        }, 500);
+			};
+
+			var onFailure = function () {
+					$('div.datastream-serial a.connect').click();  // reset the connect button back to "disconnected" state
+			};
+
+			serialHelper.connect(selected_port)
+					.then(onSuccess, onFailure);
+
 			connected_port = selected_port;
 		}
 
@@ -353,7 +382,7 @@ $(document).ready(function () {
 			return;
 		}
 		var dataLength = Math.ceil(data_rate_field.val() * (tickDelay / 8));
-		cobsReader.AppendToBuffer(inputData.slice(0, dataLength), process_binary_datastream);
+		serialHelper.read(inputData.slice(0, dataLength));
 		setReplayPosition(replay_point + dataLength);
 
 		setTimeout(function () {
@@ -513,7 +542,7 @@ function setArrayValues(fields, source) {
 (function() {
 	'use strict';
 
-	var mainController = function ($scope, $rootScope) {
+	var mainController = function ($scope, $rootScope, serial, commandLog, deviceConfig) {
 		var tabClick = function (tab) {
 			var titlestr = tab.label;
 			var href = '#' + tab.url;
@@ -595,25 +624,77 @@ function setArrayValues(fields, source) {
 
 		$scope.tabClick = tabClick;
 
-		parser_callback_list.add(function () {
-			$rootScope.$apply(function () {
-				$rootScope.state = state;
-				$rootScope.stateUpdateRate = serial_update_rate_Hz;
+		$rootScope.updateEeprom = function () {
+				deviceConfig.send($rootScope.eepromConfig);
+		}
+
+		serial.setStateCallback(function (state, state_data_mask, serial_update_rate) {
+				$rootScope.$apply(function () {
+						$rootScope.state = state;
+						$rootScope.stateDataMask = state_data_mask;
+						$rootScope.stateUpdateRate = serial_update_rate;
+				});
+		});
+
+		deviceConfig.setConfigCallback(function () {
+				$rootScope.$apply(function () {
+						$rootScope.eepromConfig = deviceConfig.getConfig();
+				});
+		})
+
+		$rootScope.$watch('state', function () {
+				if (!$rootScope.state)
+						return;
 
 				var kV0 = (20.5 + 226) / 20.5 * 1.2 / 65536;
 				var kI0 = 1000 * (1 / 50) / 0.003 * 1.2 / 65536;
 				var kI1 = 1000 * (1 / 50) / 0.03 * 1.2 / 65536;
 
 				$rootScope.batteryData = [
-					kV0 * state.V0_raw,
-					kI0 * state.I0_raw,
-					kI1 * state.I1_raw,
-					kI0 * kV0 * state.V0_raw * state.I0_raw,
-					kI1 * kV0 * state.V0_raw * state.I1_raw,
+						kV0 * $rootScope.state.V0_raw,
+						kI0 * $rootScope.state.I0_raw,
+						kI1 * $rootScope.state.I1_raw,
+						kI0 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I0_raw,
+						kI1 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I1_raw,
 				];
-			});
 		});
-	}
 
-	angular.module('flybrixApp').controller('mainController', ['$scope', '$rootScope', mainController])
+		serialHelper = serial;
+	};
+
+	var app = angular.module('flybrixApp');
+
+	app.factory('commandLog', function () {
+			return command_log;
+	});
+
+	app.controller('mainController', ['$scope', '$rootScope', 'serial', 'commandLog', 'deviceConfig', mainController]);
+
+	app.directive('eepromInput', function () {
+			return {
+					template: '<label class="model-entry-label">{{label}}<input class="model-entry-field" type="number" step="{{precision}}" ng-model="field" ng-model-options="{updateOn:\'change\'}" ng-change="onChange()"></input></label>',
+					scope: true,
+					require: '?ngModel',
+					priority: 1,
+					link: function (scope, element, attrs, ngModel) {
+							if (!ngModel)
+									return;
+
+							scope.onChange = function () {
+									ngModel.$setViewValue(scope.field);
+									scope.$root.updateEeprom();
+							};
+
+							ngModel.$render = function () {
+									if (attrs.precision !== undefined)
+											scope.precision = parseFloat(attrs.precision);
+									else
+											scope.precision = 0;
+									if (ngModel.$modelValue !== undefined)
+											scope.field = parseFloat(ngModel.$modelValue.toFixed(scope.precision));
+									scope.label = attrs.label;
+							};
+					},
+			};
+	});
 }());

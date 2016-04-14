@@ -1,6 +1,5 @@
 
 function initialize_motors_view() {
-    $('#motor-view-motors-override').css('background-color', '#000000'); //start off
 	$('#motor-view-override-pilot').click(function() {
         var style_str = $('#motor-view-motors-override').attr('style');
         if (style_str && ($.inArray('background-color', style_str.split(':')) >= 0)) {
@@ -11,7 +10,6 @@ function initialize_motors_view() {
         }
     });
 
-    $('#motor-view-motors-enabled').css('background-color', '#000000'); //start off
 	$('#motor-view-enable-motors').click(function() {
 
         var style_str = $('#motor-view-motors-enabled').attr('style');
@@ -41,26 +39,15 @@ function initialize_motors_view() {
         setTimeout(function(){send_message(CommandFields.COM_MOTOR_OVERRIDE_SPEED_0 << motor_n, [motor_v % 256, motor_v / 256]); }, 1);
     }).attr('step', 'any').attr('type', 'number').attr('min', 0);
 
-    $('#motors .mixtable-entry-field.mixTableFz').connect_to_eeprom();
-    $('#motors .mixtable-entry-field.mixTableTx').connect_to_eeprom();
-    $('#motors .mixtable-entry-field.mixTableTy').connect_to_eeprom();
-    $('#motors .mixtable-entry-field.mixTableTz').connect_to_eeprom();
     eeprom_refresh_callback_list.add(refresh_motors_view_from_eepromConfig);
 
 	refresh_motors_view_from_eepromConfig();
-
-    parser_callback_list.add(update_motors_view);
 
     $('#motors .motor-view-level-value').blur();
 };
 
 
 function refresh_motors_view_from_eepromConfig() {
-    loadArrayValues($('#motors .mixtable-entry-field.mixTableFz'), eepromConfig.mixTableFz, 0);
-    loadArrayValues($('#motors .mixtable-entry-field.mixTableTx'), eepromConfig.mixTableTx, 0);
-    loadArrayValues($('#motors .mixtable-entry-field.mixTableTy'), eepromConfig.mixTableTy, 0);
-    loadArrayValues($('#motors .mixtable-entry-field.mixTableTz'), eepromConfig.mixTableTz, 0);
-
 }
 
 function update_bar_css(index, type, val){
@@ -79,26 +66,37 @@ function update_bar_css(index, type, val){
     $('.'+ index +' .motor-view-level-bar-' + type).css({'top' : top_px+'px','height' : height_px+'px'});
 }
 
+(function() {
+  'use strict';
 
-var last_motors_view_update = 0;
-function update_motors_view() {
-    var now = Date.now();
-    if ( (now - last_motors_view_update) > graph_update_delay ) { //throttle redraw to 20Hz
+  var motorsController = function ($scope, $rootScope) {
+      var last_motors_view_update = new Date();
+      $scope.$watch('state', function () {
+          if (!$rootScope.state)
+              return;
 
-        if (!(state.status & 0x0400)) {$('#motor-view-motors-enabled').css('background-color', '#000000');} else {$('#motor-view-motors-enabled').css('background-color', '');}
-        if (!(state.status & 0x8000)) {$('#motor-view-motors-override').css('background-color', '#000000');} else {$('#motor-view-motors-override').css('background-color', '');}
+          $scope.motorsEnabledNeg = !($rootScope.state.status & 0x0400);
+          $scope.motorsOverrideNeg = !($rootScope.state.status & 0x8000);
 
-        for (var i = 0; i < 8; i++) {
-            update_bar_css(i, 'Fz', state.control[0] * eepromConfig.mixTableFz[i] / Math.max.apply(null, eepromConfig.mixTableFz));
-            update_bar_css(i, 'Tx', state.control[1] * eepromConfig.mixTableTx[i] / Math.max.apply(null, eepromConfig.mixTableTx));
-            update_bar_css(i, 'Ty', state.control[2] * eepromConfig.mixTableTy[i] / Math.max.apply(null, eepromConfig.mixTableTy));
-            update_bar_css(i, 'Tz', state.control[3] * eepromConfig.mixTableTz[i] / Math.max.apply(null, eepromConfig.mixTableTz));
-            update_bar_css(i, 'sum', state.MotorOut[i]);
-            if (!$('.'+ i +' .motor-view-level-value').is(":focus")){
-                $('.'+ i +' .motor-view-level-value').val(state.MotorOut[i].toFixed(0));
-            }
-        }
+          var now = new Date();
+          if (now - last_motors_view_update > graph_update_delay) { //throttle redraw to 20Hz
+              for (var i = 0; i < 8; i++) {
+                  update_bar_css(i, 'Fz', $rootScope.state.control[0] * eepromConfig.mixTableFz[i] / Math.max.apply(null, eepromConfig.mixTableFz));
+                  update_bar_css(i, 'Tx', $rootScope.state.control[1] * eepromConfig.mixTableTx[i] / Math.max.apply(null, eepromConfig.mixTableTx));
+                  update_bar_css(i, 'Ty', $rootScope.state.control[2] * eepromConfig.mixTableTy[i] / Math.max.apply(null, eepromConfig.mixTableTy));
+                  update_bar_css(i, 'Tz', $rootScope.state.control[3] * eepromConfig.mixTableTz[i] / Math.max.apply(null, eepromConfig.mixTableTz));
+                  update_bar_css(i, 'sum', $rootScope.state.MotorOut[i]);
+                  if (!$('.'+ i +' .motor-view-level-value').is(":focus"))
+                      $('.'+ i +' .motor-view-level-value').val($rootScope.state.MotorOut[i].toFixed(0));
+              }
+              last_motors_view_update = now;
+          }
 
-        last_motors_view_update = now;
-    }
-}
+      });
+
+      $scope.motorsEnabledNeg = true;
+      $scope.motorsOverrideNeg = true;
+  };
+
+  angular.module('flybrixApp').controller('motorsController', ['$scope', '$rootScope', motorsController]);
+}());
