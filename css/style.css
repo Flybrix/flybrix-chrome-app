@@ -196,6 +196,34 @@ div.label-title {
 		display:block;
 }
 
+.signals-fields .model-entry-field{
+		background-color: #FFFFFF;
+		width: 85px;
+		position: absolute;
+		left: -1px;
+		top: 15px;
+		font-size: 14px;
+}
+
+.signals-fields .model-entry-label{
+    position: relative;
+    top: -5px;
+		left: 20px;
+    display: inline-block;
+    width: 90px;
+    font-size: 11px;
+		margin: 3px;
+}
+
+.signals-fields-wide .model-entry-field{
+		width: 120px;
+		font-size: 16px;
+}
+
+.signals-fields-wide .model-entry-label{
+		width: 140px;
+}
+
 .model-entry output{
     background-color: #FFFFFF;
     width: 90px;
@@ -419,27 +447,6 @@ div.label-title {
     float: left;
     margin-left: 18px;
     font-size: 11px;
-}
-.command-settings-channelMidpoint-field{
-    width:38px;
-    float: left;
-    margin-left: -13px;
-}
-.command-settings-channelDeadzone-field{
-    width:38px;
-    float: left;
-    margin-left: -13px;
-}
-.command-settings-assignedChannel-field{
-    width:20px;
-    float: left;
-    margin-right: 18px;
-    margin-left: -13px;
-}
-.command-settings-commandScaling-field{
-    width: 78px;
-    float: left;
-    margin-right: -3px;
 }
 .command-settings-master-row{
     height: 60px;
