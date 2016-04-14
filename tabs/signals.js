@@ -2,12 +2,7 @@
 // order of channels in assignedChannel array is ['THROTTLE','PITCH','ROLL','YAW/RUDDER','AUX 1','AUX 2']
 
 function initialize_signals_view() {
-    eeprom_refresh_callback_list.add(refresh_signals_view_from_eepromConfig);
-
-    refresh_signals_view_from_eepromConfig();
 }
-
-function refresh_signals_view_from_eepromConfig(){}
 
 (function() {
     'use strict';

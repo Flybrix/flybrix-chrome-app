@@ -202,13 +202,6 @@ function initialize_config_view() {
 		event.preventDefault();
 		$('#configuration-filehandler').read_eepromConfig_from_filehandler();
 	});
-
-	eeprom_refresh_callback_list.add(refresh_config_view_from_eepromConfig);
-
-	refresh_config_view_from_eepromConfig();
-}
-
-function refresh_config_view_from_eepromConfig() {
 }
 
 (function() {

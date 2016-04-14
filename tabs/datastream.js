@@ -55,13 +55,6 @@ function initialize_datastream_view() {
 		console.log(new Uint8Array(bytes));
 		send_message(CommandFields.COM_SET_STATE_MASK | CommandFields.COM_REQ_RESPONSE, new Uint8Array(bytes));
 	});
-
-    eeprom_refresh_callback_list.add(refresh_datastream_view_from_eepromConfig);
-    refresh_datastream_view_from_eepromConfig();
-};
-
-function refresh_datastream_view_from_eepromConfig() {
-    //nothing yet
 };
 
 (function() {

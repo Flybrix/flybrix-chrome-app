@@ -5,41 +5,6 @@ var eepromConfig;
 var requestCONFIG;
 var sendCONFIG;
 
-var eeprom_refresh_callback_list = $.Callbacks('unique');
-
-(function($) {
-
-    $.fn.connect_to_eeprom = function() {
-        this.each(function() {
-
-            $(this)
-                .bind("change", function(event) {
-                    class_strings = $(this).attr('class').split(/[ ]+/);
-                    console.log("CLASS STRINGS:", class_strings);
-                    if (class_strings.length == 2) {
-                        window["eepromConfig"][class_strings[1]] = parseFloat($(this).val());
-                    } else if (class_strings.length == 3) {
-                        window["eepromConfig"][class_strings[1]][class_strings[2]] = parseFloat($(this).val());
-                    } else if (class_strings.length == 4) {
-                        var bitfield = window["eepromConfig"][class_strings[2]];
-                        if (this.checked) {
-                            bitfield = bitfield | (1 << class_strings[3]);
-                        } else {
-                            bitfield = bitfield & ~(1 << class_strings[3]);
-                        }
-                        window["eepromConfig"][class_strings[2]] = bitfield;
-                    } else {
-                        console.log("ERROR LINKING TO EEPROM: ", class_str, $(this).val());
-                    }
-                    setTimeout(function() {
-                        sendCONFIG();
-                        setTimeout(eeprom_refresh_callback_list.fire, 100);
-                    }, 1);
-                });
-        });
-    };
-}(jQuery));
-
 (function() {
     'use strict';
 
@@ -105,8 +70,6 @@ var eeprom_refresh_callback_list = $.Callbacks('unique');
             b.add(1);
             parseFloat32Array(dataView, structure.stateEstimationParameters, b);
             parseFloat32Array(dataView, structure.enableParameters, b);
-
-            setTimeout(eeprom_refresh_callback_list.fire, 1000);
         };
 
         function setConfig(dataView, structure) {

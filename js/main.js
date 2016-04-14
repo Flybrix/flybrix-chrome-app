@@ -22,9 +22,6 @@ var tab_dialog_open = [false, false, false, false, false, false, false];
 var tab_view_init_functions = [initialize_tuning_view, initialize_sensors_view, initialize_signals_view,
 	initialize_vehicle_view, initialize_motors_view, initialize_led_view, initialize_datastream_view,
 	initialize_config_view];
-var tab_view_eeprom_refresh_functions = [refresh_tuning_view_from_eepromConfig, refresh_sensors_view_from_eepromConfig, refresh_signals_view_from_eepromConfig,
-	refresh_vehicle_view_from_eepromConfig, refresh_motors_view_from_eepromConfig, refresh_led_view_from_eepromConfig, refresh_datastream_view_from_eepromConfig,
-	refresh_config_view_from_eepromConfig];
 var port_selector;
 var port_selector_refresh_callback;
 var discovered_ports = false;
@@ -597,8 +594,6 @@ function setArrayValues(fields, source) {
 				}, 1);
 			}
 
-			tab.refresh();
-
 			//bring tab to the front
 			setTimeout(function () {
 				$(href).parent().children('.ui-dialog-titlebar').mousedown()
@@ -619,7 +614,6 @@ function setArrayValues(fields, source) {
 
 		$scope.tabs.forEach(function (element, index, array) {
 			element.init = tab_view_init_functions[index];
-			element.refresh = tab_view_eeprom_refresh_functions[index];
 		});
 
 		$scope.tabClick = tabClick;

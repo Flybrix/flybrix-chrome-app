@@ -1,11 +1,6 @@
 
 function initialize_tuning_view() {
-    eeprom_refresh_callback_list.add(refresh_tuning_view_from_eepromConfig);
-
-    refresh_tuning_view_from_eepromConfig();
-};
-
-function refresh_tuning_view_from_eepromConfig(){}
+}
 
 (function() {
     'use strict';

@@ -39,16 +39,8 @@ function initialize_motors_view() {
         setTimeout(function(){send_message(CommandFields.COM_MOTOR_OVERRIDE_SPEED_0 << motor_n, [motor_v % 256, motor_v / 256]); }, 1);
     }).attr('step', 'any').attr('type', 'number').attr('min', 0);
 
-    eeprom_refresh_callback_list.add(refresh_motors_view_from_eepromConfig);
-
-	refresh_motors_view_from_eepromConfig();
-
     $('#motors .motor-view-level-value').blur();
 };
-
-
-function refresh_motors_view_from_eepromConfig() {
-}
 
 function update_bar_css(index, type, val){
     // if newval = +4096 --> top is 0, height is 128

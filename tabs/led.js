@@ -104,7 +104,3 @@
 
 function initialize_led_view() {
 }
-
-
-function refresh_led_view_from_eepromConfig() {
-}

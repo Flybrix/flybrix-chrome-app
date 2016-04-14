@@ -1,11 +1,5 @@
 function initialize_vehicle_view() {
-    eeprom_refresh_callback_list.add(refresh_vehicle_view_from_eepromConfig);
-    refresh_vehicle_view_from_eepromConfig();
-};
-
-function refresh_vehicle_view_from_eepromConfig(){
-    // nothing yet
-};
+}
 
 (function() {
     'use strict';
@@ -201,10 +195,8 @@ function refresh_vehicle_view_from_eepromConfig(){
             eepromConfig.magBias = magnetometer_estimate.slice(0, 3).map(function(v) {
                 return -v;
             });
-            refresh_config_view_from_eepromConfig();
             $timeout(function() {
                 sendCONFIG();
-                $timeout(eeprom_refresh_callback_list.fire, 100);
             }, 1);
         };
 
