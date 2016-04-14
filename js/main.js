@@ -624,6 +624,10 @@ function setArrayValues(fields, source) {
 
 		$scope.tabClick = tabClick;
 
+		$rootScope.updateEeprom = function () {
+				deviceConfig.send($rootScope.eepromConfig);
+		}
+
 		serial.setStateCallback(function (state, state_data_mask, serial_update_rate) {
 				$rootScope.$apply(function () {
 						$rootScope.state = state;
@@ -665,4 +669,32 @@ function setArrayValues(fields, source) {
 	});
 
 	app.controller('mainController', ['$scope', '$rootScope', 'serial', 'commandLog', 'deviceConfig', mainController]);
+
+	app.directive('eepromInput', function () {
+			return {
+					template: '<label class="model-entry-label">{{label}}<input class="model-entry-field" type="number" step="{{precision}}" ng-model="field" ng-model-options="{updateOn:\'change\'}" ng-change="onChange()"></input></label>',
+					scope: true,
+					require: '?ngModel',
+					priority: 1,
+					link: function (scope, element, attrs, ngModel) {
+							if (!ngModel)
+									return;
+
+							scope.onChange = function () {
+									ngModel.$setViewValue(scope.field);
+									scope.$root.updateEeprom();
+							};
+
+							ngModel.$render = function () {
+									if (attrs.precision !== undefined)
+											scope.precision = parseFloat(attrs.precision);
+									else
+											scope.precision = 0;
+									if (ngModel.$modelValue !== undefined)
+											scope.field = parseFloat(ngModel.$modelValue.toFixed(scope.precision));
+									scope.label = attrs.label;
+							};
+					},
+			};
+	});
 }());

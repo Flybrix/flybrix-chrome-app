@@ -15,6 +15,7 @@ var eeprom_refresh_callback_list = $.Callbacks('unique');
             $(this)
                 .bind("change", function(event) {
                     class_strings = $(this).attr('class').split(/[ ]+/);
+                    console.log("CLASS STRINGS:", class_strings);
                     if (class_strings.length == 2) {
                         window["eepromConfig"][class_strings[1]] = parseFloat($(this).val());
                     } else if (class_strings.length == 3) {
@@ -154,11 +155,13 @@ var eeprom_refresh_callback_list = $.Callbacks('unique');
                     });
         }
 
-        function send() {
+        function send(newConfig) {
+            if (newConfig === undefined)
+                newConfig = config;
             commandLog('Sending new configuration data...');
             var eepromConfigBytes = new ArrayBuffer(eepromConfigSize);
             var view = new DataView(eepromConfigBytes, 0);
-            setConfig(view, config);
+            setConfig(view, newConfig);
             var data = new Uint8Array(eepromConfigBytes);
             serial.send(serial.field.COM_SET_EEPROM_DATA, data, false).then(function() {
                 request();

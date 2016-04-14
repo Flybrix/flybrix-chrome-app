@@ -125,47 +125,19 @@
     <div class="mixtable-factors">
         <div class="mixtable-row">
             <div class="mixtable-row-label">Fz Mix</div>
-            <div class="mixtable-entry-label">CH0</div><input class="mixtable-entry-field mixTableFz 0"/>
-            <div class="mixtable-entry-label">CH1</div><input class="mixtable-entry-field mixTableFz 1"/>
-            <div class="mixtable-entry-label">CH2</div><input class="mixtable-entry-field mixTableFz 2"/>
-            <div class="mixtable-entry-label">CH3</div><input class="mixtable-entry-field mixTableFz 3"/>
-            <div class="mixtable-entry-label">CH4</div><input class="mixtable-entry-field mixTableFz 4"/>
-            <div class="mixtable-entry-label">CH5</div><input class="mixtable-entry-field mixTableFz 5"/>
-            <div class="mixtable-entry-label">CH6</div><input class="mixtable-entry-field mixTableFz 6"/>
-            <div class="mixtable-entry-label">CH7</div><input class="mixtable-entry-field mixTableFz 7"/>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableFz[$index]" label="CH{{$index}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
         <div class="mixtable-row">
             <div class="mixtable-row-label">Tx Mix</div>
-            <div class="mixtable-entry-label">CH0</div><input class="mixtable-entry-field mixTableTx 0"/>
-            <div class="mixtable-entry-label">CH1</div><input class="mixtable-entry-field mixTableTx 1"/>
-            <div class="mixtable-entry-label">CH2</div><input class="mixtable-entry-field mixTableTx 2"/>
-            <div class="mixtable-entry-label">CH3</div><input class="mixtable-entry-field mixTableTx 3"/>
-            <div class="mixtable-entry-label">CH4</div><input class="mixtable-entry-field mixTableTx 4"/>
-            <div class="mixtable-entry-label">CH5</div><input class="mixtable-entry-field mixTableTx 5"/>
-            <div class="mixtable-entry-label">CH6</div><input class="mixtable-entry-field mixTableTx 6"/>
-            <div class="mixtable-entry-label">CH7</div><input class="mixtable-entry-field mixTableTx 7"/>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableTx[$index]" label="CH{{$index}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
         <div class="mixtable-row">
             <div class="mixtable-row-label">Ty Mix</div>
-            <div class="mixtable-entry-label">CH0</div><input class="mixtable-entry-field mixTableTy 0"/>
-            <div class="mixtable-entry-label">CH1</div><input class="mixtable-entry-field mixTableTy 1"/>
-            <div class="mixtable-entry-label">CH2</div><input class="mixtable-entry-field mixTableTy 2"/>
-            <div class="mixtable-entry-label">CH3</div><input class="mixtable-entry-field mixTableTy 3"/>
-            <div class="mixtable-entry-label">CH4</div><input class="mixtable-entry-field mixTableTy 4"/>
-            <div class="mixtable-entry-label">CH5</div><input class="mixtable-entry-field mixTableTy 5"/>
-            <div class="mixtable-entry-label">CH6</div><input class="mixtable-entry-field mixTableTy 6"/>
-            <div class="mixtable-entry-label">CH7</div><input class="mixtable-entry-field mixTableTy 7"/>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableTy[$index]" label="CH{{$index}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
         <div class="mixtable-row">
             <div class="mixtable-row-label">Tz Mix</div>
-            <div class="mixtable-entry-label">CH0</div><input class="mixtable-entry-field mixTableTz 0"/>
-            <div class="mixtable-entry-label">CH1</div><input class="mixtable-entry-field mixTableTz 1"/>
-            <div class="mixtable-entry-label">CH2</div><input class="mixtable-entry-field mixTableTz 2"/>
-            <div class="mixtable-entry-label">CH3</div><input class="mixtable-entry-field mixTableTz 3"/>
-            <div class="mixtable-entry-label">CH4</div><input class="mixtable-entry-field mixTableTz 4"/>
-            <div class="mixtable-entry-label">CH5</div><input class="mixtable-entry-field mixTableTz 5"/>
-            <div class="mixtable-entry-label">CH6</div><input class="mixtable-entry-field mixTableTz 6"/>
-            <div class="mixtable-entry-label">CH7</div><input class="mixtable-entry-field mixTableTz 7"/>
+            <eeprom-input ng-model="$root.eepromConfig.mixTableTz[$index]" label="CH{{$index}}" ng-repeat="n in [0,1,2,3,4,5,6,7]"/>
         </div>
     </div>
 
