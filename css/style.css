@@ -81,6 +81,9 @@ div.firmware-entry .fw-label {
 
 div.firmware-entry .fw-data {
 		width: 180px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
 }
 
 div.color-box {

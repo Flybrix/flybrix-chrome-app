@@ -1,139 +1,3 @@
-Firebase.INTERNAL.forceWebSockets();
-
-var firebaseReference = new Firebase('https://flybrix.firebaseio.com/firmware');
-
-var officialVersionKey = "Official " + flybrix_app_configuration_version.join(":");
-
-function getFirmwareListElement(key, value, callbackLeft, callbackRight, labelRight) {
-	var entry = $("<div />").attr("id", key).addClass("firmware-entry");
-	var data = $("<table />");
-	function createRow(key, label) {
-		if (key in value) {
-			var row = $("<tr />");
-			row.append($("<td />").text(label).addClass("fw-label"));
-			row.append($("<td />").text(value[key]).addClass("fw-data"));
-			data.append(row);
-		}
-	}
-	createRow("name", "Name:");
-	createRow("author", "Author:");
-	entry.append(data);
-	entry.append($("<div />").addClass("button").addClass("firmware-button").text("update firmware").click(function () {
-			callbackLeft(key, load_firmware);
-		}));
-	if (callbackRight) {
-		entry.append($("<div />").addClass("button").addClass("firmware-button").text(labelRight).click(function () {
-				callbackRight(key);
-			}));
-	}
-	return entry;
-}
-
-function removeLocalFirmware(key) {
-	chrome.storage.local.remove("hex:" + key, function () {
-		console.log("Firmware", key, "removed");
-	});
-}
-
-function updateLocalStorageData() {
-	var hexList = $("#hex-local");
-	hexList.empty();
-	chrome.storage.local.get(null, function (items) {
-		for (var key in items) {
-			if (key.substring(0, 4) !== "hex:")
-				continue;
-			var dataLocation = hexList;
-			var callbackRight = removeLocalFirmware;
-			var shortKey = key.substring(4);
-			if (shortKey === "@remote:" + officialVersionKey) {
-				dataLocation = $("#hex-recommended");
-				dataLocation.empty();
-				callbackRight = null;
-			}
-			var item = items[key];
-			if (!("info" in item) || !("hex" in item))
-				continue;
-			dataLocation.append(getFirmwareListElement(shortKey, item.info, function (a, b) {
-					var longKey = "hex:" + a;
-					chrome.storage.local.get(longKey, function (items) {
-						if (!(longKey in items))
-							return;
-						var item = items[longKey];
-						if (!("hex" in item))
-							return;
-						b(item.hex);
-					})
-				}, callbackRight, "remove"));
-		}
-	});
-}
-
-firebaseReference.on('value', function (snapshot) {
-	var hexList = $("#hex-remote");
-	hexList.empty();
-	snapshot.forEach(function (child) {
-		var key = child.key();
-		var info = child.child("info").val();
-		hexList.append(getFirmwareListElement(key, info, readFirebaseEntry, function (key) {
-				readFirebaseEntryFull(key, function (data) {
-					var entry = {};
-					entry["hex:@remote:" + key] = data;
-					chrome.storage.local.set(entry, function () {
-						console.log("Firmware", key, "stored");
-					});
-				});
-			}, "store"));
-		if (key === officialVersionKey) {
-			var entry = {};
-			entry["hex:@remote:" + key] = child.val();
-			chrome.storage.local.set(entry, function () {
-				console.log("Recommended hex version stored");
-			});
-		}
-	});
-});
-
-function readFirebaseEntry(key, callback) {
-	firebaseReference.child(key).child("hex").once("value", function (snapshot) {
-		callback(snapshot.val());
-	});
-}
-
-function readFirebaseEntryFull(key, callback) {
-	firebaseReference.child(key).once("value", function (snapshot) {
-		callback(snapshot.val());
-	});
-}
-
-function readLocalEntry(key, callback) {
-	var longKey = "hex:" + key;
-	chrome.storage.local.get(longKey, function (items) {
-		if (!(longKey in items))
-			return;
-		var item = items[longKey];
-		if (!("hex" in item))
-			return;
-		callback(item.hex);
-	})
-}
-
-function readTextFile(file, callback) {
-	readURL(chrome.runtime.getURL(file), callback);
-}
-
-function readURL(file, callback) {
-	var rawFile = new XMLHttpRequest();
-	rawFile.open("GET", file, true);
-	rawFile.onreadystatechange = function () {
-		if (rawFile.readyState === XMLHttpRequest.DONE) {
-			if (rawFile.status === 200 || rawFile.status == 0) {
-				callback(rawFile.responseText);
-			}
-		}
-	}
-	rawFile.send(null);
-}
-
 function readHexFile(entry, callback) {
 	if (!entry) {
 		command_log('No hex file selected!');
@@ -161,9 +25,6 @@ function readHexFile(entry, callback) {
 }
 
 function initialize_config_view() {
-	updateLocalStorageData();
-	chrome.storage.onChanged.addListener(updateLocalStorageData);
-
 	$('#load-hex-file').click(function (e) {
 		e.preventDefault();
 		var accepts = [{
@@ -207,7 +68,7 @@ function initialize_config_view() {
 (function() {
     'use strict';
 
-    var configController = function($scope, $rootScope, deviceConfig) {
+    var configController = function($scope, $rootScope, $timeout, deviceConfig, $firebaseObject) {
         $scope.eepromRefresh = function() {
             deviceConfig.request();
         };
@@ -215,7 +76,74 @@ function initialize_config_view() {
         $scope.eepromReinit = function() {
             deviceConfig.reinit();
         };
+
+				var officialVersionKey = "Official " + flybrix_app_configuration_version.join(":");
+
+        Firebase.INTERNAL.forceWebSockets();
+        $timeout(function() {
+            var firebaseReference = new Firebase('https://flybrix.firebaseio.com/firmware');
+            var syncObject = $firebaseObject(firebaseReference);
+            syncObject.$bindTo($scope, 'firmwareRemote');
+        }, 0);
+
+        $scope.loadFirmware = function(hex) {
+						console.log(hex);
+            load_firmware(hex);
+        };
+
+				function removeLocalFirmware(key) {
+						chrome.storage.local.remove("hex:" + key, function () {
+								console.log("Firmware", key, "removed");
+						});
+				};
+
+				$scope.storeLocalFirmware = function(key, data) {
+						var entry = {};
+						entry["hex:@remote:" + key] = data;
+						chrome.storage.local.set(entry, function () {
+								console.log("Firmware", key, "stored");
+						});
+				}
+
+        function getEntriesFromStorage(items) {
+						$scope.$apply(function () {
+								$scope.recommendedFirmware = undefined;
+		            $scope.firmwareLocal = Object.keys(items)
+		                .filter(function(key) {
+		                    return key.substring(0, 4) === 'hex:'
+		                })
+		                .map(function(key) {
+												var shortKey = key.substring(4);
+												if (shortKey === "@remote:" + officialVersionKey)
+														$scope.recommendedFirmware = items[key];
+		                    return {
+		                        data: items[key],
+														callbackRight: function () {
+																removeLocalFirmware(shortKey);
+														}
+		                    };
+		                });
+						});
+        }
+				chrome.storage.onChanged.addListener(function() {
+						chrome.storage.local.get(null, getEntriesFromStorage);
+				});
+				chrome.storage.local.get(null, getEntriesFromStorage);
     };
 
-    angular.module('flybrixApp').controller('configController', ['$scope', '$rootScope', 'deviceConfig', configController]);
+    var app = angular.module('flybrixApp');
+
+    app.controller('configController', ['$scope', '$rootScope', '$timeout', 'deviceConfig', '$firebaseObject', configController]);
+
+    app.directive('firmwareCard', function() {
+        return {
+            templateUrl: 'tabs/templates/firmware-card.html',
+            scope: {
+                data: '=',
+                callbackRight: '=',
+                labelRight: '=',
+								key: '=',
+            },
+        };
+    });
 }());
