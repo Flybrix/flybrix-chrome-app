@@ -3,7 +3,7 @@
       <div class="firmware-list-title">Recommended firmware</div>
       <firmware-card data="recommendedFirmware"/>
     </div>
-    <div class='button view-button' id="load-hex-file">load local firmware</div>
+    <div class="button view-button" ng-click="loadHexFile">load local firmware</div>
     <div>
         <div style="display: inline-block;">
             <div class='firmware-list-title'>Remote firmwares</div>
@@ -23,9 +23,7 @@
         </div>
     </div>
 
-    <div class="flybrix-filehandler-holder">
-        <div id="configuration-filehandler" class="configuration-filehandler"></div>
-    </div>
+    <filehandler-bar ng-model="configurationFilehandler"/>
 
     <div class='button view-button' ng-click="eepromRefresh()">refresh from flyer</div>
 

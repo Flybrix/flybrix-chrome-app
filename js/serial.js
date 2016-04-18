@@ -38,7 +38,7 @@ var send_message;
 
                 // throttle back datastream when the UI lags behind to keep things usable
                 if (ui_update_rate > 1020) {
-                    command_log('UI is falling behind -- <span style="color: red;">SLOWING DOWN GRAPH UPDATES</span>');
+                    commandLog('UI is falling behind -- <span style="color: red;">SLOWING DOWN GRAPH UPDATES</span>');
                     graph_update_delay *= 2.0;
                 }
                 var port_speed_kbps = char_counter / ui_update_rate;
@@ -95,7 +95,7 @@ var send_message;
         function onDisconnectCallback(result, response) {
             if (result) {  // All went as expected
                 console.log('Connection closed successfully.');
-                command_log('Connection closed -- <span style="color: green;">OK</span>');
+                commandLog('Connection closed -- <span style="color: green;">OK</span>');
 
                 backgroundPage.serialConnectionId = -1;  // reset connection id
 
@@ -105,7 +105,7 @@ var send_message;
             } else {  // Something went wrong
                 if (backgroundPage.serialConnectionId > 0) {
                     console.log('There was an error that happened during "connection-close" procedure.');
-                    command_log('Connection closed -- <span style="color: red;">ERROR</span>');
+                    commandLog('Connection closed -- <span style="color: red;">ERROR</span>');
                 }
                 response.reject();
             }
