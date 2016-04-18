@@ -4,7 +4,7 @@ function initialize_vehicle_view() {
 (function() {
     'use strict';
 
-    var vehicleController = function($scope, $rootScope, $timeout) {
+    var vehicleController = function($scope, $rootScope, $timeout, deviceConfig) {
 
         var magnetometer_estimate = [0, 0, 0, 0];
         var magnetometer_estimate_points = [];
@@ -141,9 +141,9 @@ function initialize_vehicle_view() {
             var pitch = state.kinematicsAngle[0];
             var roll = state.kinematicsAngle[1];
             var yaw = state.kinematicsAngle[2];
-            var magx = state.mag[0] + eepromConfig.magBias[0];
-            var magy = state.mag[1] + eepromConfig.magBias[1];
-            var magz = state.mag[2] + eepromConfig.magBias[2];
+            var magx = state.mag[0] + $rootScope.eepromConfig.magBias[0];
+            var magy = state.mag[1] + $rootScope.eepromConfig.magBias[1];
+            var magz = state.mag[2] + $rootScope.eepromConfig.magBias[2];
 
             // change to three.js coordinate system
             // The X axis is red. The Y axis is green. The Z axis is blue.
@@ -192,12 +192,10 @@ function initialize_vehicle_view() {
         };
 
         $scope.applyBiasFix = function() {
-            eepromConfig.magBias = magnetometer_estimate.slice(0, 3).map(function(v) {
+            $rootScope.eepromConfig.magBias = magnetometer_estimate.slice(0, 3).map(function(v) {
                 return -v;
             });
-            $timeout(function() {
-                sendCONFIG();
-            }, 1);
+            deviceConfig.send($rootScope.eepromConfig);
         };
 
         var last_time = new Date();
@@ -243,5 +241,5 @@ function initialize_vehicle_view() {
 
     var app = angular.module('flybrixApp');
 
-    app.controller('vehicleController', ['$scope', '$rootScope', '$timeout', vehicleController]);
+    app.controller('vehicleController', ['$scope', '$rootScope', '$timeout', 'deviceConfig', vehicleController]);
 }());
