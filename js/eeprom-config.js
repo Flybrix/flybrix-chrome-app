@@ -1,9 +1,7 @@
 var flybrix_app_configuration_version = [1, 2, 0];  // checked at startup!
 
 // TODO: remove all of this once we encapsulate everything
-var eepromConfig;
 var requestCONFIG;
-var sendCONFIG;
 
 (function() {
     'use strict';
@@ -40,7 +38,6 @@ var sendCONFIG;
 
         function resetConfig() {
             config = $.extend(true, {}, configBase);
-            eepromConfig = config;  // TODO: remove this line once we encapsulate everything
         }
 
         function parse(dataView, structure) {
@@ -164,9 +161,6 @@ var sendCONFIG;
 
         // TODO: remove
         requestCONFIG = request;
-        sendCONFIG = function() {
-            send();
-        };
 
         return {
             request: request,

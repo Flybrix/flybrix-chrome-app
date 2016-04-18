@@ -20,80 +20,6 @@
         }
     };
 
-    function migrate(config, recursive_call) {
-        recursive_call = recursive_call || false;
-        var desiredVersion = eepromConfig.version.slice(0, 2).join('.');
-        var currentVersion = config.version.slice(0, 2).join('.');
-
-        if (desiredVersion === currentVersion) {  // http://semver.org/
-            if (recursive_call)
-                commandLog('Configuration update <span style="color: green;">SUCCESSFUL</span>');
-            return true;
-        }
-        if (!recursive_call)
-            commandLog('EEPROM version is newer than the configuration file - attempting update');
-        if (currentVersion in migrations) {
-            migrations[currentVersion](config);
-            return migrate(config, true);
-        }
-        return false;
-    }
-
-    $.fn.read_eepromConfig_from_filehandler = function() {
-        this.each(function() {
-            var filehandler_query = $(this);
-
-            chosenEntry = filehandler_query.data("chosenEntry");
-
-            if (!chosenEntry) {
-                commandLog('No file selected for loading configuration!');
-                console.error('no file selected');
-                return;
-            }
-
-            chosenEntry.file(function(file) {
-                var reader = new FileReader();
-
-                reader.onerror = function(e) {
-                    commandLog('Reading configuration <span style="color: red">FAILED</span>');
-                    console.error(e);
-                };
-
-                reader.onloadend = function(e) {
-                    commandLog('Reading configuration was <span style="color: green;">SUCCESSFUL</span>');
-
-                    try {  // check if string provided is a valid JSON
-                        var deserialized_config_object = JSON.parse(e.target.result);
-                        if (deserialized_config_object.version === undefined)
-                            throw 'no version parameter found';
-                    } catch (e) {
-                        commandLog('Reading configuration <span style="color: red">FAILED</span>');
-                        commandLog('File provided doesn\'t contain valid data');
-                        return;
-                    }
-
-                    console.log('here!');
-                    // replace eepromConfig with configuration from backup file
-                    if (migrate(deserialized_config_object)) {  // http://semver.org/
-
-                        commandLog('Configuration MAJOR and MINOR versions <span style="color: green;">MATCH</span>');
-                        console.log('versions match');
-
-                        eepromConfig = deserialized_config_object.config;
-                        sendCONFIG();
-
-                    } else {
-                        commandLog('Configuration MAJOR and MINOR versions <span style="color: red;">DO NOT MATCH</span>');
-                        commandLog('Reading configuration <span style="color: red">FAILED</span>');
-                        console.log('version mismatch');
-                    }
-                };
-
-                reader.readAsText(file);
-            });
-        });
-    };
-
     var filehandlerBar = function() {
         var link = function(scope, element, attrs, ngModel) {
 
@@ -130,6 +56,25 @@
     };
 
     var filehandlerHelper = function(deviceConfig, commandLog) {
+        function migrate(config, recursive_call) {
+            recursive_call = recursive_call || false;
+            var desiredVersion = deviceConfig.getConfig().version.slice(0, 2).join('.');
+            var currentVersion = config.version.slice(0, 2).join('.');
+
+            if (desiredVersion === currentVersion) {  // http://semver.org/
+                if (recursive_call)
+                    commandLog('Configuration update <span style="color: green;">SUCCESSFUL</span>');
+                return true;
+            }
+            if (!recursive_call)
+                commandLog('EEPROM version is newer than the configuration file - attempting update');
+            if (currentVersion in migrations) {
+                migrations[currentVersion](config);
+                return migrate(config, true);
+            }
+            return false;
+        }
+
         function writeData(entry, data) {
             if (!entry) {
                 console.log('no file selected');
