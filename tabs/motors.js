@@ -1,22 +1,5 @@
-
 function initialize_motors_view() {
-    $('#motors .motor-view-level-value')
-        .change(function(e) {
-            var motor_n = parseInt($(this).parent().index());  // motor number
-            console.log(motor_n);
-            var motor_v = parseInt($(this).val());  // motor value
-            setTimeout(function() {
-                send_message(CommandFields.COM_MOTOR_OVERRIDE_SPEED_0 << motor_n, [motor_v % 256, motor_v / 256]);
-            }, 1);
-        })
-        .attr('step', 'any')
-        .attr('type', 'number')
-        .attr('min', 0);
-
-    $('#motors .motor-view-level-value').blur();
 };
-
-
 
 (function() {
     'use strict';
@@ -41,7 +24,7 @@ function initialize_motors_view() {
 
         var last_motors_view_update = new Date();
         $scope.$watch('state', function() {
-            if (!$rootScope.state)
+            if (!$rootScope.state || !$rootScope.eepromConfig)
                 return;
 
             $scope.motorsEnabledNeg = !($rootScope.state.status & 0x0400);
@@ -55,8 +38,8 @@ function initialize_motors_view() {
                     update_bar_css(i, 'Ty', $rootScope.state.control[2] * $rootScope.eepromConfig.mixTableTy[i] / Math.max.apply(null, $rootScope.eepromConfig.mixTableTy));
                     update_bar_css(i, 'Tz', $rootScope.state.control[3] * $rootScope.eepromConfig.mixTableTz[i] / Math.max.apply(null, $rootScope.eepromConfig.mixTableTz));
                     update_bar_css(i, 'sum', $rootScope.state.MotorOut[i]);
-                    if (!$('.' + i + ' .motor-view-level-value').is(":focus"))
-                        $('.' + i + ' .motor-view-level-value').val($rootScope.state.MotorOut[i].toFixed(0));
+                    if (!$scope.motorFocused[i])
+                        $scope.motorValue[i] = $rootScope.state.MotorOut[i];
                 }
                 last_motors_view_update = now;
             }
@@ -85,8 +68,16 @@ function initialize_motors_view() {
             serial.send(CommandFields.COM_MOTOR_OVERRIDE_SPEED_ALL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
         };
 
+        $scope.changeMotorValue = function (index) {
+            console.log('Change value of motor', index);
+            var motor_v = $scope.motorValue[index];  // motor value
+            serial.send(CommandFields.COM_MOTOR_OVERRIDE_SPEED_0 << index, [motor_v % 256, motor_v / 256]);
+        };
+
         $scope.motorsEnabledNeg = true;
         $scope.motorsOverrideNeg = true;
+        $scope.motorValue = [0, 0, 0, 0, 0, 0, 0, 0];
+        $scope.motorFocused = [false, false, false, false, false, false, false, false];
     };
 
     angular.module('flybrixApp').controller('motorsController', ['$scope', '$rootScope', '$interval', 'serial', motorsController]);
