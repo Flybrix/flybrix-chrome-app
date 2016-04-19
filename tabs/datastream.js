@@ -2,23 +2,6 @@ var setTargetDelay;
 var old_data_mode;
 
 function initialize_datastream_view() {
-    $("#current-state .model-change-mask")
-        .each(function f() {
-            //$(this).prop("checked", state_data_mask[parseInt($(this).attr('id'))]);
-            // TODO: fix this!!
-        });
-
-    $("#current-state .model-change-mask")
-        .change(function() {
-            var mask = 0;
-            $("#current-state .model-change-mask:checked")
-                .each(function f() {
-                    mask = mask + (1 << parseInt($(this).attr('id')));
-                });
-            var bytes = [mask % 256, mask / 256, mask / 256 / 256, mask / 256 / 256 / 256];  // little endian
-            console.log(new Uint8Array(bytes));
-            send_message(CommandFields.COM_SET_STATE_MASK | CommandFields.COM_REQ_RESPONSE, new Uint8Array(bytes));
-        });
 };
 
 (function() {
@@ -34,18 +17,30 @@ function initialize_datastream_view() {
         return 1000 / delay;
     }
 
-    var datastreamController = function($scope, $rootScope, $interval, filehandler, commandLog) {
+    var datastreamController = function($scope, $rootScope, $interval, filehandler, commandLog, serial) {
         $interval(function() {
             $scope.slowState = $rootScope.state;
             $scope.slowStateUpdateRate = $rootScope.stateUpdateRate;
+            $scope.modelChangeMask = $rootScope.stateDataMask;
         }, 150);  // throttle redraw to 6-7Hz
+
+        $scope.modelChangeMask = [];
+
+        $scope.changeMask = function() {
+            var mask = $scope.modelChangeMask.reduce(function(acc, val, idx) {
+                return acc + (val ? (1 << idx) : 0);
+            });
+            var bytes = [mask % 0x100, (mask >> 8) % 0x100, (mask >> 16) % 0x100, (mask >> 24) % 0x100];  // little endian
+            console.log(bytes);
+            serial.send(serial.field.COM_SET_STATE_MASK, new Uint8Array(bytes));
+        };
 
         $scope.$watch('targetDelay', function(value) {
             if (value === undefined)
                 return;
             $scope.targetRate = rate_from_delay(value);
             var bytes = [value % 256, value / 256];  // little endian
-            send_message(CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE, new Uint8Array(bytes));
+            serial.send(serial.field.COM_SET_STATE_DELAY, new Uint8Array(bytes));
         });
 
         setTargetDelay = function(delay) {
@@ -92,5 +87,5 @@ function initialize_datastream_view() {
         };
     };
 
-    angular.module('flybrixApp').controller('datastreamController', ['$scope', '$rootScope', '$interval', 'filehandler', 'commandLog', datastreamController]);
+    angular.module('flybrixApp').controller('datastreamController', ['$scope', '$rootScope', '$interval', 'filehandler', 'commandLog', 'serial', datastreamController]);
 }());
