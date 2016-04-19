@@ -233,31 +233,6 @@ $(document).ready(function () {
 	chrome.app.window.current().outerBounds.maxHeight = 0;
 	chrome.app.window.current().outerBounds.maxWidth = 0;
 
-	chrome.storage.local.get('auto_connect', function (result) {
-		if (result.auto_connect === 'undefined' || result.auto_connect) {
-			auto_connect = true;
-			$('input.auto_connect').prop('checked', true);
-
-		} else {
-			// disabled by user
-			auto_connect = false;
-			$('input.auto_connect').prop('checked', false);
-		}
-		// bind UI hook to auto-connect checkbos
-		$('input.auto_connect').change(function () {
-			auto_connect = $(this).is(':checked');
-			chrome.storage.local.set({
-				'auto_connect' : auto_connect
-			});
-			if (auto_connect) {
-				if (!connected_port) {
-					connect_disconnect();
-				}
-			}
-		});
-
-	});
-
 	// serial datastream setup
 	port_selector = $('.datastream-serial select');
 	//$('.datastream-serial #refresh').click(refresh_port_selector);
@@ -643,6 +618,28 @@ function setArrayValues(fields, source) {
 						kI0 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I0_raw,
 						kI1 * kV0 * $rootScope.state.V0_raw * $rootScope.state.I1_raw,
 				];
+		});
+
+		chrome.storage.local.get('auto_connect', function (result) {
+			if (result.auto_connect === 'undefined' || result.auto_connect) {
+				$scope.autoConnect = true;
+			} else {
+				$scope.autoConnect = false;
+			}
+		});
+
+		$scope.$watch('autoConnect', function(val) {
+			if (val === undefined)
+					return;
+			auto_connect = val;
+			chrome.storage.local.set({
+				'auto_connect' : auto_connect
+			});
+			if (val) {
+				if (!connected_port) {
+					connect_disconnect();
+				}
+			}
 		});
 
 		serialHelper = serial;
