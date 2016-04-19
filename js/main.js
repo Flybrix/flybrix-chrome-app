@@ -10,232 +10,10 @@ Credit is due to several other projects, including:
 
  */
 
-var data_mode = "idle"; // valid modes: 'serial','replay','capture', and 'idle'
-
-var replay_buffer;
-var replay_point;
-
-
-// keep track of tabs (fix this with something less hacky someday)
-var tab_id_initialized = [false, false, false, false, false, false, false];
-var tab_dialog_open = [false, false, false, false, false, false, false];
-var discovered_ports = false;
-var connected_port = false;
-var auto_connect = false;
-
-function diff(A, B) {
-	var out = [];
-
-	// create hardcopy
-	for (var i = 0; i < A.length; i++) {
-		out.push(A[i]);
-	}
-
-	for (var i = 0; i < B.length; i++) {
-		if (out.indexOf(B[i]) != -1) {
-			out.splice(out.indexOf(B[i]), 1);
-		}
-	}
-	return out;
-
-}
-
-var serialHelper;  // TODO: remove this once we achieve full AngularJS integration
-
-var initial_config_request = null;
-
 $(document).ready(function () {
-
 	chrome.app.window.current().outerBounds.maxHeight = 0;
 	chrome.app.window.current().outerBounds.maxWidth = 0;
-
-	function setReplayPosition(position) {
-		replay_point = position;
-		$('.datastream-replay .slider').slider("value", position);
-		$('.datastream-replay .datastream-report').html(position);
-	}
-
-	// replay datastream setup
-	$('.datastream-replay .slider').slider({
-		value : 0,
-		min : 0,
-		max : 100,
-		disabled : true,
-		start : function (event, ui) {
-			// pause playback while we're moving the marker
-			//$('.datastream-replay .datastream-report').html(ui.value);
-
-			if (data_mode === "replay") {
-				fireOffStop();
-			}
-		},
-		stop : function (event, ui) {
-			setReplayPosition(ui.value);
-		},
-	});
-	//  https://api.jqueryui.com/slider/
-
-	function checkVersion(ver) {
-		if (ver === flybrix_app_configuration_version)
-			return true;
-		if (ver == null || flybrix_app_configuration_version == null)
-			return false;
-		if (ver.length !== flybrix_app_configuration_version.length)
-			return false;
-		for (var i = 0; i < ver.length; ++i)
-			if (ver[i] !== flybrix_app_configuration_version[i])
-				return false;
-		return true;
-	}
-
-	$('.datastream-replay #open').click(function () {
-		event.preventDefault();
-		var accepts = [{
-				mimeTypes : ['text/*'],
-				extensions : ['dat', 'csv', 'txt', 'bin', 'log', 'raw']
-			}
-		];
-		var file_textbox_selector = $('.datastream-replay .filename')
-			chrome.fileSystem.chooseEntry({
-				type : 'openFile',
-				accepts : accepts
-			}, function (chosenEntry) {
-				if (!chosenEntry) {
-					$('.datastream-replay .filename').html('No File Selected!');
-					return;
-				}
-				// read all contents into replay buffer //TODO worry about size...
-				chosenEntry.file(function (file) {
-					var reader = new FileReader();
-					reader.onerror = function (e) {
-						console.error(e);
-					};
-					reader.onloadend = function (e) {
-						try {
-							var dataObject = JSON.parse(reader.result);
-							if (!('version' in dataObject))
-								throw "File is missing the 'version' field";
-							if (!('config' in dataObject))
-								throw "File is missing the 'config' field";
-							if (!('data' in dataObject))
-								throw "File is missing the 'data' field";
-							if (!checkVersion(dataObject.version))
-								throw "The requested recording is made on an old firmware version";
-							replay_buffer = new Uint8Array(atob(dataObject.data).split("").map(function (c) {
-										return c.charCodeAt(0);
-									}));
-							replay_point = 0;
-						} catch (err) {
-							command_log('Read <span style="color: red;">FAILED</span>: ' + err);
-							console.log('Read FAILED, error:', err);
-							return;
-						}
-
-						command_log('Read <span style="color: green;">SUCCESSFUL</span>');
-						console.log('Read SUCCESSFUL');
-
-						$('.datastream-replay .datastream-report').html("Loaded " + replay_buffer.length + " bytes.");
-						$('.datastream-replay .slider').slider("option", "disabled", false);
-						$('.datastream-replay .slider').slider("option", "max", replay_buffer.length);
-					};
-					reader.readAsText(file);
-				});
-
-				chrome.fileSystem.getDisplayPath(chosenEntry, function (displayPath) {
-					$('.datastream-replay .filename').html(displayPath);
-				});
-			});
-	});
-
-	var data_rate_field = $("#data-rate");
-
-	function simulateData(inputData, tickDelay) {
-		if (data_mode != "replay")
-			return;
-		if (inputData.length < 1) {
-			fireOffStop();
-			setReplayPosition(0);
-			return;
-		}
-		var dataLength = Math.ceil(data_rate_field.val() * (tickDelay / 8));
-		serialHelper.read(inputData.slice(0, dataLength));
-		setReplayPosition(replay_point + dataLength);
-
-		setTimeout(function () {
-			simulateData(inputData.slice(dataLength), tickDelay);
-		}, tickDelay);
-	}
-
-	function fireOffStop() {
-		data_mode = "idle";
-	}
-
-	$('.datastream-replay #play').click(function () {
-		console.log('click play', $(this));
-		// TODO
-		// turn off serial port if necessary
-		// set mode to replay
-		// advance to slider position in replay_buffer
-		// read and feed while adjusting slider position
-
-		// drive everything via the slider value update -- send a chunk of bytes and then advance on a timer.
-
-		//$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
-		if (data_mode === "replay")
-			return;
-		if (data_mode === "serial")
-			connect_disconnect();
-		data_mode = "replay";
-
-		setTimeout(function () {
-			simulateData(replay_buffer.slice(replay_point), 50);
-		}, 100);
-	});
-
-	$('.datastream-replay #pause').click(function () {
-		// stop playing
-		fireOffStop();
-	});
-
-	$('.datastream-replay #stop').click(function () {
-		// stop playing
-		fireOffStop();
-		setReplayPosition(0);
-	});
-	// TODO
-	// deal with slider related events
-
-	setTimeout(function () {
-		$("[href='#datastream']").click()
-	}, 10);
-
-	$('.command-log').click(function (e) {
-		var loglines = document.getElementById('command-log').innerHTML.split('<p>');
-		var str = "";
-		for (var i = 0; i < loglines.length; i++) {
-			str += $('<p>' + loglines[i]).text() + '\n';
-		}
-		console.log(str);
-	});
-
 }); // document ready
-
-function command_log(message) {
-	var d = new Date();
-	var time = ((d.getHours() < 10) ? '0' + d.getHours() : d.getHours())
-	 + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes() : d.getMinutes())
-	 + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds() : d.getSeconds())
-	 + ':' + ((d.getMilliseconds() < 100) ? '0' + ((d.getMilliseconds() < 10) ? '0' + d.getMilliseconds() : d.getMilliseconds()) : d.getMilliseconds())
-
-	var html = '<p>' + time + ' -- ' + message + '</p>';
-	$('.command-log').append(html);
-	var bottom = $('.command-log')[0].scrollHeight - $('.command-log').height();
-	setTimeout(function () {
-		$('.command-log').animate({
-			scrollTop : bottom
-		}, 500, function () {});
-	}, 1);
-}
 
 //these functions are used to work with dataviews in eeprom-config.js and in parser.js
 //javascript won't pass primitives by reference
@@ -317,6 +95,22 @@ function setArrayValues(fields, source) {
 
 (function() {
 	'use strict';
+
+	function diff(A, B) {
+		var out = [];
+
+		// create hardcopy
+		for (var i = 0; i < A.length; i++) {
+			out.push(A[i]);
+		}
+
+		for (var i = 0; i < B.length; i++) {
+			if (out.indexOf(B[i]) != -1) {
+				out.splice(out.indexOf(B[i]), 1);
+			}
+		}
+		return out;
+	}
 
 	var mainController = function ($scope, $rootScope, $timeout, $interval, serial, commandLog, deviceConfig) {
 		var tabClick = function (tab) {
@@ -419,8 +213,6 @@ function setArrayValues(fields, source) {
 			console.log('Connecting to: ' + $scope.deviceChoice);
 
 			var onSuccess = function () {
-					data_mode = "serial";
-
 					initial_config_request = $timeout(function() {
 							// request configuration data (so we have something to work with)
 							deviceConfig.request();
@@ -452,8 +244,6 @@ function setArrayValues(fields, source) {
 
 			// Reset port usage indicator to 0
 			$('span.port-usage').html(0 + ' kbps');  // TODO: handle this more elegantly
-
-			data_mode = "idle";
 		};
 
 		$scope.tabs = [
@@ -474,11 +264,11 @@ function setArrayValues(fields, source) {
 		}
 
 		serial.setStateCallback(function (state, state_data_mask, serial_update_rate) {
-				$rootScope.$apply(function () {
+				$timeout(function () {
 						$rootScope.state = state;
 						$rootScope.stateDataMask = state_data_mask;
 						$rootScope.stateUpdateRate = serial_update_rate;
-				});
+				}, 0);
 		});
 
 		deviceConfig.setConfigCallback(function () {
@@ -505,7 +295,6 @@ function setArrayValues(fields, source) {
 		});
 
 		$scope.$watch('devices', function (devices) {
-			console.log("PING");
 			disconnectSerialIfSamePath(devices, serial.getPath());
 			if ($scope.deviceChoice === undefined) {
 				chrome.storage.local.get('last_used_port', function (result) {
@@ -539,21 +328,187 @@ function setArrayValues(fields, source) {
 		$scope.$watch('autoConnect', function(val) {
 			if (val === undefined)
 					return;
-			auto_connect = val;
 			chrome.storage.local.set({
-				'auto_connect' : auto_connect
+				'auto_connect' : val
 			});
 			autoConnectIfExists();
 		});
 
+		$scope.$watch('dataSource', function () {
+			// terminate all data sources
+			$scope.disconnect();
+			fireOffStop();
+		});
+
 		$interval(refreshPortSelector, 200);
 
-		serialHelper = serial;
+		$scope.dataSource = 'serial';
+
+		function setReplayPosition(position) {
+			$scope.datastreamReplay.replayPoint = position;
+			$('.datastream-replay .slider').slider("value", position);
+			$('.datastream-replay .datastream-report').html(position);
+		}
+
+		$scope.datastreamReplay = {
+			dataRate:100,
+		};
+
+		function fireOffStop() {
+			$interval.cancel($scope.datastreamReplay.interval);
+		}
+
+		function simulateData(inputData, tickDelay) {
+			if (inputData.length < 1) {
+				setReplayPosition(0);
+				fireOffStop();
+				return;
+			}
+			var dataLength = Math.ceil($scope.datastreamReplay.dataRate * (tickDelay / 8));
+			serial.read(inputData.slice(0, dataLength));
+			setReplayPosition($scope.datastreamReplay.replayPoint + dataLength);
+		}
+
+		function checkVersion(ver) {
+			if (ver === flybrix_app_configuration_version)
+				return true;
+			if (ver == null || flybrix_app_configuration_version == null)
+				return false;
+			if (ver.length !== flybrix_app_configuration_version.length)
+				return false;
+			for (var i = 0; i < ver.length; ++i)
+				if (ver[i] !== flybrix_app_configuration_version[i])
+					return false;
+			return true;
+		}
+
+		$scope.datastreamReplay.open = function () {
+			var accepts = [{
+					mimeTypes : ['text/*'],
+					extensions : ['dat', 'csv', 'txt', 'bin', 'log', 'raw']
+				}
+			];
+			var file_textbox_selector = $('.datastream-replay .filename')
+				chrome.fileSystem.chooseEntry({
+					type : 'openFile',
+					accepts : accepts
+				}, function (chosenEntry) {
+					if (!chosenEntry) {
+						$('.datastream-replay .filename').html('No File Selected!');
+						return;
+					}
+					// read all contents into replay buffer //TODO worry about size...
+					chosenEntry.file(function (file) {
+						var reader = new FileReader();
+						reader.onerror = function (e) {
+							console.error(e);
+						};
+						reader.onloadend = function (e) {
+							try {
+								var dataObject = JSON.parse(reader.result);
+								if (!('version' in dataObject))
+									throw "File is missing the 'version' field";
+								if (!('config' in dataObject))
+									throw "File is missing the 'config' field";
+								if (!('data' in dataObject))
+									throw "File is missing the 'data' field";
+								if (!checkVersion(dataObject.version))
+									throw "The requested recording is made on an old firmware version";
+								$scope.datastreamReplay.replayBuffer = new Uint8Array(atob(dataObject.data).split("").map(function (c) {
+											return c.charCodeAt(0);
+										}));
+								$scope.datastreamReplay.replayPoint = 0;
+							} catch (err) {
+								commandLog('Read <span style="color: red;">FAILED</span>: ' + err);
+								console.log('Read FAILED, error:', err);
+								return;
+							}
+
+							commandLog('Read <span style="color: green;">SUCCESSFUL</span>');
+							console.log('Read SUCCESSFUL');
+
+							$('.datastream-replay .datastream-report').html("Loaded " + $scope.datastreamReplay.replayBuffer.length + " bytes.");
+							$('.datastream-replay .slider').slider("option", "disabled", false);
+							$('.datastream-replay .slider').slider("option", "max", $scope.datastreamReplay.replayBuffer.length);
+						};
+						reader.readAsText(file);
+					});
+
+					chrome.fileSystem.getDisplayPath(chosenEntry, function (displayPath) {
+						$('.datastream-replay .filename').html(displayPath);
+					});
+				});
+		};
+
+		$scope.datastreamReplay.play = function () {
+			// drive everything via the slider value update -- send a chunk of bytes and then advance on a timer.
+
+			//$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
+			$scope.datastreamReplay.interval = $interval(function () {
+				simulateData($scope.datastreamReplay.replayBuffer.slice($scope.datastreamReplay.replayPoint), 50);
+			}, 50);
+		};
+
+		$scope.datastreamReplay.pause = function () {
+			// stop playing
+			fireOffStop();
+		};
+
+		$scope.datastreamReplay.stop = function () {
+			// stop playing
+			fireOffStop();
+			setReplayPosition(0);
+		};
+
+		// replay datastream setup
+		$('.datastream-replay .slider').slider({
+			value : 0,
+			min : 0,
+			max : 100,
+			disabled : true,
+			start : function (event, ui) {
+				// pause playback while we're moving the marker
+				//$('.datastream-replay .datastream-report').html(ui.value);
+
+				fireOffStop();
+			},
+			stop : function (event, ui) {
+				setReplayPosition(ui.value);
+			},
+		});
+		//  https://api.jqueryui.com/slider/
+
+		$scope.commandLogClick = function () {
+			var loglines = document.getElementById('command-log').innerHTML.split('<p>');
+			var str = "";
+			for (var i = 0; i < loglines.length; i++) {
+				str += $('<p>' + loglines[i]).text() + '\n';
+			}
+			console.log(str);
+		};
+
+		$rootScope.eepromConfig = deviceConfig.getConfig();
 	};
 
 	var app = angular.module('flybrixApp');
 
 	app.factory('commandLog', function () {
+			function command_log(message) {
+				var d = new Date();
+				var time = ((d.getHours() < 10) ? '0' + d.getHours() : d.getHours())
+				 + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes() : d.getMinutes())
+				 + ':' + ((d.getSeconds() < 10) ? '0' + d.getSeconds() : d.getSeconds())
+				 + ':' + ((d.getMilliseconds() < 100) ? '0' + ((d.getMilliseconds() < 10) ? '0' + d.getMilliseconds() : d.getMilliseconds()) : d.getMilliseconds())
+
+				var html = '<p>' + time + ' -- ' + message + '</p>';
+				$('.command-log').append(html);
+				var bottom = $('.command-log')[0].scrollHeight - $('.command-log').height();
+				setTimeout(function () {
+					$('.command-log').animate({
+						scrollTop : bottom
+					}, 500, function () {});
+				}, 1);
+			}
 			return command_log;
 	});
 

@@ -110,7 +110,7 @@ var graph_update_delay = 50;
 
         function disconnect() {
             var response = $q.defer();
-            if (backgroundPage.serialConnectionId > 0) {
+            if (backgroundPage !== null && backgroundPage.serialConnectionId > 0) {
                 chrome.serial.disconnect(backgroundPage.serialConnectionId, function(result) {
                     onDisconnectCallback(result, response);
                 });

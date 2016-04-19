@@ -211,7 +211,7 @@
 					function (theEntry) {
 
 					if (!theEntry) {
-						command_log('No File Selected!');
+						//command_log('No File Selected!');
 						console.log('no file selected...');
 						return;
 					}
@@ -230,7 +230,7 @@
 									console.error(e);
 								};
 								fileWriter.onwriteend = function (e) {
-									command_log('Write plot to CSV -- <span style="color: green">SUCCESSFUL</span>');
+									//command_log('Write plot to CSV -- <span style="color: green">SUCCESSFUL</span>');
 									console.log('Write SUCCESSFUL');
 								};
 								//write data
