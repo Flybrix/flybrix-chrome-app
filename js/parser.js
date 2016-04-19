@@ -1,5 +1,3 @@
-var CommandFields;  // TODO: wrap this into the IIFE as well
-
 (function() {
     'use strict';
 
@@ -12,7 +10,7 @@ var CommandFields;  // TODO: wrap this into the IIFE as well
             Response: 255,
         };
 
-        var CommandField = {
+        var CommandFields = {
             COM_REQ_RESPONSE: 1 << 0,
             COM_SET_EEPROM_DATA: 1 << 1,
             COM_REINIT_EEPROM_DATA: 1 << 2,
@@ -277,12 +275,10 @@ var CommandFields;  // TODO: wrap this into the IIFE as well
             }, cb_command, cb_ack);
         };
 
-        CommandFields = CommandField;
-
         return {
             processBinaryDatastream: processBinaryDatastream,
             MessageType: MessageType,
-            CommandFields: CommandField,
+            CommandFields: CommandFields,
         };
     };
 

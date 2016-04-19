@@ -206,8 +206,8 @@ function connect_disconnect() {
 
 	                var default_delay_msec = 50;
 
-	                send_message(
-	                    CommandFields.COM_SET_STATE_MASK | CommandFields.COM_SET_STATE_DELAY | CommandFields.COM_REQ_RESPONSE,
+	                serialHelper.send(
+	                    serialHelper.field.COM_SET_STATE_MASK | serialHelper.field.COM_SET_STATE_DELAY,
 	                    new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
 	                // update fields in datastream tab
 	                setTargetDelay(default_delay_msec);

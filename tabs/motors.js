@@ -47,7 +47,7 @@ function initialize_motors_view() {
         });
 
         $scope.overridePilot = function() {
-            serial.send(CommandFields.COM_SET_COMMAND_OVERRIDE, ($scope.motorsOverrideNeg ? 1 : 0));
+            serial.send(serial.field.COM_SET_COMMAND_OVERRIDE, ($scope.motorsOverrideNeg ? 1 : 0));
         };
 
         $scope.enableMotors = function() {
@@ -55,23 +55,23 @@ function initialize_motors_view() {
                 console.log('enabling motors');
                 var i = 0;
                 $interval(function() {
-                    serial.send(CommandFields.COM_REQ_ENABLE_ITERATION, 1, i++ === 81);
+                    serial.send(serial.field.COM_REQ_ENABLE_ITERATION, 1, i++ === 81);
                 }, 10, 82);
             } else {
                 console.log('disabling motors');
-                serial.send(CommandFields.COM_REQ_ENABLE_ITERATION, 0);
+                serial.send(serial.field.COM_REQ_ENABLE_ITERATION, 0);
             }
         };
 
         $scope.zeroMotors = function() {
             console.log('zero motors');
-            serial.send(CommandFields.COM_MOTOR_OVERRIDE_SPEED_ALL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            serial.send(serial.field.COM_MOTOR_OVERRIDE_SPEED_ALL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
         };
 
-        $scope.changeMotorValue = function (index) {
+        $scope.changeMotorValue = function(index) {
             console.log('Change value of motor', index);
             var motor_v = $scope.motorValue[index];  // motor value
-            serial.send(CommandFields.COM_MOTOR_OVERRIDE_SPEED_0 << index, [motor_v % 256, motor_v / 256]);
+            serial.send(serial.field.COM_MOTOR_OVERRIDE_SPEED_0 << index, [motor_v % 256, motor_v / 256]);
         };
 
         $scope.motorsEnabledNeg = true;

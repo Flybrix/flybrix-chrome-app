@@ -4,8 +4,6 @@ var capture_mode_callback = function(data) {
     console.log("ERROR: capture mode callback not set!")
 };
 
-var send_message;
-
 (function() {
     'use strict';
 
@@ -241,8 +239,6 @@ var send_message;
             disconnect();
         };
         chrome.serial.onReceiveError.addListener(onSerialReadError);
-
-        send_message = sendMessage;  // TODO: gradually remove any non-AngularJS serial use
 
         function getDevices() {
             return $q(function(resolve, reject) {
