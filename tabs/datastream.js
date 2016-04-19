@@ -49,37 +49,34 @@ var setTargetDelay;  // TODO: remove when main is handled
         var chosenEntry = null;
         var accumulatedBlob = new Blob();
         var lastBlobWrite = new Date();
-        var old_data_mode;
+        var capturing = false;
+
+        var captureModeCallback = function(data) {
+            var currentTime = new Date();
+            accumulatedBlob = new Blob([accumulatedBlob, data]);
+            if (currentTime - lastBlobWrite < 5000)
+                return;
+            lastBlobWrite = currentTime;
+            filehandler.writeData(chosenEntry, accumulatedBlob);
+        };
 
         $scope.captureModeFilehandler = {
             start: function(entry) {
-                if (data_mode === "capture")
+                if (serial.getDataHandler() === captureModeCallback)
                     return;
                 commandLog('Changing to capture mode.');
                 if (chosenEntry !== entry) {
                     chosenEntry = entry;
                     accumulatedBlob = new Blob();
                 }
-
-                capture_mode_callback = function(data) {
-                    var currentTime = new Date();
-                    accumulatedBlob = new Blob([accumulatedBlob, data]);
-                    if (currentTime - lastBlobWrite < 5000)
-                        return;
-                    lastBlobWrite = currentTime;
-                    filehandler.writeData(chosenEntry, accumulatedBlob);
-                };
-
-                old_data_mode = data_mode;
-                data_mode = "capture";
-
+                serial.setDataHandler(captureModeCallback);
             },
             stop: function(entry) {
-                if (data_mode !== "capture")
+                if (serial.getDataHandler() !== captureModeCallback)
                     return;
-                commandLog('Closing capture mode and returning to ' + old_data_mode);
+                commandLog('Closing capture mode and returning to previous mode.');
                 filehandler.writeData(chosenEntry, accumulatedBlob);
-                data_mode = old_data_mode;
+                serial.setDataHandler(null);
             },
         };
     };

@@ -1,9 +1,5 @@
 var graph_update_delay = 50;
 
-var capture_mode_callback = function(data) {
-    console.log("ERROR: capture mode callback not set!")
-};
-
 (function() {
     'use strict';
 
@@ -211,13 +207,30 @@ var capture_mode_callback = function(data) {
             parser.processBinaryDatastream(command, mask, message_buffer, onStateListener, onCommandListener, acknowledge);
         };
 
+        var dataHandler = null;
+
+        function setDataHandler(handler) {
+            dataHandler = handler;
+        }
+
+        function getDataHandler() {
+            return dataHandler;
+        }
+
         function onSerialReadData(data) {
             char_counter += data.length;
+
+            if (dataHandler)
+                dataHandler(data, processData);
+            else
+                cobsReader.AppendToBuffer(data, processData);
+
+            return;  // TODO: get rid of code below
 
             if (data_mode === "serial") {
                 cobsReader.AppendToBuffer(data, processData);
             } else if (data_mode === "capture") {
-                capture_mode_callback(data);
+                //capture_mode_callback(data);
             } else if (data_mode === "replay") {
                 cobsReader.AppendToBuffer(data, processData);
             } else if (data_mode === "idle") {
@@ -255,6 +268,8 @@ var capture_mode_callback = function(data) {
             read: onSerialReadData,
             setStateCallback: onState,
             setCommandCallback: onCommand,
+            setDataHandler: setDataHandler,
+            getDataHandler: getDataHandler,
         };
     };
 
