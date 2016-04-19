@@ -19,8 +19,6 @@ var replay_point;
 // keep track of tabs (fix this with something less hacky someday)
 var tab_id_initialized = [false, false, false, false, false, false, false];
 var tab_dialog_open = [false, false, false, false, false, false, false];
-var port_selector;
-var port_selector_refresh_callback;
 var discovered_ports = false;
 var connected_port = false;
 var auto_connect = false;
@@ -44,202 +42,12 @@ function diff(A, B) {
 
 var serialHelper;  // TODO: remove this once we achieve full AngularJS integration
 
-function refresh_port_selector() {
-	serialHelper.getDevices()
-			.then(function (ports) {
-		var devices = [];
-		ports.forEach(function (device) {
-			devices.push(device.path);
-		});
-
-		if (!discovered_ports || diff(discovered_ports, devices).length > 0) {
-			var diff_ports = diff(discovered_ports, devices);
-
-			if (discovered_ports != false) {
-				console.log("discovered_ports not false");
-				if (diff_ports.length > 1) {
-					console.log('Port unplugged: ' + diff_ports);
-				} else {
-					console.log('Port unplugged: ' + diff_ports[0]);
-				}
-			}
-			/*
-			if disconnected ports contains active then disconnect
-			 */
-			if (connected_port) {
-				for (var i = 0; i < diff_ports.length; i++) {
-					if (diff_ports[i] == connected_port) {
-						console.log("disconnected connected port");
-						connect_disconnect();
-					}
-				}
-			}
-
-			port_selector.html('');
-			if (devices.length > 0) {
-				// Port list received
-
-				devices.forEach(function (device) {
-					$(port_selector).append($("<option/>", {
-							value : device,
-							text : device
-						}));
-				});
-				if (!discovered_ports) {
-					chrome.storage.local.get('last_used_port', function (result) {
-						// if last_used_port was set, we try to select it
-						if (typeof result.last_used_port != 'undefined') {
-							// check if same port exists, if it does, select it
-							ports.forEach(function (port) {
-								if (port.path == result.last_used_port) {
-									$(port_selector).val(result.last_used_port);
-								}
-							});
-						}
-					});
-				}
-			} else {
-				$(port_selector).append($("<option/>", {
-						value : 0,
-						text : 'NOT FOUND'
-					}));
-
-				console.log("No serial ports detected");
-
-			}
-			if (!discovered_ports) {
-				discovered_ports = devices;
-			} else {
-				for (var i = 0; i < diff_ports.length; i++) {
-					discovered_ports.splice(discovered_ports.indexOf(diff_ports[i]), 1);
-				}
-			}
-
-		}
-
-		var new_ports = diff(devices, discovered_ports);
-		if (new_ports.length) {
-
-			if (new_ports.length > 1) {
-				console.log('Port found: ' + new_ports);
-			} else {
-				console.log('Port found: ' + new_ports[0]);
-			}
-			port_selector.html('');
-			devices.forEach(function (device) {
-				$(port_selector).append($("<option/>", {
-						value : device,
-						text : device
-					}));
-			});
-			// if already connected switch to connected port
-			if (connected_port) {
-				port_selector.val(connected_port);
-			} else {
-				port_selector.val(new_ports[0])
-				if (auto_connect) {
-					connect_disconnect();
-				}
-			}
-
-			discovered_ports = devices;
-
-		}
-
-	});
-	port_selector_refresh_callback = setTimeout(refresh_port_selector, 200);
-}
-
 var initial_config_request = null;
-
-function connect_disconnect() {
-	console.log('connect/disconnect');
-	var connect_button = $('.datastream-serial #connect');
-	var connected = connect_button.data('connected'); //initially zero (false)
-
-	selected_port = String($(port_selector).val());
-
-	if (selected_port != '0') {
-		if (connected) {
-
-			console.log('Disconnecting from: ' + selected_port);
-
-			var onSuccess = function () {
-				$('#content').empty();                     // empty content
-        $('#tabs > ul li').removeClass('active');  // de-select any selected tabs
-			};
-
-			var onFailure = function () {
-			};
-
-			serialHelper.disconnect()
-					.then(onSuccess, onFailure);
-
-			// if we disconnect before we ask for initial config data
-			if (initial_config_request) {
-				clearTimeout(initial_config_request);
-			}
-
-			// Reset port usage indicator to 0
-			$('span.port-usage').html(0 + ' kbps');
-
-			connect_button.text('Connect');
-			connected_port = false;
-			data_mode = "idle";
-
-		} else {
-			console.log('Connecting to: ' + selected_port);
-
-			var onSuccess = function () {
-					$('.datastream-serial #connect').text('Disconnect');
-					data_mode = "serial";
-
-					initial_config_request = setTimeout(function() {
-							// request configuration data (so we have something to work with)
-							requestCONFIG();
-
-	            // set the state message mask and frequency
-	            setTimeout(function() {
-
-	                var default_delay_msec = 50;
-
-	                serialHelper.send(
-	                    serialHelper.field.COM_SET_STATE_MASK | serialHelper.field.COM_SET_STATE_DELAY,
-	                    new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
-	                // update fields in datastream tab
-	                setTargetDelay(default_delay_msec);
-	                $('#datastream #current-state .model-change-mask').prop('checked', true);
-	            }, 100);
-
-	        }, 500);
-			};
-
-			var onFailure = function () {
-					$('div.datastream-serial a.connect').click();  // reset the connect button back to "disconnected" state
-			};
-
-			serialHelper.connect(selected_port)
-					.then(onSuccess, onFailure);
-
-			connected_port = selected_port;
-		}
-
-		connect_button.data("connected", !connected);
-	}
-}
 
 $(document).ready(function () {
 
 	chrome.app.window.current().outerBounds.maxHeight = 0;
 	chrome.app.window.current().outerBounds.maxWidth = 0;
-
-	// serial datastream setup
-	port_selector = $('.datastream-serial select');
-	//$('.datastream-serial #refresh').click(refresh_port_selector);
-	// software click to refresh port picker select (during initial load)
-	//$('.datastream-serial #refresh').click();
-
-	refresh_port_selector();
 
 	function setReplayPosition(position) {
 		replay_point = position;
@@ -247,7 +55,6 @@ $(document).ready(function () {
 		$('.datastream-replay .datastream-report').html(position);
 	}
 
-	$('.datastream-serial #connect').click(connect_disconnect);
 	// replay datastream setup
 	$('.datastream-replay .slider').slider({
 		value : 0,
@@ -511,7 +318,7 @@ function setArrayValues(fields, source) {
 (function() {
 	'use strict';
 
-	var mainController = function ($scope, $rootScope, serial, commandLog, deviceConfig) {
+	var mainController = function ($scope, $rootScope, $timeout, $interval, serial, commandLog, deviceConfig) {
 		var tabClick = function (tab) {
 			var titlestr = tab.label;
 			var href = '#' + tab.url;
@@ -572,6 +379,83 @@ function setArrayValues(fields, source) {
 
 		};
 
+		$scope.devices = [];
+		$scope.deviceChoice = undefined;
+
+		function disconnectSerialIfSamePath(devices, path) {
+			var serialPath = serial.getPath();
+			var connectedPort = devices.find(function (val) {
+				return val === serialPath;
+			});
+			if (connectedPort !== undefined)
+				$scope.disconnect();
+		}
+
+		function refreshPortSelector() {
+			serial.getDevices().then(function (ports) {
+				var devices = ports.map(function (port) {
+					return port.path;
+				});
+
+				var diffPorts = diff($scope.devices, devices);
+				if (diffPorts.lenght > 0) {
+					console.log('Ports unplugged:', diff_ports);
+				}
+				diffPorts = diff(devices, $scope.devices);
+				if (diffPorts.lenght > 0) {
+					console.log('Ports found:', diff_ports);
+				}
+				$scope.devices = devices;
+			});
+		}
+
+		$scope.isConnected = function() {
+			return serial.isConnected();
+		}
+
+		var initial_config_request;
+
+		$scope.connect = function () {
+			console.log('Connecting to: ' + $scope.deviceChoice);
+
+			var onSuccess = function () {
+					data_mode = "serial";
+
+					initial_config_request = $timeout(function() {
+							// request configuration data (so we have something to work with)
+							deviceConfig.request();
+
+							// set the state message mask and frequency
+							$timeout(function() {
+									var default_delay_msec = 50;
+
+									serial.send(
+											serial.field.COM_SET_STATE_MASK | serial.field.COM_SET_STATE_DELAY,
+											new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
+									// update fields in datastream tab
+									setTargetDelay(default_delay_msec);
+							}, 100);
+
+					}, 500);
+			};
+
+			serial.connect($scope.deviceChoice).then(onSuccess);
+		};
+
+		$scope.disconnect = function () {
+			console.log('Disconnecting from: ' + serial.getPath());
+
+			serial.disconnect();
+
+			// if we disconnect before we ask for initial config data
+			$timeout.cancel(initial_config_request);
+
+			// Reset port usage indicator to 0
+			$('span.port-usage').html(0 + ' kbps');  // TODO: handle this more elegantly
+
+			data_mode = "idle";
+		};
+
 		$scope.tabs = [
 			{url:'tuning', label:'Tuning'},
 			{url:'sensors', label:'Sensor Data'},
@@ -620,6 +504,30 @@ function setArrayValues(fields, source) {
 				];
 		});
 
+		$scope.$watch('devices', function (devices) {
+			console.log("PING");
+			disconnectSerialIfSamePath(devices, serial.getPath());
+			if ($scope.deviceChoice === undefined) {
+				chrome.storage.local.get('last_used_port', function (result) {
+					$scope.deviceChoice = result.last_used_port;
+				});
+			}
+		}, true);
+
+		function autoConnectIfExists() {
+			if (!$scope.autoConnect)
+				return;
+			var chosenDevice = $scope.devices.find(function (elem) {
+				return elem === $scope.deviceChoice;
+			});
+			console.log("CHOSEN DEVICE", chosenDevice);
+			if (chosenDevice === undefined)
+				return;
+			$scope.connect();
+		}
+
+		$scope.$watch('deviceChoice', autoConnectIfExists);
+
 		chrome.storage.local.get('auto_connect', function (result) {
 			if (result.auto_connect === 'undefined' || result.auto_connect) {
 				$scope.autoConnect = true;
@@ -635,12 +543,10 @@ function setArrayValues(fields, source) {
 			chrome.storage.local.set({
 				'auto_connect' : auto_connect
 			});
-			if (val) {
-				if (!connected_port) {
-					connect_disconnect();
-				}
-			}
+			autoConnectIfExists();
 		});
+
+		$interval(refreshPortSelector, 200);
 
 		serialHelper = serial;
 	};
@@ -651,7 +557,7 @@ function setArrayValues(fields, source) {
 			return command_log;
 	});
 
-	app.controller('mainController', ['$scope', '$rootScope', 'serial', 'commandLog', 'deviceConfig', mainController]);
+	app.controller('mainController', ['$scope', '$rootScope', '$timeout', '$interval', 'serial', 'commandLog', 'deviceConfig', mainController]);
 
 	app.directive('eepromInput', function () {
 			return {

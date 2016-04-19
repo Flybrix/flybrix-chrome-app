@@ -52,6 +52,7 @@ var graph_update_delay = 50;
         chrome.runtime.getBackgroundPage(function(result) {
             backgroundPage = result;
             backgroundPage.serialConnectionId = -1;
+            backgroundPage.serialPortPath = "";
         });
 
         function onConnectCallback(connectionInfo, serialPort, response) {
@@ -64,6 +65,7 @@ var graph_update_delay = 50;
             portUsageStart();
 
             backgroundPage.serialConnectionId = connectionInfo.connectionId;
+            backgroundPage.serialPortPath = serialPort;
             console.log('Connection was opened with ID: ' + backgroundPage.serialConnectionId);
             commandLog('Connection to: ' + serialPort + ' was opened with ID: ' + backgroundPage.serialConnectionId);
 
@@ -92,6 +94,7 @@ var graph_update_delay = 50;
                 commandLog('Connection closed -- <span style="color: green;">OK</span>');
 
                 backgroundPage.serialConnectionId = -1;  // reset connection id
+                backgroundPage.serialPortPath = "";
 
                 portUsageStop();
 
@@ -217,6 +220,12 @@ var graph_update_delay = 50;
             return dataHandler;
         }
 
+        function getPath() {
+            if (backgroundPage === null)
+                return "";
+            return backgroundPage.serialPortPath;
+        }
+
         function onSerialReadData(data) {
             char_counter += data.length;
 
@@ -224,20 +233,6 @@ var graph_update_delay = 50;
                 dataHandler(data, processData);
             else
                 cobsReader.AppendToBuffer(data, processData);
-
-            return;  // TODO: get rid of code below
-
-            if (data_mode === "serial") {
-                cobsReader.AppendToBuffer(data, processData);
-            } else if (data_mode === "capture") {
-                //capture_mode_callback(data);
-            } else if (data_mode === "replay") {
-                cobsReader.AppendToBuffer(data, processData);
-            } else if (data_mode === "idle") {
-                console.log("ERROR: serial port should be closed if we're in 'idle' mode");
-            } else {
-                console.log("ERROR: unknown data_mode");
-            }
         }
 
         function onSerialRead(readInfo) {
@@ -259,6 +254,10 @@ var graph_update_delay = 50;
             });
         }
 
+        function isConnected() {
+            return backgroundPage !== null && backgroundPage.serialConnectionId > 0;
+        }
+
         return {
             getDevices: getDevices,
             connect: connect,
@@ -270,6 +269,8 @@ var graph_update_delay = 50;
             setCommandCallback: onCommand,
             setDataHandler: setDataHandler,
             getDataHandler: getDataHandler,
+            getPath: getPath,
+            isConnected: isConnected,
         };
     };
 

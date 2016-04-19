@@ -47,8 +47,9 @@
     <body ng-cloak ng-controller='mainController'>
         <div style="padding: 5px;">
             <div class="datastream-serial">
-                <select id="port-selector"></select>
-                <div class="button" id="connect">Connect</div>
+                <select ng-model="deviceChoice" ng-options="device as device for device in devices"></select>
+                <div class="button" ng-hide="isConnected()" ng-click="connect()">Connect</div>
+                <div class="button" ng-show="isConnected()" ng-click="disconnect()">Disconnect</div>
 				<label>
 					<input class="auto_connect" type="checkbox" ng-model="autoConnect"/>
 					<span class="auto_connect">Auto Connect</span>
