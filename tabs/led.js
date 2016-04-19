@@ -103,6 +103,3 @@
         };
     });
 }());
-
-function initialize_led_view() {
-}

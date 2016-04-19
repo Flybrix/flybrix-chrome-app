@@ -1,8 +1,4 @@
-var setTargetDelay;
-var old_data_mode;
-
-function initialize_datastream_view() {
-};
+var setTargetDelay;  // TODO: remove when main is handled
 
 (function() {
     'use strict';
@@ -53,6 +49,7 @@ function initialize_datastream_view() {
         var chosenEntry = null;
         var accumulatedBlob = new Blob();
         var lastBlobWrite = new Date();
+        var old_data_mode;
 
         $scope.captureModeFilehandler = {
             start: function(entry) {

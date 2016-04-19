@@ -1,6 +1,3 @@
-function initialize_vehicle_view() {
-}
-
 (function() {
     'use strict';
 

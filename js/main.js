@@ -19,9 +19,6 @@ var replay_point;
 // keep track of tabs (fix this with something less hacky someday)
 var tab_id_initialized = [false, false, false, false, false, false, false];
 var tab_dialog_open = [false, false, false, false, false, false, false];
-var tab_view_init_functions = [initialize_tuning_view, initialize_sensors_view, initialize_signals_view,
-	initialize_vehicle_view, initialize_motors_view, initialize_led_view, initialize_datastream_view,
-	initialize_config_view];
 var port_selector;
 var port_selector_refresh_callback;
 var discovered_ports = false;
@@ -545,7 +542,6 @@ function setArrayValues(fields, source) {
 			var href = '#' + tab.url;
 
 			if (!tab.initialized) {
-				tab.init();
 				tab.initialized = true;
 				tab.open = false;
 
@@ -611,10 +607,6 @@ function setArrayValues(fields, source) {
 			{url:'datastream', label:'Datastream'},
 			{url:'config', label:'Configuration'}
 		];
-
-		$scope.tabs.forEach(function (element, index, array) {
-			element.init = tab_view_init_functions[index];
-		});
 
 		$scope.tabClick = tabClick;
 

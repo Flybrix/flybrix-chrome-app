@@ -1,5 +1,3 @@
-function initialize_config_view(){}
-
 (function() {
     'use strict';
 

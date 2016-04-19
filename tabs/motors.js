@@ -1,6 +1,3 @@
-function initialize_motors_view() {
-};
-
 (function() {
     'use strict';
 

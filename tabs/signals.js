@@ -1,12 +1,7 @@
-
-// order of channels in assignedChannel array is ['THROTTLE','PITCH','ROLL','YAW/RUDDER','AUX 1','AUX 2']
-
-function initialize_signals_view() {
-}
-
 (function() {
     'use strict';
 
+    // order of channels in assignedChannel array is ['THROTTLE','PITCH','ROLL','YAW/RUDDER','AUX 1','AUX 2']
     var signalsController = function($scope, $rootScope, deviceConfig) {
         $rootScope.$watch('state', function(st) {
             if (!st)

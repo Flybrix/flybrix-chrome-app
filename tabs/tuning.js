@@ -1,7 +1,3 @@
-
-function initialize_tuning_view() {
-}
-
 (function() {
     'use strict';
 
