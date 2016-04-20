@@ -225,7 +225,7 @@ function setArrayValues(fields, source) {
 
                         serial.send(serial.field.COM_SET_STATE_MASK | serial.field.COM_SET_STATE_DELAY, new Uint8Array([255, 255, 255, 255, default_delay_msec % 256, default_delay_msec / 256]));
                         // update fields in datastream tab
-                        setTargetDelay(default_delay_msec);
+                        $rootScope.targetDelay = default_delay_msec;
                     }, 100);
 
                 }, 500);

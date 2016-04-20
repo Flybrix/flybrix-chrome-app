@@ -1,5 +1,3 @@
-var setTargetDelay;  // TODO: remove when main is handled
-
 (function() {
     'use strict';
 
@@ -31,20 +29,13 @@ var setTargetDelay;  // TODO: remove when main is handled
             serial.send(serial.field.COM_SET_STATE_MASK, new Uint8Array(bytes));
         };
 
-        $scope.$watch('targetDelay', function(value) {
+        $rootScope.$watch('targetDelay', function(value) {
             if (value === undefined)
                 return;
             $scope.targetRate = rate_from_delay(value);
             var bytes = [value % 256, value / 256];  // little endian
             serial.send(serial.field.COM_SET_STATE_DELAY, new Uint8Array(bytes));
         });
-
-        setTargetDelay = function(delay) {
-            $scope.$apply(function() {
-                $scope.targetDelay = delay;
-            });
-        };
-
 
         var chosenEntry = null;
         var accumulatedBlob = new Blob();
