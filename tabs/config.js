@@ -64,7 +64,7 @@
             deviceConfig.reinit();
         };
 
-        var officialVersionKey = "Official " + flybrix_app_configuration_version.join(":");
+        var officialVersionKey = "Official " + deviceConfig.getDesiredVersion().join(":");
 
         Firebase.INTERNAL.forceWebSockets();
         $timeout(function() {

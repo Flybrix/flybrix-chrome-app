@@ -1,14 +1,15 @@
-var flybrix_app_configuration_version = [1, 2, 0];  // checked at startup!
-
-// TODO: remove all of this once we encapsulate everything
-var requestCONFIG;
-
 (function() {
     'use strict';
 
     var deviceConfigFactory = function(serial, commandLog) {
         var eepromConfigSize = 350;
         var config;
+
+        var desiredVersion = [1, 2, 0];  // checked at startup!
+
+        function getDesiredVersion() {
+            return desiredVersion;
+        }
 
         var configBase = {
             version: [0.0, 0.0, 0.0],
@@ -135,12 +136,11 @@ var requestCONFIG;
             var data = new DataView(message_buffer, 0);
             resetConfig();
             parse(data, config);
-            if ((flybrix_app_configuration_version[0] != config.version[0]) || (flybrix_app_configuration_version[1] != config.version[1])) {
+            if ((desiredVersion[0] != config.version[0]) || (desiredVersion[1] != config.version[1])) {
                 commandLog('<span style="color: red">WARNING: Configuration MAJOR or MINOR version mismatch!</span>');
                 commandLog(
                     'eeprom version: <strong>' + config.version[0] + '.' + config.version[1] + '.' + config.version[2] + '</strong>' +
-                    ' - app expected version: <strong>' + flybrix_app_configuration_version.version[0] + '.' + flybrix_app_configuration_version.version[1] + '.' +
-                    flybrix_app_configuration_version.version[2] + '</strong>');
+                    ' - app expected version: <strong>' + desiredVersion.version[0] + '.' + desiredVersion.version[1] + '.' + desiredVersion.version[2] + '</strong>');
             } else {
                 commandLog('Recieved configuration version: <span style="color: green">' + config.version[0] + '.' + config.version[1] + '.' + config.version[2] + '</span>');
                 configCallback();
@@ -159,15 +159,13 @@ var requestCONFIG;
 
         resetConfig();
 
-        // TODO: remove
-        requestCONFIG = request;
-
         return {
             request: request,
             reinit: reinit,
             send: send,
             getConfig: getConfig,
             setConfigCallback: setConfigCallback,
+            getDesiredVersion: getDesiredVersion,
         };
     };
 

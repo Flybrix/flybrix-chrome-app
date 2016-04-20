@@ -363,6 +363,7 @@ function setArrayValues(fields, source) {
         }
 
         function checkVersion(ver) {
+            var flybrix_app_configuration_version = deviceConfig.getDesiredVersion();
             if (ver === flybrix_app_configuration_version)
                 return true;
             if (ver == null || flybrix_app_configuration_version == null)
@@ -377,7 +378,8 @@ function setArrayValues(fields, source) {
 
         $scope.datastreamReplay.open = function() {
             var accepts = [{mimeTypes: ['text/*'], extensions: ['dat', 'csv', 'txt', 'bin', 'log', 'raw']}];
-            var file_textbox_selector = $('.datastream-replay .filename') chrome.fileSystem.chooseEntry({type: 'openFile', accepts: accepts}, function(chosenEntry) {
+            var file_textbox_selector = $('.datastream-replay .filename');
+            chrome.fileSystem.chooseEntry({type: 'openFile', accepts: accepts}, function(chosenEntry) {
                 if (!chosenEntry) {
                     $('.datastream-replay .filename').html('No File Selected!');
                     return;
