@@ -28,7 +28,7 @@
             $scope.motorsOverrideNeg = !($rootScope.state.status & 0x8000);
 
             var now = new Date();
-            if (now - last_motors_view_update > graph_update_delay) {  // throttle redraw to 20Hz
+            if (now - last_motors_view_update > serial.getGraphUpdateDelay()) {  // throttle redraw to 20Hz
                 for (var i = 0; i < 8; i++) {
                     update_bar_css(i, 'Fz', $rootScope.state.control[0] * $rootScope.eepromConfig.mixTableFz[i] / Math.max.apply(null, $rootScope.eepromConfig.mixTableFz));
                     update_bar_css(i, 'Tx', $rootScope.state.control[1] * $rootScope.eepromConfig.mixTableTx[i] / Math.max.apply(null, $rootScope.eepromConfig.mixTableTx));

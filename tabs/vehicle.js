@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var vehicleController = function($scope, $rootScope, $timeout, deviceConfig) {
+    var vehicleController = function($scope, $rootScope, $timeout, deviceConfig, serial) {
 
         var magnetometer_estimate = [0, 0, 0, 0];
         var magnetometer_estimate_points = [];
@@ -200,7 +200,7 @@
             if (state === undefined)
                 return;
             var new_time = new Date();
-            if (new_time - last_time < graph_update_delay)
+            if (new_time - last_time < serial.getGraphUpdateDelay())
                 return;
             last_time = new_time;
             if (!$scope.drawVehicle)
@@ -238,5 +238,5 @@
 
     var app = angular.module('flybrixApp');
 
-    app.controller('vehicleController', ['$scope', '$rootScope', '$timeout', 'deviceConfig', vehicleController]);
+    app.controller('vehicleController', ['$scope', '$rootScope', '$timeout', 'deviceConfig', 'serial', vehicleController]);
 }());

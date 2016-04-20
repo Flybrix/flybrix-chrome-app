@@ -1,5 +1,3 @@
-var graph_update_delay = 50;
-
 (function() {
     'use strict';
 
@@ -7,6 +5,7 @@ var graph_update_delay = 50;
         var last_port_usage_update = 0;
         var char_counter = 0;  // used to keep track of serial port data rate
         var portUsageInterval = null;
+        var graphUpdateDelay = 50;
 
         function portUsageStop() {
             if (!portUsageInterval)
@@ -19,12 +18,16 @@ var graph_update_delay = 50;
             portUsageInterval = $interval(portUsage, 1000);
         }
 
+        function getGraphUpdateDelay() {
+            return graphUpdateDelay;
+        }
+
         function portUsage() {
             var now = Date.now();
 
-            graph_update_delay *= 0.8;
-            if (graph_update_delay < 50) {
-                graph_update_delay = 50;
+            graphUpdateDelay *= 0.8;
+            if (graphUpdateDelay < 50) {
+                graphUpdateDelay = 50;
             }
 
             if (last_port_usage_update > 0) {
@@ -33,7 +36,7 @@ var graph_update_delay = 50;
                 // throttle back datastream when the UI lags behind to keep things usable
                 if (ui_update_rate > 1020) {
                     commandLog('UI is falling behind -- <span style="color: red;">SLOWING DOWN GRAPH UPDATES</span>');
-                    graph_update_delay *= 2.0;
+                    graphUpdateDelay *= 2.0;
                 }
                 var port_speed_kbps = char_counter / ui_update_rate;
                 $('#port-usage').html(port_speed_kbps.toFixed(3) + ' kbps');
@@ -271,6 +274,7 @@ var graph_update_delay = 50;
             getDataHandler: getDataHandler,
             getPath: getPath,
             isConnected: isConnected,
+            getGraphUpdateDelay: getGraphUpdateDelay,
         };
     };
 
