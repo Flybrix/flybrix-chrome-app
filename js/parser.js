@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var parser = function(commandLog) {
+    var parser = function(commandLog, serializer) {
         var MessageType = {
             State: 0,
             Command: 1,
@@ -113,7 +113,7 @@
             var state = $.extend(true, {}, state_base);
             var state_data_mask = [];
             var data = new DataView(message_buffer, 0);
-            var b = new byteRef();
+            var b = new serializer.ByteReference();
             var serial_update_rate_Hz = 0;
 
             for (var i = 0; i < state_data_mask.length; i++)
@@ -149,15 +149,15 @@
             }
             if (0 != (mask & StateFields.STATE_ACCEL)) {
                 state_data_mask[5] = true;
-                parseFloat32Array(data, state.accel, b);
+                serializer.parseFloat32Array(data, state.accel, b);
             }
             if (0 != (mask & StateFields.STATE_GYRO)) {
                 state_data_mask[6] = true;
-                parseFloat32Array(data, state.gyro, b);
+                serializer.parseFloat32Array(data, state.gyro, b);
             }
             if (0 != (mask & StateFields.STATE_MAG)) {
                 state_data_mask[7] = true;
-                parseFloat32Array(data, state.mag, b);
+                serializer.parseFloat32Array(data, state.mag, b);
             }
             if (0 != (mask & StateFields.STATE_TEMPERATURE)) {
                 state_data_mask[8] = true;
@@ -171,7 +171,7 @@
             }
             if (0 != (mask & StateFields.STATE_RX_PPM)) {
                 state_data_mask[10] = true;
-                parseInt16Array(data, state.ppm, b);
+                serializer.parseInt16Array(data, state.ppm, b);
             }
             if (0 != (mask & StateFields.STATE_AUX_CHAN_MASK)) {
                 state_data_mask[11] = true;
@@ -180,11 +180,11 @@
             }
             if (0 != (mask & StateFields.STATE_COMMANDS)) {
                 state_data_mask[12] = true;
-                parseInt16Array(data, state.command, b);
+                serializer.parseInt16Array(data, state.command, b);
             }
             if (0 != (mask & StateFields.STATE_F_AND_T)) {
                 state_data_mask[13] = true;
-                parseFloat32Array(data, state.control, b);
+                serializer.parseFloat32Array(data, state.control, b);
             }
             if (0 != (mask & StateFields.STATE_PID_FZ_MASTER)) {
                 state_data_mask[15] = true;
@@ -220,15 +220,15 @@
             }
             if (0 != (mask & StateFields.STATE_MOTOR_OUT)) {
                 state_data_mask[23] = true;
-                parseInt16Array(data, state.MotorOut, b);
+                serializer.parseInt16Array(data, state.MotorOut, b);
             }
             if (0 != (mask & StateFields.STATE_KINE_ANGLE)) {
                 state_data_mask[24] = true;
-                parseFloat32Array(data, state.kinematicsAngle, b);
+                serializer.parseFloat32Array(data, state.kinematicsAngle, b);
             }
             if (0 != (mask & StateFields.STATE_KINE_RATE)) {
                 state_data_mask[25] = true;
-                parseFloat32Array(data, state.kinematicsRate, b);
+                serializer.parseFloat32Array(data, state.kinematicsRate, b);
             }
             if (0 != (mask & StateFields.STATE_KINE_ALTITUDE)) {
                 state_data_mask[26] = true;
@@ -282,5 +282,5 @@
         };
     };
 
-    angular.module('flybrixApp').factory('parser', ['commandLog', parser]);
+    angular.module('flybrixApp').factory('parser', ['commandLog', 'serializer', parser]);
 }());

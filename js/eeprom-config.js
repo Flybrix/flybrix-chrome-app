@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var deviceConfigFactory = function(serial, commandLog) {
+    var deviceConfigFactory = function(serial, commandLog, serializer) {
         var eepromConfigSize = 350;
         var config;
 
@@ -42,61 +42,61 @@
         }
 
         function parse(dataView, structure) {
-            var b = new byteRef();
-            parseInt8Array(dataView, structure.version, b);
-            parseFloat32Array(dataView, structure.pcbOrientation, b);
-            parseFloat32Array(dataView, structure.pcbTranslation, b);
-            parseInt8Array(dataView, structure.mixTableFz, b);
-            parseInt8Array(dataView, structure.mixTableTx, b);
-            parseInt8Array(dataView, structure.mixTableTy, b);
-            parseInt8Array(dataView, structure.mixTableTz, b);
-            parseFloat32Array(dataView, structure.magBias, b);
-            parseUint8Array(dataView, structure.assignedChannel, b);
+            var b = new serializer.ByteReference();
+            serializer.parseInt8Array(dataView, structure.version, b);
+            serializer.parseFloat32Array(dataView, structure.pcbOrientation, b);
+            serializer.parseFloat32Array(dataView, structure.pcbTranslation, b);
+            serializer.parseInt8Array(dataView, structure.mixTableFz, b);
+            serializer.parseInt8Array(dataView, structure.mixTableTx, b);
+            serializer.parseInt8Array(dataView, structure.mixTableTy, b);
+            serializer.parseInt8Array(dataView, structure.mixTableTz, b);
+            serializer.parseFloat32Array(dataView, structure.magBias, b);
+            serializer.parseUint8Array(dataView, structure.assignedChannel, b);
             structure.commandInversion = dataView.getUint8(b.index);
             b.add(1);
-            parseUint16Array(dataView, structure.channelMidpoint, b);
-            parseUint16Array(dataView, structure.channelDeadzone, b);
-            parseFloat32Array(dataView, structure.thrustMasterPIDParameters, b);
-            parseFloat32Array(dataView, structure.pitchMasterPIDParameters, b);
-            parseFloat32Array(dataView, structure.rollMasterPIDParameters, b);
-            parseFloat32Array(dataView, structure.yawMasterPIDParameters, b);
-            parseFloat32Array(dataView, structure.thrustSlavePIDParameters, b);
-            parseFloat32Array(dataView, structure.pitchSlavePIDParameters, b);
-            parseFloat32Array(dataView, structure.rollSlavePIDParameters, b);
-            parseFloat32Array(dataView, structure.yawSlavePIDParameters, b);
+            serializer.parseUint16Array(dataView, structure.channelMidpoint, b);
+            serializer.parseUint16Array(dataView, structure.channelDeadzone, b);
+            serializer.parseFloat32Array(dataView, structure.thrustMasterPIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.pitchMasterPIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.rollMasterPIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.yawMasterPIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.thrustSlavePIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.pitchSlavePIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.rollSlavePIDParameters, b);
+            serializer.parseFloat32Array(dataView, structure.yawSlavePIDParameters, b);
             structure.pidBypass = dataView.getUint8(b.index);
             b.add(1);
-            parseFloat32Array(dataView, structure.stateEstimationParameters, b);
-            parseFloat32Array(dataView, structure.enableParameters, b);
+            serializer.parseFloat32Array(dataView, structure.stateEstimationParameters, b);
+            serializer.parseFloat32Array(dataView, structure.enableParameters, b);
         };
 
         function setConfig(dataView, structure) {
-            var b = new byteRef();
-            setInt8Array(dataView, structure.version, b);
-            setFloat32Array(dataView, structure.pcbOrientation, b);
-            setFloat32Array(dataView, structure.pcbTranslation, b);
-            setInt8Array(dataView, structure.mixTableFz, b);
-            setInt8Array(dataView, structure.mixTableTx, b);
-            setInt8Array(dataView, structure.mixTableTy, b);
-            setInt8Array(dataView, structure.mixTableTz, b);
-            setFloat32Array(dataView, structure.magBias, b);
-            setUint8Array(dataView, structure.assignedChannel, b);
+            var b = new serializer.ByteReference();
+            serializer.setInt8Array(dataView, structure.version, b);
+            serializer.setFloat32Array(dataView, structure.pcbOrientation, b);
+            serializer.setFloat32Array(dataView, structure.pcbTranslation, b);
+            serializer.setInt8Array(dataView, structure.mixTableFz, b);
+            serializer.setInt8Array(dataView, structure.mixTableTx, b);
+            serializer.setInt8Array(dataView, structure.mixTableTy, b);
+            serializer.setInt8Array(dataView, structure.mixTableTz, b);
+            serializer.setFloat32Array(dataView, structure.magBias, b);
+            serializer.setUint8Array(dataView, structure.assignedChannel, b);
             dataView.setUint8(b.index, structure.commandInversion);
             b.add(1);
-            setUint16Array(dataView, structure.channelMidpoint, b);
-            setUint16Array(dataView, structure.channelDeadzone, b);
-            setFloat32Array(dataView, structure.thrustMasterPIDParameters, b);
-            setFloat32Array(dataView, structure.pitchMasterPIDParameters, b);
-            setFloat32Array(dataView, structure.rollMasterPIDParameters, b);
-            setFloat32Array(dataView, structure.yawMasterPIDParameters, b);
-            setFloat32Array(dataView, structure.thrustSlavePIDParameters, b);
-            setFloat32Array(dataView, structure.pitchSlavePIDParameters, b);
-            setFloat32Array(dataView, structure.rollSlavePIDParameters, b);
-            setFloat32Array(dataView, structure.yawSlavePIDParameters, b);
+            serializer.setUint16Array(dataView, structure.channelMidpoint, b);
+            serializer.setUint16Array(dataView, structure.channelDeadzone, b);
+            serializer.setFloat32Array(dataView, structure.thrustMasterPIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.pitchMasterPIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.rollMasterPIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.yawMasterPIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.thrustSlavePIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.pitchSlavePIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.rollSlavePIDParameters, b);
+            serializer.setFloat32Array(dataView, structure.yawSlavePIDParameters, b);
             dataView.setUint8(b.index, structure.pidBypass);
             b.add(1);
-            setFloat32Array(dataView, structure.stateEstimationParameters, b);
-            setFloat32Array(dataView, structure.enableParameters, b);
+            serializer.setFloat32Array(dataView, structure.stateEstimationParameters, b);
+            serializer.setFloat32Array(dataView, structure.enableParameters, b);
         };
 
         function request() {
@@ -169,5 +169,5 @@
         };
     };
 
-    angular.module('flybrixApp').factory('deviceConfig', ['serial', 'commandLog', deviceConfigFactory]);
+    angular.module('flybrixApp').factory('deviceConfig', ['serial', 'commandLog', 'serializer', deviceConfigFactory]);
 }());
