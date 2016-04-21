@@ -64,6 +64,12 @@
                 byteRef.add(2);
             }
         }
+        function setInt16Array(view, destination, byteRef) {
+            for (var i = 0; i < destination.length; i++) {
+                view.setInt16(byteRef.index, destination[i], 1);
+                byteRef.add(2);
+            }
+        }
 
         return {
             ByteReference: byteRef,
@@ -76,6 +82,7 @@
             setInt8Array: setInt8Array,
             setUint8Array: setUint8Array,
             setUint16Array: setUint16Array,
+            setInt16Array: setInt16Array,
         };
     };
 

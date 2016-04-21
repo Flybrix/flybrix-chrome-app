@@ -30,6 +30,7 @@
             COM_SET_STATE_DELAY: 1 << 15,
             COM_REQ_HISTORY: 1 << 16,
             COM_SET_LED: 1 << 17,
+            COM_SET_SERIAL_RC: 1 << 18,
         };
 
         var state_base = {
