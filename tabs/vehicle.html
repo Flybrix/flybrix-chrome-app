@@ -22,6 +22,6 @@
 				<div class="led-green" ng-repeat="light in vehicleSignalLights" ng-class="{'black-bg': light.off}"><div class="led-label">{{light.label}}</div></div>
     </div>
 
-    <div id="vehicle_scene" style="top:150px;position: absolute;left:50px;"/>
+    <vehicle-visualizer style="top:150px;position:absolute;left:50px;" draw="drawVehicle" state="state" screen-width="800" screen-height="450" magnet-sphere="magSphere"/>
 
 </div>
