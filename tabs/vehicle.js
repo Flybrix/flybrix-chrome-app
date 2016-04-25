@@ -7,6 +7,8 @@
         var magnetometer_estimate_points = [];
 
         function calculateMagnetometerEstimatePoint(state) {
+            if (!$scope.drawVehicle)
+                return;
             var magx = state.mag[0] + $rootScope.eepromConfig.magBias[0];
             var magy = state.mag[1] + $rootScope.eepromConfig.magBias[1];
             var magz = state.mag[2] + $rootScope.eepromConfig.magBias[2];
