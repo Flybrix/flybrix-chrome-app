@@ -1,5 +1,6 @@
-var cobs = (function() {
+(function() {
     'use strict';
+
     function Reader(capacity) {
         this.N = capacity || 2000;
         this.buffer = new Uint8Array(capacity);
@@ -99,8 +100,11 @@ var cobs = (function() {
         return retval.subarray(0, len).slice().buffer;
     };
 
-    return {
-        Reader: Reader,
-        encode: encode,
-    };
+    angular.module('flybrixApp').factory('cobs', function() {
+        return {
+            Reader: Reader,
+            encode: encode,
+        };
+    });
+
 }());

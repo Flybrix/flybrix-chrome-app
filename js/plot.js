@@ -211,7 +211,7 @@
 					function (theEntry) {
 
 					if (!theEntry) {
-						command_log('No File Selected!');
+						//command_log('No File Selected!');
 						console.log('no file selected...');
 						return;
 					}
@@ -230,7 +230,7 @@
 									console.error(e);
 								};
 								fileWriter.onwriteend = function (e) {
-									command_log('Write plot to CSV -- <span style="color: green">SUCCESSFUL</span>');
+									//command_log('Write plot to CSV -- <span style="color: green">SUCCESSFUL</span>');
 									console.log('Write SUCCESSFUL');
 								};
 								//write data
@@ -424,3 +424,39 @@
 
 }
 	(jQuery));
+
+(function() {
+		'use strict';
+
+		angular.module('flybrixApp').directive('plotSeries', ['serial', function (serial) {
+				var link = function (scope, element, attrs) {
+						var labels = attrs.labels.split('|');
+
+						element.addClass('flybrix-plot-holder');
+						element.append($('<div/>').addClass('flybrix-plot-title').text(attrs.title));
+						var plotHolder = $('<div/>');
+						element.append(plotHolder);
+						plotHolder.create_plot(labels);
+
+						var lastTime = new Date();
+
+						scope.$watch(attrs.value, function(value) {
+								if (!plotHolder.find("#live").prop("checked"))
+										return;
+								var newTime = new Date();
+								if (newTime - lastTime < serial.getGraphUpdateDelay())  // limit plots to 20Hz
+										return;
+								lastTime = newTime;
+								var x = value.x / 1000000;
+								var last_idx = value.y.length - 1;
+								value.y.forEach(function (y, idx) {
+										plotHolder.update_flybrix_plot_series(labels[idx], x, y, idx === last_idx);
+								});
+						}, true);
+				};
+
+				return {
+						link: link
+				};
+		}]);
+}());

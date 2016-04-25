@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="flybrixApp">
     <head>
         <title>Configurator</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -18,7 +18,12 @@
         <script type="text/javascript" src="./js/lib/three-libs/OrbitControls.js"></script>
         <script type="text/javascript" src="./js/lib/firebase.js"></script>
         <script type="text/javascript" src="./js/lib/spectrum.js"></script>
+        <script type="text/javascript" src="./js/lib/angular.js"></script>
+        <script type="text/javascript" src="./js/lib/angularfire.js"></script>
 
+        <script type="text/javascript" src="./js/module.js"></script>
+
+        <script type="text/javascript" src="./js/serializer.js"></script>
         <script type="text/javascript" src="./js/parser.js"></script>
         <script type="text/javascript" src="./js/serial.js"></script>
         <script type="text/javascript" src="./js/eeprom-config.js"></script>
@@ -27,6 +32,7 @@
         <script type="text/javascript" src="./js/filehandler.js"></script>
         <script type="text/javascript" src="./js/teensy-firmware.js"></script>
         <script type="text/javascript" src="./js/sphere-minimizer.js"></script>
+        <script type="text/javascript" src="./js/vehicle-visualizer.js"></script>
 
         <!-- Various tabs are divided into separate files (for clarity) -->
         <script type="text/javascript" src="./tabs/tuning.js"></script>
@@ -40,55 +46,54 @@
 
         <script type="text/javascript" src="./js/main.js"></script>
     </head>
-    <body>
+    <body ng-cloak ng-controller='mainController'>
         <div style="padding: 5px;">
-            <div class="datastream-serial">
-                <select id="port-selector"></select>
-                <div class="button" id="connect">Connect</div>
+          <div>
+            <div class="datastream-buttons">
+              <div class="tab-button" ng-click="dataSource='serial'">
+                serial port
+              </div>
+              <div class="tab-button" ng-click="dataSource='replay'">
+                replay file
+              </div>
+            </div>
+            <div class="datastream-tabs">
+              <div class="datastream-serial" ng-show="dataSource=='serial'">
+                <select ng-model="deviceChoice" ng-options="device as device for device in devices"></select>
+                <div class="button" ng-hide="isConnected()" ng-click="connect()">Connect</div>
+                <div class="button" ng-show="isConnected()" ng-click="disconnect()">Disconnect</div>
 				<label>
-					<input class="auto_connect" type="checkbox" />
+					<input class="auto_connect" type="checkbox" ng-model="autoConnect"/>
 					<span class="auto_connect">Auto Connect</span>
                 </label>
 				<!--<div class="button" id="refresh">Refresh</div>-->
                 <div class="datastream-report" id="port-usage">0 kpbs </div>
-            </div>
+              </div>
 
-            <div class="datastream-replay">
-                <div style="height: 30px; margin-top:10px"><div class='filename' id='file'></div><img class='button' id='open' src='/img/open.png'></img></div>
+              <div class="datastream-replay" ng-show="dataSource=='replay'">
+                <div style="height: 30px; margin-top:10px"><div class='filename' id='file'></div><img class='button' ng-click="datastreamReplay.open()" src='/img/open.png'></img></div>
                 <div style="height: 20px;"><div class='slider'></div></div>
                 <div style="height: 16px; margin-left:30px; margin-top:4px">
-                <input type='number' id='data-rate' min='0' max='2000' value='100' />
+                <input type='number' ng-model="datastreamReplay.dataRate" min='0' max='2000' value='100' />
                 kbps
                 </div>
                 <div style="height: 24px; margin-left:60px">
-                <img class='button' id='play' src='/img/play.png'></img>
-                <img class='button' id='pause' src='/img/pause.png'></img>
-                <img class='button' id='stop' src='/img/stop.png'></img>
+                <img class='button' ng-click="datastreamReplay.play()" src='/img/play.png'></img>
+                <img class='button' ng-click="datastreamReplay.pause()" src='/img/pause.png'></img>
+                <img class='button' ng-click="datastreamReplay.stop()" src='/img/stop.png'></img>
                 </div>
                 <div class="datastream-report"> </div>
+              </div>
             </div>
+          </div>
 
-            <div class="command-log" id='command-log'></div>
+            <div class="command-log" id='command-log' ng-click="commandLogClick()"></div>
 
             <div id="menu" class="tab-button-bar">
-                <a class="tab-button" href="#tuning" title="">Tuning</a>
-                <a class="tab-button" href="#signals" title="">R/C Signals</a>
-                <a class="tab-button" href="#sensors" title="">Sensor Data</a>
-                <a class="tab-button" href="#vehicle" title="">Vehicle View</a>
-                <a class="tab-button" href="#motors" title="">Motors</a>
-                <a class="tab-button" href="#led" title="">LED</a>
-                <a class="tab-button" href="#datastream" title="">Datastream</a>
-                <a class="tab-button" href="#config" title="">Configuration</a>
+                <a class="tab-button" ng-repeat="tab in tabs" ng-click="tabClick(tab)" title="">{{tab.label}}</a>
             </div>
             <div class="tab-content">
-                <div id="tuning"></div>
-                <div id="signals"></div>
-                <div id="sensors"></div>
-                <div id="vehicle"></div>
-                <div id="motors"></div>
-                <div id="led"></div>
-                <div id="datastream"></div>
-                <div id="config"></div>
+                <div ng-repeat="tab in tabs" id="{{tab.url}}" ng-include="'tabs/' + tab.url + '.html'"></div>
             </div>
 
         </div>

@@ -81,6 +81,9 @@ div.firmware-entry .fw-label {
 
 div.firmware-entry .fw-data {
 		width: 180px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
 }
 
 div.color-box {
@@ -104,7 +107,7 @@ div.label-title {
 
 .tab-button-bar{
     position: absolute;
-    top: 140px;
+    top: 180px;
 }
 .tab-button{
     margin-top: 6px;
@@ -128,9 +131,28 @@ div.label-title {
     display:none;
 }
 
+.rate-display-label{
+		float:left;
+		min-width:100px;
+		margin-right: 10px;
+}
 
+.rate-display-field{
+		float: left;
+		width: 100px;
+		height: 16px;
+		margin-right: 10px;
+		background-color:#ffffff;
+}
 
-.model-entry-field{
+.mixtable-row .model-entry-field{
+    background-color: #FFFFFF;
+		width: 28px;
+    margin-left: 5px;
+		margin-right: 15px;
+}
+
+.config-fields .model-entry-field{
     background-color: #FFFFFF;
     width: 90px;
     height: 10px;
@@ -138,6 +160,82 @@ div.label-title {
     left: -1px;
     top: 12px;
 }
+
+.pid-tuner .model-entry-field{
+		margin-left: 0px;
+		background-color: #FFFFFF;
+		width: 115px;
+		height: 15px;
+		margin-bottom: 5px;
+		float: left;
+		border-style: solid;
+		border-color: black;
+		border-width: 1px;
+}
+
+.config-fields .model-entry-label{
+    position: relative;
+    top: -6px;
+    display: inline-block;
+    width: 95px;
+    font-size: 9px;
+    color: blue;
+}
+
+.datastream-fields .model-entry-label{
+    position: relative;
+    top: -6px;
+    display: inline-block;
+    width: 95px;
+    font-size: 9px;
+    color: blue;
+}
+
+.pid-tuner .model-entry-label{
+		font-size: 10px;
+		width: 100px;
+		margin-top: 0px;
+		margin-left: 10px;
+		display:block;
+}
+
+.signals-fields .model-entry-field{
+		background-color: #FFFFFF;
+		width: 85px;
+		position: absolute;
+		left: -1px;
+		top: 15px;
+		font-size: 14px;
+}
+
+.signals-fields .model-entry-label{
+    position: relative;
+    top: -5px;
+		left: 20px;
+    display: inline-block;
+    width: 90px;
+    font-size: 11px;
+		margin: 3px;
+}
+
+.signals-fields-wide .model-entry-field{
+		width: 120px;
+		font-size: 16px;
+}
+
+.signals-fields-wide .model-entry-label{
+		width: 140px;
+}
+
+.model-entry output{
+    background-color: #FFFFFF;
+    width: 90px;
+    height: 10px;
+    position: absolute;
+    left: -1px;
+    top: 12px;
+}
+
 .model-entry{
     font-size: 9px;
     height: 20px;
@@ -157,14 +255,6 @@ div.label-title {
     width: 12px;
     height: 12px;
     margin-right: 10px;
-}
-.model-entry-label{
-    position: relative;
-    top: -6px;
-    display: inline-block;
-    width: 95px;
-    font-size: 9px;
-    color: blue;
 }
 .future{
     display: none;
@@ -294,23 +384,6 @@ div.label-title {
     border-width: 2px;
     padding: 10px;
 }
-.pid-tuner-label{
-    font-size: 10px;
-    width: 100px;
-    margin-top: 0px;
-    margin-left: 10px;
-}
-.pid-tuner-entry-field{
-    margin-left: 10px;
-    background-color: #FFFFFF;
-    width: 115px;
-    height: 15px;
-    margin-bottom: 5px;
-    float: left;
-    border-style: solid;
-    border-color: black;
-    border-width: 1px;
-}
 .pid-tuner-bypass{
     background-color: #FFC0A9;
     height: 18px;
@@ -377,27 +450,6 @@ div.label-title {
     float: left;
     margin-left: 18px;
     font-size: 11px;
-}
-.command-settings-channelMidpoint-field{
-    width:38px;
-    float: left;
-    margin-left: -13px;
-}
-.command-settings-channelDeadzone-field{
-    width:38px;
-    float: left;
-    margin-left: -13px;
-}
-.command-settings-assignedChannel-field{
-    width:20px;
-    float: left;
-    margin-right: 18px;
-    margin-left: -13px;
-}
-.command-settings-commandScaling-field{
-    width: 78px;
-    float: left;
-    margin-right: -3px;
 }
 .command-settings-master-row{
     height: 60px;
@@ -548,7 +600,7 @@ div.label-title {
 
 .mixtable-factors{}
 .mixtable-row{
-    height: 42px;
+    height: 52px;
     width: 787px;
     padding-top: 10px;
     border-color: black;
@@ -568,19 +620,6 @@ div.label-title {
     font-size: 14px;
     color: #5901FF;
 }
-.mixtable-entry-label{
-    width: 40px;
-    float: left;
-    font-size: 11px;
-}
-.mixtable-entry-field{
-    width: 28px;
-    float: left;
-    margin-right: 20px;
-    margin-left: -17px;
-}
-
-
 
 .led-green {
 	float: left;
@@ -617,8 +656,8 @@ div.led-label {
     margin-right: 10px;
 
     border: 1px solid silver;
-    width: 90px;
-    height: 105px;
+    width: 180px;
+    height: 125px;
     background-color: azure;
     padding: 5px;
 }
@@ -710,4 +749,8 @@ div.led-label {
 .flight-mode-text{
     position: inline;
     display: table;
+}
+
+.black-bg {
+	background-color: #000000;
 }

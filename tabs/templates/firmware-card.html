@@ -1,0 +1,20 @@
+<div class="firmware-entry">
+  <table>
+    <tr ng-repeat="p in [{tag:'name',label:'Name:'},{tag:'author',label:'Author'}]">
+      <td class="fw-label">
+        {{p.label}}
+      </td>
+      <td class="fw-data">
+        <div class="fw-data">
+          {{data.info[p.tag]}}
+        </div>
+      </td>
+    </tr>
+  </table>
+  <div class="button firmware-button" ng-click="$parent.loadFirmware(data.hex)">
+    update firmware
+  </div>
+  <div ng-show="labelRight" class="button firmware-button" ng-click="callbackRight(key, data)">
+    {{labelRight}}
+  </div>
+</div>

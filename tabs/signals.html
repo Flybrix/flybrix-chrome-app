@@ -1,83 +1,52 @@
-<div>
+<div ng-controller="signalsController">
 
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Received PPM Signals</div>
-        <div id="signals-plot" class="signals-plot"></div>
-    </div>
+    <div plot-series value="{x:state.timestamp_us, y:state.ppm}" labels="CH0 (usec)|CH1 (usec)|CH2 (usec)|CH3 (usec)|CH4 (usec)|CH5 (usec)" title="Received PPM Signals"/>
 
-    <div class= "command-settings">
-        <div class="command-settings-channel-midpoints">
-            <div class="command-settings-label">CH0 Midpoint</div><input class="command-settings-channelMidpoint-field channelMidpoint 0"/>
-            <div class="command-settings-label">CH1 Midpoint</div><input class="command-settings-channelMidpoint-field channelMidpoint 1"/>
-            <div class="command-settings-label">CH2 Midpoint</div><input class="command-settings-channelMidpoint-field channelMidpoint 2"/>
-            <div class="command-settings-label">CH3 Midpoint</div><input class="command-settings-channelMidpoint-field channelMidpoint 3"/>
-            <div class="command-settings-label">CH4 Midpoint</div><input class="command-settings-channelMidpoint-field channelMidpoint 4"/>
-            <div class="command-settings-label">CH5 Midpoint</div><input class="command-settings-channelMidpoint-field channelMidpoint 5"/>
+    <div class="command-settings">
+        <div class="command-settings-channel-midpoints signals-fields">
+            <eeprom-input ng-model="$root.eepromConfig.channelMidpoint[$index]" label="CH{{n}} Midpoint" ng-repeat="n in [0,1,2,3,4,5]"/>
         </div>
-        <div class="command-settings-channel-deadzones">
-            <div class="command-settings-label">CH0 Deadzone</div><input class="command-settings-channelDeadzone-field channelDeadzone 0"/>
-            <div class="command-settings-label">CH1 Deadzone</div><input class="command-settings-channelDeadzone-field channelDeadzone 1"/>
-            <div class="command-settings-label">CH2 Deadzone</div><input class="command-settings-channelDeadzone-field channelDeadzone 2"/>
-            <div class="command-settings-label">CH3 Deadzone</div><input class="command-settings-channelDeadzone-field channelDeadzone 3"/>
-            <div class="command-settings-label">CH4 Deadzone</div><input class="command-settings-channelDeadzone-field channelDeadzone 4"/>
-            <div class="command-settings-label">CH5 Deadzone</div><input class="command-settings-channelDeadzone-field channelDeadzone 5"/>
+        <div class="command-settings-channel-deadzones signals-fields">
+            <eeprom-input ng-model="$root.eepromConfig.channelDeadzone[$index]" label="CH{{n}} Deadzone" ng-repeat="n in [0,1,2,3,4,5]"/>
         </div>
-        
-        <div class="command-settings-assigned-channels">
-            <div class="command-settings-label">Throttle Channel</div><input class="command-settings-assignedChannel-field assignedChannel 0"/>
-            <div class="command-settings-label">Pitch Channel</div><input class="command-settings-assignedChannel-field assignedChannel 1"/>
-            <div class="command-settings-label">Roll Channel</div><input class="command-settings-assignedChannel-field assignedChannel 2"/>
-            <div class="command-settings-label">Yaw Channel</div><input class="command-settings-assignedChannel-field assignedChannel 3"/>
-            <div class="command-settings-label">AUX 1 Channel</div><input class="command-settings-assignedChannel-field assignedChannel 4"/>
-            <div class="command-settings-label">AUX 2 Channel</div><input class="command-settings-assignedChannel-field assignedChannel 5"/>
+
+        <div class="command-settings-assigned-channels signals-fields">
+            <eeprom-input ng-model="$root.eepromConfig.assignedChannel[$index]" label="{{n}} Channel" ng-repeat="n in ['Throttle','Pitch','Roll','Yaw','AUX 1','AUX 2']"/>
         </div>
 
         <div class="command-settings-commandInversion">
-            <div class="command-settings-label" style="width:105px">Invert Pitch Channel</div><input type='checkbox' class="command-settings-checkbox-inversion bitfield commandInversion 0"/>
-            <div class="command-settings-label" style="width:105px">Invert Roll Channel</div><input type='checkbox' class="command-settings-checkbox-inversion bitfield commandInversion 1"/>
-            <div class="command-settings-label" style="width:105px">Invert Yaw Channel</div><input type='checkbox' class="command-settings-checkbox-inversion bitfield commandInversion 2"/>
+            <div class="command-settings-label" style="width:105px">Invert Pitch Channel</div><input type="checkbox" class="command-settings-checkbox-inversion" ng-model="inversions[0]" ng-change="onInversionChange()"/>
+            <div class="command-settings-label" style="width:105px">Invert Roll Channel</div><input type="checkbox" class="command-settings-checkbox-inversion" ng-model="inversions[1]" ng-change="onInversionChange()"/>
+            <div class="command-settings-label" style="width:105px">Invert Yaw Channel</div><input type="checkbox" class="command-settings-checkbox-inversion" ng-model="inversions[2]" ng-change="onInversionChange()"/>
         </div>
-        <div class="command-settings-scale-factors">
+
+        <div class="command-settings-scale-factors signals-fields signals-fields-wide">
             <div class="command-settings-master-row">
-                <div class="command-settings-label">Throttle to Altitude (meters)</div><input class="command-settings-commandScaling-field thrustMasterPIDParameters 6"/>
-                <div class="command-settings-label">Pitch to Angle (deg)</div><input class="command-settings-commandScaling-field pitchMasterPIDParameters 6"/>
-                <div class="command-settings-label">Roll to Angle (deg)</div><input class="command-settings-commandScaling-field rollMasterPIDParameters 6"/>
-                <div class="command-settings-label">Yaw to Angle (deg)</div><input class="command-settings-commandScaling-field yawMasterPIDParameters 6"/>
+                <eeprom-input ng-model="$root.eepromConfig.thrustMasterPIDParameters[6]" label="Throttle to Altitude (meters)"/>
+                <eeprom-input ng-model="$root.eepromConfig.pitchMasterPIDParameters[6]" label="Pitch to Angle (deg)"/>
+                <eeprom-input ng-model="$root.eepromConfig.rollMasterPIDParameters[6]" label="Roll to Angle (deg)"/>
+                <eeprom-input ng-model="$root.eepromConfig.yawMasterPIDParameters[6]" label="Yaw to Angle (deg)"/>
             </div>
             <div class="command-settings-slave-row">
-                <div class="command-settings-label">Throttle to Climb Rate (m/sec)</div><input class="command-settings-commandScaling-field thrustSlavePIDParameters 6"/>
-                <div class="command-settings-label">Pitch to Rate (deg/sec)</div><input class="command-settings-commandScaling-field pitchSlavePIDParameters 6"/>
-                <div class="command-settings-label">Roll to Rate (deg/sec)</div><input class="command-settings-commandScaling-field rollSlavePIDParameters 6"/>
-                <div class="command-settings-label">Yaw to Rate (deg/sec)</div><input class="command-settings-commandScaling-field yawSlavePIDParameters 6"/>
-            </div>     
+                <eeprom-input ng-model="$root.eepromConfig.thrustSlavePIDParameters[6]" label="Throttle to Climb Rate (m/s)"/>
+                <eeprom-input ng-model="$root.eepromConfig.pitchSlavePIDParameters[6]" label="Pitch to Rate (deg/s)"/>
+                <eeprom-input ng-model="$root.eepromConfig.rollSlavePIDParameters[6]" label="Roll to Rate (deg/s)"/>
+                <eeprom-input ng-model="$root.eepromConfig.yawSlavePIDParameters[6]" label="Yaw to Rate (deg/s)"/>
+            </div>
         </div>
     </div>
 
     <div class="command-settings-aux-levels">
- 		<div class="led-green" id="auxbit00"><div class="led-label">AUX1 LOW</div></div>
-		<div class="led-green" id="auxbit01"><div class="led-label">AUX1 MID</div></div>
-		<div class="led-green" id="auxbit02"><div class="led-label">AUX1 HIGH</div></div>
-		<div class="led-green" id="auxbit03"><div class="led-label">AUX2 LOW</div></div>
-		<div class="led-green" id="auxbit04"><div class="led-label">AUX2 MID</div></div>
-		<div class="led-green" id="auxbit05"><div class="led-label">AUX2 HIGH</div></div>
+      <div class="led-green" ng-repeat="label in ['AUX1 LOW', 'AUX1 MID', 'AUX1 HIGH', 'AUX2 LOW', 'AUX2 MID', 'AUX2 HIGH']" ng-class="{'black-bg': auxBits[$index]}"><div class="led-label">{{label}}</div></div>
     </div>
-    
+
     <p style="margin-top:20px">The master pid loop will be driven with these scaled command setpoints (target state values):</p>
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Master PID Setpoints</div>
-        <div id="commands-master-plot" class="commands-master-plot"></div>
-    </div>
+    <div plot-series value="{x:state.timestamp_us, y:masterSetpoints}" labels="Fz (m)|Tx (deg)|Ty (deg)|Tz (deg)" title="Master PID Setpoints"/>
 
     <p style="margin-top:20px">If the master pid is bypassed, the slave pid loop will be driven with these scaled command setpoints (target state derivitive values):</p>
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Slave PID Setpoints</div>
-        <div id="commands-slave-plot" class="commands-slave-plot"></div>
-    </div>
+    <div plot-series value="{x:state.timestamp_us, y:slaveSetpoints}" labels="Fz (m/s)|Tx (deg/s)|Ty (deg/s)|Tz (deg/s)" title="Slave PID Setpoints"/>
 
     <p style="margin-top:20px">If both the master pid and the slave pid are bypassed, the airframe will be powered with these levels:</p>
-    <div class="flybrix-plot-holder">
-        <div class="flybrix-plot-title">Direct PWM Output Levels</div>
-        <div id="commands-direct-plot" class="commands-direct-plot"></div>
-    </div>
+    <div plot-series value="{x:state.timestamp_us, y:outputLevels}" labels="Fz (pwm counts)|Tx (pwm counts)|Ty (pwm counts)|Tz (pwm counts)" title="Direct PWM Output Levels"/>
 
 </div>
