@@ -43,30 +43,23 @@
         <script type="text/javascript" src="./tabs/led.js"></script>
         <script type="text/javascript" src="./tabs/datastream.js"></script>
         <script type="text/javascript" src="./tabs/config.js"></script>
+        <script type="text/javascript" src="./tabs/log.js"></script>
 
         <script type="text/javascript" src="./js/main.js"></script>
     </head>
     <body ng-cloak ng-controller='mainController'>
-        <div style="padding: 5px;">
-          <div>
-            <div class="datastream-buttons">
-              <div class="tab-button" ng-click="dataSource='serial'">
-                serial port
-              </div>
-              <div class="tab-button" ng-click="dataSource='replay'">
-                replay file
-              </div>
-            </div>
+      <div style="padding: 5px;">
+        <div class="bar-top">
+          <div class="bar-top-box">
             <div class="datastream-tabs">
               <div class="datastream-serial" ng-show="dataSource=='serial'">
                 <select ng-model="deviceChoice" ng-options="device as device for device in devices"></select>
                 <div class="button" ng-hide="isConnected()" ng-click="connect()">Connect</div>
                 <div class="button" ng-show="isConnected()" ng-click="disconnect()">Disconnect</div>
-				<label>
-					<input class="auto_connect" type="checkbox" ng-model="autoConnect"/>
-					<span class="auto_connect">Auto Connect</span>
+                <label>
+                  <input class="auto_connect" type="checkbox" ng-model="autoConnect"/>
+                  <span class="auto_connect">Auto Connect</span>
                 </label>
-				<!--<div class="button" id="refresh">Refresh</div>-->
                 <div class="datastream-report" id="port-usage">0 kpbs </div>
               </div>
 
@@ -86,8 +79,31 @@
               </div>
             </div>
           </div>
-
-            <div class="command-log" id='command-log' ng-click="commandLogClick()"></div>
+          <div class="bar-top-box">
+            <div class="tab-button" ng-click="goToForums()">
+              go to the flybrix forums
+            </div>
+          </div>
+          <div class="bar-top-box">
+            <div class="tab-button" ng-hide="viewMode=='basic'" ng-click="viewMode='basic'">
+              basic mode
+            </div>
+            <div class="tab-button" ng-show="viewMode=='basic'" ng-click="viewMode='advanced'">
+              advanced mode
+            </div>
+          </div>
+          <div style="clear:left"/>
+        </div>
+        <div ng-show="viewMode=='advanced'">
+            <div class="datastream-buttons">
+              Switch to:
+              <div class="tab-button" ng-hide="dataSource=='serial'" ng-click="dataSource='serial'">
+                serial port
+              </div>
+              <div class="tab-button" ng-hide="dataSource=='replay'" ng-click="dataSource='replay'">
+                replay file
+              </div>
+            </div>
 
             <div id="menu" class="tab-button-bar">
                 <a class="tab-button" ng-repeat="tab in tabs" ng-click="tabClick(tab)" title="">{{tab.label}}</a>
@@ -95,7 +111,8 @@
             <div class="tab-content">
                 <div ng-repeat="tab in tabs" id="{{tab.url}}" ng-include="'tabs/' + tab.url + '.html'"></div>
             </div>
-
         </div>
+
+      </div>
     </body>
 </html>

@@ -35,7 +35,7 @@ $(document)
         return out;
     }
 
-    var mainController = function($scope, $rootScope, $timeout, $interval, serial, commandLog, deviceConfig) {
+    var mainController = function($scope, $rootScope, $window, $timeout, $interval, serial, commandLog, deviceConfig) {
         var tabClick = function(tab) {
             var titlestr = tab.label;
             var href = '#' + tab.url;
@@ -169,8 +169,15 @@ $(document)
         };
 
         $scope.tabs = [
-            {url: 'tuning', label: 'Tuning'}, {url: 'sensors', label: 'Sensor Data'}, {url: 'signals', label: 'R/C Signals'}, {url: 'vehicle', label: 'Vehicle View'}, {url: 'motors', label: 'Motors'},
-            {url: 'led', label: 'LED'}, {url: 'datastream', label: 'Datastream'}, {url: 'config', label: 'Configuration'}
+            {url: 'tuning', label: 'Tuning'},
+            {url: 'sensors', label: 'Sensor Data'},
+            {url: 'signals', label: 'R/C Signals'},
+            {url: 'vehicle', label: 'Vehicle View'},
+            {url: 'motors', label: 'Motors'},
+            {url: 'led', label: 'LED'},
+            {url: 'datastream', label: 'Datastream'},
+            {url: 'config', label: 'Configuration'},
+            {url: 'log', label: 'Log'},
         ];
 
         $scope.tabClick = tabClick;
@@ -397,7 +404,18 @@ $(document)
             console.log(str);
         };
 
+        $scope.goToForums = function() {
+            $window.open('https://flybrix.com/pages/flybrix-user-forum', '_blank');
+        };
+
         $rootScope.eepromConfig = deviceConfig.getConfig();
+
+        $scope.$watch('viewMode', function(mode) {
+            if (mode != 'advanced')
+                $scope.dataSource = 'serial';
+        });
+
+        $scope.viewMode = 'basic';
     };
 
     var app = angular.module('flybrixApp');
@@ -419,7 +437,7 @@ $(document)
         return command_log;
     });
 
-    app.controller('mainController', ['$scope', '$rootScope', '$timeout', '$interval', 'serial', 'commandLog', 'deviceConfig', mainController]);
+    app.controller('mainController', ['$scope', '$rootScope', '$window', '$timeout', '$interval', 'serial', 'commandLog', 'deviceConfig', mainController]);
 
     app.directive('eepromInput', function() {
         return {

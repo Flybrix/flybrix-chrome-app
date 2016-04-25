@@ -106,7 +106,6 @@ div.label-title {
 }
 
 .tab-button-bar{
-    position: absolute;
     top: 180px;
 }
 .tab-button{
@@ -647,14 +646,18 @@ div.led-label {
 	font-size: 9px;
 }
 
+.bar-top-box{
+	float: left;
+	height: 150px;
+}
 
-
-
+.datastream-tabs{
+	clear: left;
+}
 
 .datastream-serial{
     float: left;
     margin-right: 10px;
-
     border: 1px solid silver;
     width: 180px;
     height: 125px;
@@ -717,8 +720,8 @@ div.led-label {
 
 .command-log {
     float: left;
-    height: 115px;
-    width: 450px;
+    height: 100%;
+    width: 100%;
     font-weight: bold;
     font-size: 10px;
     border: 1px solid silver;
