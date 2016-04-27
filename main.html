@@ -45,6 +45,7 @@
         <script type="text/javascript" src="./tabs/config.js"></script>
         <script type="text/javascript" src="./tabs/log.js"></script>
 
+        <script type="text/javascript" src="./js/basic.js"></script>
         <script type="text/javascript" src="./js/main.js"></script>
     </head>
     <body ng-cloak ng-controller='mainController'>
@@ -112,6 +113,7 @@
                 <div ng-repeat="tab in tabs" id="{{tab.url}}" ng-include="'tabs/' + tab.url + '.html'"></div>
             </div>
         </div>
+        <div ng-show="viewMode=='basic'" ng-include="'basic.html'"/>
 
       </div>
     </body>
