@@ -416,6 +416,24 @@ $(document)
         });
 
         $scope.viewMode = 'basic';
+
+        $scope.models = [
+            {
+              label: 'Quad',
+              url: './models/flyer_assembly_xquad_small.stl',
+              pdf: './pdfs/pp1.pdf',
+            },
+            {
+              label: 'Hexa',
+              url: './models/flyer_assembly_hexa_small.stl',
+              pdf: './pdfs/pp2.pdf',
+            },
+            {
+              label: 'Octa',
+              url: './models/flyer_assembly_octa_small.stl',
+              pdf: './pdfs/pp3.pdf',
+            },
+        ];
     };
 
     var app = angular.module('flybrixApp');

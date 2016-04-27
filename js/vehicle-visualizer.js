@@ -256,6 +256,7 @@
             render();
 
             ngModel.$render = function() {
+                console.log('DRAWING FOR', ngModel.$modelValue);
                 if (ngModel.$modelValue === undefined)
                     return;
                 while (vehicleBaseCoordinates.children.length > 0)

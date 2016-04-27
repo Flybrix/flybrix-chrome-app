@@ -1,4 +1,4 @@
 (function() {
   'use strict';
-  angular.module('flybrixApp', ['firebase']);
+  angular.module('flybrixApp', ['firebase', 'pdf']);
 }());
