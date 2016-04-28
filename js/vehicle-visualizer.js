@@ -86,7 +86,7 @@
                 shininess: 200,
             });
             var loader = new THREE.STLLoader();
-            loader.load('./models/flyer_assembly_xquad_small.stl', function(geometry) {
+            loader.load('./models/flyer_assembly_xquad_small.STL', function(geometry) {
                 var vehicleMesh = new THREE.Mesh(geometry, modelMaterial);
                 vehicleMesh.position.set(-24, -20, 16);
                 vehicleMesh.rotation.y = Math.PI / 2;
