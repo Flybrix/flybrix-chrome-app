@@ -127,18 +127,17 @@
         </div>
         <div ng-show="viewMode=='gallery'" ng-controller="galleryController">
           <div>
-            <select ng-model="pdfUrl" ng-options="item.pdf as item.label for item in models"></select>
+            <div class="model-type-tile" ng-repeat="item in models" ng-click="setPdfChoice(item)">
+              <span>{{item.label}}</span>
+            </div>
           </div>
           <div style="height:400px">
-            <div ng-click="goPrevious()" class="pdf-button"><</div>
+            <div ng-click="goPrevious()" class="pdf-button">&lt;</div>
             <div class="pdf-border">
               <ng-pdf template-url="templates/assemblyViewer.html" style="width:640px;height:480px" scale="page-fit"></ng-pdf>
             </div>
-            <div ng-click="goNext()" class="pdf-button">></div>
+            <div ng-click="goNext()" class="pdf-button">&gt;</div>
             <div style="clear:left"></div>
-          </div>
-          <div class="button" ng-click="goNext()">
-
           </div>
         </div>
       </div>

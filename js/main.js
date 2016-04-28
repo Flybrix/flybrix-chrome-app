@@ -421,7 +421,7 @@ $(document)
             {
               label: 'Quad',
               url: './models/flyer_assembly_xquad_small.STL',
-              pdf: './pdfs/pp1.pdf',
+              pdf: './pdfs/flyer_assembly_xquad_small.pdf',
             },
             {
               label: 'Hexa',
@@ -434,6 +434,10 @@ $(document)
               pdf: './pdfs/pp3.pdf',
             },
         ];
+
+        $scope.setPdfChoice = function(choice) {
+            $scope.pdfUrl = choice.pdf;
+        };
     };
 
     var app = angular.module('flybrixApp');
