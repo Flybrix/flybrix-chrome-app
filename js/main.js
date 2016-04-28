@@ -420,17 +420,17 @@ $(document)
         $scope.models = [
             {
               label: 'Quad',
-              url: './models/flyer_assembly_xquad_small.stl',
+              url: './models/flyer_assembly_xquad_small.STL',
               pdf: './pdfs/pp1.pdf',
             },
             {
               label: 'Hexa',
-              url: './models/flyer_assembly_hexa_small.stl',
+              url: './models/flyer_assembly_hexa_small.STL',
               pdf: './pdfs/pp2.pdf',
             },
             {
               label: 'Octa',
-              url: './models/flyer_assembly_octa_small.stl',
+              url: './models/flyer_assembly_octa_small.STL',
               pdf: './pdfs/pp3.pdf',
             },
         ];
