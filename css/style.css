@@ -75,6 +75,16 @@ div.button {
     font-weight: bold;
 }
 
+div.basic-button {
+    width: 400px;
+		font-size: 25px;
+		height: 28px;
+		padding: 10px;
+		background-color: #eb8f00;
+		color: #000;
+		margin: 10px 109px;
+}
+
 .view-button {
     width: 180px;
 }
