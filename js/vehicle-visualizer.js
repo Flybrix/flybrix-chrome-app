@@ -191,7 +191,7 @@
         };
     };
 
-    var vehiclePreview = function() {
+    var vehiclePreview = function($http, modelBuilder) {
         function link(scope, element, attrs, ngModel) {
             var SCREEN_WIDTH = 1, SCREEN_HEIGHT = 1;
             var VIEW_ANGLE = 45, ASPECT = 1, NEAR = 0.1, FAR = 20000;
@@ -261,14 +261,8 @@
                     return;
                 while (vehicleBaseCoordinates.children.length > 0)
                     vehicleBaseCoordinates.remove(vehicleBaseCoordinates.children[0]);
-                var loader = new THREE.STLLoader();
-                loader.load(ngModel.$modelValue, function(geometry) {
-                    var vehicleMesh = new THREE.Mesh(geometry, modelMaterial);
-                    vehicleMesh.position.set(-24, -20, 16);
-                    vehicleMesh.rotation.y = Math.PI / 2;
-                    vehicleMesh.castShadow = true;
-                    vehicleMesh.receiveShadow = true;
-                    vehicleBaseCoordinates.add(vehicleMesh);
+                $http.get(ngModel.$modelValue).then(function(retval) {
+                    vehicleBaseCoordinates.add(modelBuilder.build(angular.fromJson(retval.data)));
                 });
             }
         }
@@ -285,5 +279,5 @@
 
     app.directive('vehicleVisualizer', ['$rootScope', vehicleVisualizer]);
 
-    app.directive('vehiclePreview', vehiclePreview);
+    app.directive('vehiclePreview', ['$http', 'modelBuilder', vehiclePreview]);
 }());

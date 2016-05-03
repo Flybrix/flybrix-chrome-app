@@ -34,6 +34,7 @@
         <script type="text/javascript" src="./js/filehandler.js"></script>
         <script type="text/javascript" src="./js/teensy-firmware.js"></script>
         <script type="text/javascript" src="./js/sphere-minimizer.js"></script>
+        <script type="text/javascript" src="./js/model-builder.js"></script>
         <script type="text/javascript" src="./js/vehicle-visualizer.js"></script>
 
         <!-- Various tabs are divided into separate files (for clarity) -->
@@ -120,7 +121,7 @@
           <div>
             <select ng-model="modelChoice" ng-options="item as item.label for item in models"></select>
           </div>
-          <div vehicle-preview ng-model="modelChoice.url" screen-width="640" screen-height="480"></div>
+          <div vehicle-preview ng-model="modelChoice.model" screen-width="640" screen-height="480"></div>
           <div class="button basic-button" ng-click="viewMode='gallery'">
             build new model
           </div>

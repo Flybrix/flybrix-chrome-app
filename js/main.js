@@ -421,19 +421,18 @@ $(document)
             {
               label: 'X Quad',
               image: './models/x quad.JPG',
+              model: './models/builds/x quad.json',
               url: './models/flyer_assembly_xquad_small.STL',
               pdf: './pdfs/flyer_assembly_xquad_small.pdf',
             },
             {
               label: 'Hex',
               image: './models/flat6 hex.JPG',
-              url: './models/flyer_assembly_hexa_small.STL',
               pdf: './pdfs/pp2.pdf',
             },
             {
               label: 'Octo',
               image: './models/flat8 octo.JPG',
-              url: './models/flyer_assembly_octa_small.STL',
               pdf: './pdfs/pp3.pdf',
             },
         ];
