@@ -128,7 +128,7 @@
         <div ng-show="viewMode=='gallery'" ng-controller="galleryController">
           <div>
             <div class="model-type-tile" ng-repeat="item in models" ng-click="setPdfChoice(item)">
-              <span>{{item.label}}</span>
+              <img ng-src="{{item.image}}" alt="{{item.label}}" />
             </div>
           </div>
           <div style="height:400px">

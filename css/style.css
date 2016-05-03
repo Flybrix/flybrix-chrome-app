@@ -38,6 +38,11 @@ body {
 		padding: 5px;
 }
 
+div.model-type-tile img {
+    width: 120px;
+    height: 80px;
+}
+
 div.pdf-button {
     margin: 218px 10px;
     border: 1px solid #999;
