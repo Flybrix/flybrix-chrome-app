@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var modelBuilder = function() {
+    var modelBuilder = function($q, $http) {
         var files = {
             plate2x4: '3020 (2x4 plate) solid.STL',
             flat2x2: '3068 (2x2 flat tile) solid.STL',
@@ -49,18 +49,41 @@
             if ('rotation' in structure) {
                 mesh.rotation.y = structure.rotation * Math.PI / 180.0;
             }
+
+            var addMesh = function(val) {
+                mesh.add(val);
+            };
+
             if ('children' in structure) {
                 structure.children.forEach(function(val) {
-                    mesh.add(build(val));
+                    build(val).then(addMesh);
                 });
             }
-            return mesh;
+
+            var childrenFiles = [];
+            if ('childrenFiles' in structure)
+                childrenFiles = structure.childrenFiles;
+
+            return $q
+                .all(childrenFiles.map(function(val) {
+                    return buildFromFile('./models/builds/parts/' + val).then(addMesh);
+                }))
+                .then(function() {
+                    return mesh;
+                });
+        }
+
+        function buildFromFile(filename) {
+            console.log(filename);
+            return $http.get(filename).then(function(retval) {
+                return build(angular.fromJson(retval.data));
+            });
         }
 
         return {
-            build: build,
+            build: buildFromFile,
         };
     };
 
-    angular.module('flybrixApp').factory('modelBuilder', modelBuilder);
+    angular.module('flybrixApp').factory('modelBuilder', ['$q', '$http', modelBuilder]);
 }());

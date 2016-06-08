@@ -261,8 +261,9 @@
                     return;
                 while (vehicleBaseCoordinates.children.length > 0)
                     vehicleBaseCoordinates.remove(vehicleBaseCoordinates.children[0]);
-                $http.get(ngModel.$modelValue).then(function(retval) {
-                    vehicleBaseCoordinates.add(modelBuilder.build(angular.fromJson(retval.data)));
+                console.log(ngModel.$modelValue);
+                modelBuilder.build(ngModel.$modelValue).then(function(model) {
+                    vehicleBaseCoordinates.add(model);
                 });
             }
         }
