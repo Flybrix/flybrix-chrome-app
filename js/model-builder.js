@@ -17,6 +17,9 @@
             hinge1: '73983 bottom (2x2 hinge) solid.STL',
             hinge2: '73983 top (2x2 hinge) solid.STL',
             plate2knobs: '92593 (1x4 plate with 2 knobs) solid.STL',
+            motorarm: '1x6 0820 motor arm R04.STL',
+            engine: 'chaoli 0820 CW red-blue.STL',
+            propeller: 'U816A propeller CW type B.STL',
         };
 
         var parts = {};
