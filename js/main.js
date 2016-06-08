@@ -434,6 +434,7 @@ $(document)
             {
               label: 'Octo',
               image: './models/flat8 octo.JPG',
+              model: './models/builds/octo.json',
               pdf: './pdfs/pp3.pdf',
             },
         ];

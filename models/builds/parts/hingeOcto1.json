@@ -1,0 +1,144 @@
+{
+  "rotation": 15.81,
+  "children": [
+    {
+      "position": {
+        "x": 0.5,
+        "y": 0,
+        "z": 0.5
+      },
+      "children": [
+        {
+          "rotation": -40.54,
+          "children": [
+            {
+              "part": "hinge2",
+              "position": {
+                "x": -0.39,
+                "y": 0,
+                "z": -0.36
+              }
+            },
+            {
+              "part": "plate1x4",
+              "rotation": -90,
+              "position": {
+                "x": 1,
+                "y": 1,
+                "z": 0
+              }
+            },
+            {
+              "position": {
+                "x": 0.5,
+                "y": 2,
+                "z": 2.5
+              },
+              "childrenFiles": [
+                "motorArm.json"
+              ]
+            },
+            {
+              "position": {
+                "x": 0.5,
+                "y": 3,
+                "z": 2.5
+              },
+              "rotation": 155.27,
+              "children": [
+                {
+                  "part": "plate1x4",
+                  "position": {
+                    "x": -0.5,
+                    "y": 0,
+                    "z": -0.5
+                  }
+                }
+              ]
+            },
+            {
+              "position": {
+                "x": 0.5,
+                "y": 4,
+                "z": 2.5
+              },
+              "rotation": 24.73,
+              "children": [
+                {
+                  "part": "plate1x4",
+                  "position": {
+                    "x": -0.5,
+                    "y": 0,
+                    "z": -0.5
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "part": "hinge1",
+          "rotation": -90,
+          "position": {
+            "x": 0.36,
+            "y": 0,
+            "z": -1
+          }
+        },
+        {
+          "part": "plate1x8",
+          "position": {
+            "x": -8,
+            "y": 1,
+            "z": -1
+          }
+        },
+        {
+          "part": "round",
+          "position": {
+            "x": -3,
+            "y": 2,
+            "z": -1
+          }
+        },
+        {
+          "position": {
+            "x": -3.5,
+            "y": 2,
+            "z": -0.5
+          },
+          "rotation": -90,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        },
+        {
+          "part": "round",
+          "position": {
+            "x": -3,
+            "y": 4,
+            "z": -1
+          }
+        },
+        {
+          "position": {
+            "x": -2.5,
+            "y": 5,
+            "z": -0.5
+          },
+          "rotation": -31.62,
+          "children": [
+            {
+              "part": "plate1x3",
+              "position": {
+                "x": -0.5,
+                "y": 0,
+                "z": -0.5
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
