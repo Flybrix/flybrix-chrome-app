@@ -1,1 +1,140 @@
-{"children":[{"part":"frame","position":{"x":-2,"y":0,"z":-2}},{"position":{"x":-2,"y":1,"z":-1},"rotation":90,"children":[{"part":"hinge1","position":{"x":0,"y":0,"z":-0.4}},{"position":{"x":1.0,"y":0,"z":0},"rotation":135,"children":[{"part":"hinge2","position":{"x":-0.4,"y":0,"z":-0.4}},{"part":"plate1x6","rotation":90,"position":{"x":0,"y":1,"z":6}}]}]},{"position":{"x":2,"y":1,"z":1},"rotation":-90,"children":[{"part":"hinge1","position":{"x":0,"y":0,"z":-0.4}},{"position":{"x":1.0,"y":0,"z":0},"rotation":135,"children":[{"part":"hinge2","position":{"x":-0.4,"y":0,"z":-0.4}},{"part":"plate1x6","rotation":90,"position":{"x":0,"y":1,"z":6}}]}]},{"position":{"x":2,"y":1,"z":-3},"rotation":-90,"children":[{"part":"hinge2","position":{"x":0.6,"y":0,"z":-0.4}},{"position":{"x":1.0,"y":0,"z":0},"rotation":-135,"children":[{"part":"hinge1","position":{"x":-1,"y":0,"z":-0.4}},{"part":"plate1x6","rotation":90,"position":{"x":-1,"y":1,"z":6}}]}]},{"position":{"x":-2,"y":1,"z":3},"rotation":90,"children":[{"part":"hinge2","position":{"x":0.6,"y":0,"z":-0.4}},{"position":{"x":1.0,"y":0,"z":0},"rotation":-135,"children":[{"part":"hinge1","position":{"x":-1,"y":0,"z":-0.4}},{"part":"plate1x6","rotation":90,"position":{"x":-1,"y":1,"z":6}}]}]},{"part":"plate1x4","position":{"x":-2,"y":2,"z":-2}},{"part":"plate1x4","position":{"x":-2,"y":2,"z":1}},{"part":"plate1x6","rotation":90,"position":{"x":-2,"y":3,"z":3}},{"part":"plate1x6","rotation":90,"position":{"x":1,"y":3,"z":3}},{"part":"round","position":{"x":1,"y":4,"z":-3}},{"part":"round","position":{"x":1,"y":4,"z":2}},{"part":"round","position":{"x":-2,"y":4,"z":-3}},{"part":"round","position":{"x":-2,"y":4,"z":2}},{"part":"PCB","position":{"x":0,"y":5,"z":0},"children":[{"part":"plate1x4","position":{"x":-2,"y":0,"z":-3}},{"part":"plate2x4","position":{"x":-2,"y":0,"z":2}},{"part":"round","position":{"x":-1,"y":1,"z":-3}},{"part":"round","position":{"x":0,"y":1,"z":-3}},{"part":"round","position":{"x":-1,"y":1,"z":2}},{"part":"round","position":{"x":0,"y":1,"z":2}}]},{"part":"windshield","rotation":180,"position":{"x":2,"y":6,"z":5}}]}
+{
+  "children": [
+    {
+      "part": "plate1x8",
+      "rotation": 90,
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "children": [
+        {
+          "position": {
+            "x": 1.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": -150,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 6.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": 150,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        }
+      ]
+    },
+    {
+      "part": "plate1x8",
+      "rotation": 90,
+      "position": {
+        "x": 3,
+        "y": 0,
+        "z": 0
+      },
+      "children": [
+        {
+          "position": {
+            "x": 1.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": -30,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 6.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": 30,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -7
+      },
+      "childrenFiles": [
+        "pcb.json"
+      ]
+    },
+    {
+      "part": "plate1x4",
+      "position": {
+        "x": 0,
+        "y": -1,
+        "z": -8
+      }
+    },
+    {
+      "part": "plate2x4",
+      "position": {
+        "x": 0,
+        "y": -1,
+        "z": -1
+      }
+    },
+    {
+      "part": "plate1x4",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -7
+      }
+    },
+    {
+      "part": "rudder",
+      "rotation": 180,
+      "position": {
+        "x": 3,
+        "y": 0,
+        "z": -7
+      }
+    },
+    {
+      "part": "flat2x2",
+      "position": {
+        "x": 1,
+        "y": 4,
+        "z": -8
+      }
+    },
+    {
+      "part": "windshield",
+      "rotation": 180,
+      "position": {
+        "x": 4,
+        "y": 0,
+        "z": 2
+      }
+    },
+    {
+      "position": {
+        "x": 2,
+        "y": 0,
+        "z": -1
+      },
+      "childrenFiles": [
+        "pilot.json"
+      ]
+    }
+  ]
+}
