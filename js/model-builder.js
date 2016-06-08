@@ -74,7 +74,6 @@
         }
 
         function buildFromFile(filename) {
-            console.log(filename);
             return $http.get(filename).then(function(retval) {
                 return build(angular.fromJson(retval.data));
             });
