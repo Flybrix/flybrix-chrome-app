@@ -1,0 +1,289 @@
+{
+  "children": [
+    {
+      "part": "plate1x8",
+      "rotation": 90,
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "children": [
+        {
+          "part": "round",
+          "position": {
+            "x": 1,
+            "y": 2,
+            "z": 0
+          }
+        },
+        {
+          "part": "round",
+          "position": {
+            "x": 6,
+            "y": 2,
+            "z": 0
+          }
+        },
+        {
+          "position": {
+            "x": 3,
+            "y": 1,
+            "z": 0
+          },
+          "childrenFiles": [
+            "hingeHex1.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 6,
+            "y": 1,
+            "z": 0
+          },
+          "rotation": 205,
+          "childrenFiles": [
+            "hingeHex2.json"
+          ]
+        }
+      ]
+    },
+    {
+      "part": "plate1x8",
+      "rotation": 90,
+      "position": {
+        "x": 3,
+        "y": 0,
+        "z": 0
+      },
+      "children": [
+        {
+          "part": "round",
+          "position": {
+            "x": 1,
+            "y": 2,
+            "z": 0
+          }
+        },
+        {
+          "part": "round",
+          "position": {
+            "x": 6,
+            "y": 2,
+            "z": 0
+          }
+        },
+        {
+          "position": {
+            "x": 6,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": 180,
+          "childrenFiles": [
+            "hingeHex1.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 3,
+            "y": 1,
+            "z": 1
+          },
+          "rotation": 25,
+          "childrenFiles": [
+            "hingeHex2.json"
+          ]
+        }
+      ]
+    },
+    {
+      "part": "plate1x12",
+      "position": {
+        "x": -4,
+        "y": 1,
+        "z": -5
+      },
+      "children": [
+        {
+          "position": {
+            "x": 1.5,
+            "y": 0,
+            "z": 0.5
+          },
+          "children": [
+            {
+              "rotation": -62,
+              "children": [
+                {
+                  "part": "plate1x4",
+                  "position": {
+                    "x": -0.5,
+                    "y": -1,
+                    "z": -0.5
+                  }
+                }
+              ]
+            },
+            {
+              "rotation": 62,
+              "children": [
+                {
+                  "part": "plate2knobs",
+                  "position": {
+                    "x": -0.5,
+                    "y": -2,
+                    "z": -0.5
+                  }
+                },
+                {
+                  "part": "round",
+                  "position": {
+                    "x": 2.5,
+                    "y": -1,
+                    "z": -0.5
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "position": {
+            "x": 10.5,
+            "y": 0,
+            "z": 0.5
+          },
+          "children": [
+            {
+              "rotation": -118,
+              "children": [
+                {
+                  "part": "plate1x4",
+                  "position": {
+                    "x": -0.5,
+                    "y": -1,
+                    "z": -0.5
+                  }
+                }
+              ]
+            },
+            {
+              "rotation": 118,
+              "children": [
+                {
+                  "part": "plate2knobs",
+                  "position": {
+                    "x": -0.5,
+                    "y": -2,
+                    "z": -0.5
+                  }
+                },
+                {
+                  "part": "round",
+                  "position": {
+                    "x": 2.5,
+                    "y": -1,
+                    "z": -0.5
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "position": {
+            "x": 1.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": -90,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 10.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": 90,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -7
+      },
+      "childrenFiles": [
+        "pcb.json"
+      ]
+    },
+    {
+      "part": "plate1x4",
+      "position": {
+        "x": 0,
+        "y": 4,
+        "z": -7
+      }
+    },
+    {
+      "part": "plate2x4",
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -9
+      }
+    },
+    {
+      "part": "rudder",
+      "rotation": 180,
+      "position": {
+        "x": 3,
+        "y": 3,
+        "z": -8
+      }
+    },
+    {
+      "part": "flat2x2",
+      "position": {
+        "x": 1,
+        "y": 5,
+        "z": -8
+      }
+    },
+    {
+      "part": "plate2x4",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": -1
+      }
+    },
+    {
+      "part": "windshield",
+      "rotation": 180,
+      "position": {
+        "x": 4,
+        "y": 2,
+        "z": 2
+      }
+    },
+    {
+      "position": {
+        "x": 2,
+        "y": 2,
+        "z": -1
+      },
+      "childrenFiles": [
+        "pilot.json"
+      ]
+    }
+  ]
+}

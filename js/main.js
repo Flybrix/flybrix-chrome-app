@@ -428,6 +428,7 @@ $(document)
             {
               label: 'Hex',
               image: './models/flat6 hex.JPG',
+              model: './models/builds/hex.json',
               pdf: './pdfs/pp2.pdf',
             },
             {

@@ -1,0 +1,37 @@
+{
+  "children": [
+    {
+      "rotation": -115,
+      "children": [
+        {
+          "part": "hinge1",
+          "position": {
+            "x": -1,
+            "y": 0,
+            "z": -0.36
+          }
+        }
+      ]
+    },
+    {
+      "part": "hinge2",
+      "rotation": -90,
+      "position": {
+        "x": 0.36,
+        "y": 0,
+        "z": -0.39
+      }
+    },
+    {
+      "position": {
+        "x": -0.5,
+        "y": 1,
+        "z": 0.5
+      },
+      "rotation": -90,
+      "childrenFiles": [
+        "motorArm.json"
+      ]
+    }
+  ]
+}
