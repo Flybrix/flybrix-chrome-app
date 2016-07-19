@@ -40,6 +40,17 @@
             }),
         };
 
+        var configFields = {
+            VERSION: 1 << 0,
+            PCB: 1 << 1,
+            MIX_TABLE: 1 << 2,
+            MAG_BIAS: 1 << 3,
+            CHANNEL: 1 << 4,
+            PID_PARAMETERS: 1 << 5,
+            STATE_PARAMETERS: 1 << 6,
+            LED_STATES: 1 << 7,
+        };
+
         function resetConfig() {
             config = $.extend(true, {}, configBase);
         }
@@ -72,6 +83,65 @@
             serializer.parseFloat32Array(dataView, structure.stateEstimationParameters, b);
             serializer.parseFloat32Array(dataView, structure.enableParameters, b);
             serializer.parseUint8Array(dataView, structure.ledStates, b);
+        };
+
+        function parsePartial(dataView, structure) {
+            var b = new serializer.ByteReference();
+            var mask = dataView.getUint16(b.index, 1);
+            b.add(2);
+
+            if (mask & configFields.VERSION) {
+                serializer.parseInt8Array(dataView, structure.version, b);
+            }
+            if (mask & configFields.PCB) {
+                serializer.parseFloat32Array(dataView, structure.pcbOrientation, b);
+                serializer.parseFloat32Array(dataView, structure.pcbTranslation, b);
+            }
+            if (mask & configFields.MIX_TABLE) {
+                serializer.parseInt8Array(dataView, structure.mixTableFz, b);
+                serializer.parseInt8Array(dataView, structure.mixTableTx, b);
+                serializer.parseInt8Array(dataView, structure.mixTableTy, b);
+                serializer.parseInt8Array(dataView, structure.mixTableTz, b);
+            }
+            if (mask & configFields.MAG_BIAS) {
+                serializer.parseFloat32Array(dataView, structure.magBias, b);
+            }
+            if (mask & configFields.CHANNEL) {
+                serializer.parseUint8Array(dataView, structure.assignedChannel, b);
+                structure.commandInversion = dataView.getUint8(b.index);
+                b.add(1);
+                serializer.parseUint16Array(dataView, structure.channelMidpoint, b);
+                serializer.parseUint16Array(dataView, structure.channelDeadzone, b);
+            }
+            if (mask & configFields.PID_PARAMETERS) {
+                serializer.parseFloat32Array(dataView, structure.thrustMasterPIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.pitchMasterPIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.rollMasterPIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.yawMasterPIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.thrustSlavePIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.pitchSlavePIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.rollSlavePIDParameters, b);
+                serializer.parseFloat32Array(dataView, structure.yawSlavePIDParameters, b);
+                structure.pidBypass = dataView.getUint8(b.index);
+                b.add(1);
+            }
+            if (mask & configFields.STATE_PARAMETERS) {
+                serializer.parseFloat32Array(dataView, structure.stateEstimationParameters, b);
+                serializer.parseFloat32Array(dataView, structure.enableParameters, b);
+            }
+            if (mask & configFields.LED_STATES) {
+                var led_mask = dataView.getUint16(b.index, 1);
+                b.add(2);
+                var RECORD_LENGTH = 17;
+                for (var i = 0; i < 16; ++i) {
+                    if (led_mask & (1 << i)) {
+                        for (var j = 0; j < RECORD_LENGTH; ++j) {
+                            structure.ledStates[i * RECORD_LENGTH + j] = dataView.getUint8(b.index);
+                            b.add(1);
+                        }
+                    }
+                }
+            }
         };
 
         function setConfig(dataView, structure) {
@@ -135,8 +205,15 @@
         }
 
         serial.setCommandCallback(function(mask, message_buffer) {
-            if (mask !== serial.field.COM_SET_EEPROM_DATA)
-                return;
+            if (mask & serial.field.COM_SET_EEPROM_DATA) {
+                comSetEepromData(message_buffer);
+            }
+            if (mask & serial.field.COM_SET_PARTIAL_EEPROM_DATA) {
+                comSetPartialEepromData(message_buffer);
+            }
+        });
+
+        function comSetEepromData(message_buffer) {
             console.log("Received config!");
             var data = new DataView(message_buffer, 0);
             resetConfig();
@@ -150,7 +227,23 @@
                 commandLog('Recieved configuration version: <span style="color: green">' + config.version[0] + '.' + config.version[1] + '.' + config.version[2] + '</span>');
                 configCallback();
             }
-        });
+        }
+
+        function comSetPartialEepromData(message_buffer) {
+            console.log("Received partial config!");
+            var data = new DataView(message_buffer, 0);
+            config = $.extend(true, {}, config);
+            parsePartial(data, config);
+            if ((desiredVersion[0] != config.version[0]) || (desiredVersion[1] != config.version[1])) {
+                commandLog('<span style="color: red">WARNING: Configuration MAJOR or MINOR version mismatch!</span>');
+                commandLog(
+                    'eeprom version: <strong>' + config.version[0] + '.' + config.version[1] + '.' + config.version[2] + '</strong>' +
+                    ' - app expected version: <strong>' + desiredVersion.version[0] + '.' + desiredVersion.version[1] + '.' + desiredVersion.version[2] + '</strong>');
+            } else {
+                commandLog('Recieved configuration version: <span style="color: green">' + config.version[0] + '.' + config.version[1] + '.' + config.version[2] + '</span>');
+                configCallback();
+            }
+        }
 
         var configCallback = function() {};
 
