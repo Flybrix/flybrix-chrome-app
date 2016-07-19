@@ -2,10 +2,10 @@
     'use strict';
 
     var deviceConfigFactory = function(serial, commandLog, serializer) {
-        var eepromConfigSize = 350;
+        var eepromConfigSize = 350 + 273;
         var config;
 
-        var desiredVersion = [1, 2, 0];  // checked at startup!
+        var desiredVersion = [1, 3, 0];  // checked at startup!
 
         function getDesiredVersion() {
             return desiredVersion;
@@ -35,6 +35,9 @@
             pidBypass: 0,
             stateEstimationParameters: [0.0, 0.0],
             enableParameters: [0.0, 0.0],
+            ledStates: Array.apply(null, Array(272)).map(function() {
+                return 0;
+            }),
         };
 
         function resetConfig() {
@@ -68,6 +71,7 @@
             b.add(1);
             serializer.parseFloat32Array(dataView, structure.stateEstimationParameters, b);
             serializer.parseFloat32Array(dataView, structure.enableParameters, b);
+            serializer.parseUint8Array(dataView, structure.ledStates, b);
         };
 
         function setConfig(dataView, structure) {
@@ -97,6 +101,7 @@
             b.add(1);
             serializer.setFloat32Array(dataView, structure.stateEstimationParameters, b);
             serializer.setFloat32Array(dataView, structure.enableParameters, b);
+            serializer.setUint8Array(dataView, structure.ledStates, b);
         };
 
         function request() {
