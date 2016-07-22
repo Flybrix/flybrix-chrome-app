@@ -264,6 +264,7 @@
             getConfig: getConfig,
             setConfigCallback: setConfigCallback,
             getDesiredVersion: getDesiredVersion,
+            field: configFields,
         };
     };
 

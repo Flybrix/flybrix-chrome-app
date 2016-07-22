@@ -99,6 +99,30 @@
             STATE_LOOP_COUNT: 1 << 27,
         };
 
+        var StatusCodes = {
+            STATUS_BOOT: 0x0001,
+            STATUS_MPU_FAIL: 0x0002,
+            STATUS_BMP_FAIL: 0x0004,
+            STATUS_RX_FAIL: 0x0008,
+
+            STATUS_IDLE: 0x0010,
+
+            STATUS_ENABLING: 0x0020,
+            STATUS_CLEAR_MPU_BIAS: 0x0040,
+            STATUS_SET_MPU_BIAS: 0x0080,
+
+            STATUS_FAIL_STABILITY: 0x0100,
+            STATUS_FAIL_ANGLE: 0x0200,
+
+            STATUS_ENABLED: 0x0400,
+            STATUS_BATTERY_LOW: 0x0800,
+
+            STATUS_TEMP_WARNING: 0x1000,
+            STATUS_LOG_FULL: 0x2000,
+            STATUS_UNPAIRED: 0x4000,
+            STATUS_OVERRIDE: 0x8000,
+        };
+
         function arraybuffer2string(buf) {
             return String.fromCharCode.apply(null, new Uint8Array(buf));
         }
@@ -284,6 +308,7 @@
             processBinaryDatastream: processBinaryDatastream,
             MessageType: MessageType,
             CommandFields: CommandFields,
+            StatusCodes: StatusCodes,
         };
     };
 

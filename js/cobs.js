@@ -79,7 +79,7 @@
     };
 
     function encode(buf) {
-        var retval = new Uint8Array((buf.byteLength * 255 + 761) / 254);
+        var retval = new Uint8Array(Math.floor((buf.byteLength * 255 + 761) / 254));
         var len = 1;
         var pos_ctr = 0;
         for (var i = 0; i < buf.length; ++i) {
