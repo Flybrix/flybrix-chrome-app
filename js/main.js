@@ -35,7 +35,7 @@ $(document)
         return out;
     }
 
-    var mainController = function($scope, $rootScope, $window, $timeout, $interval, serial, commandLog, deviceConfig) {
+    var mainController = function($scope, $rootScope, $window, $timeout, $interval, serial, commandLog, deviceConfig, usbSerial) {
         var tabClick = function(tab) {
             var titlestr = tab.label;
             var href = '#' + tab.url;
@@ -100,7 +100,7 @@ $(document)
         $scope.deviceChoice = undefined;
 
         function disconnectSerialIfSamePath(devices, path) {
-            var serialPath = serial.getPath();
+            var serialPath = usbSerial.getPath();
             var connectedPort = devices.find(function(val) {
                 return val === serialPath;
             });
@@ -109,7 +109,7 @@ $(document)
         }
 
         function refreshPortSelector() {
-            serial.getDevices().then(function(ports) {
+            usbSerial.getDevices().then(function(ports) {
                 var devices = ports.map(function(port) {
                     return port.path;
                 });
@@ -128,7 +128,7 @@ $(document)
 
         $scope.isConnected =
             function() {
-            return serial.isConnected();
+            return usbSerial.isConnected();
         }
 
         var initial_config_request;
@@ -153,13 +153,13 @@ $(document)
                 }, 500);
             };
 
-            serial.connect($scope.deviceChoice).then(onSuccess);
+            usbSerial.connect($scope.deviceChoice).then(onSuccess);
         };
 
         $scope.disconnect = function() {
-            console.log('Disconnecting from: ' + serial.getPath());
+            console.log('Disconnecting from: ' + usbSerial.getPath());
 
-            serial.disconnect();
+            usbSerial.disconnect();
 
             // if we disconnect before we ask for initial config data
             $timeout.cancel(initial_config_request);
@@ -219,7 +219,7 @@ $(document)
         });
 
         $scope.$watch('devices', function(devices) {
-            disconnectSerialIfSamePath(devices, serial.getPath());
+            disconnectSerialIfSamePath(devices, usbSerial.getPath());
             if ($scope.deviceChoice === undefined) {
                 chrome.storage.local.get('last_used_port', function(result) {
                     $scope.deviceChoice = result.last_used_port;
@@ -287,7 +287,7 @@ $(document)
                 return;
             }
             var dataLength = Math.ceil($scope.datastreamReplay.dataRate * (tickDelay / 8));
-            serial.read(inputData.slice(0, dataLength));
+            usbSerial.read(inputData.slice(0, dataLength));
             setReplayPosition($scope.datastreamReplay.replayPoint + dataLength);
         }
 
@@ -442,28 +442,29 @@ $(document)
         $scope.setPdfChoice = function(choice) {
             $scope.pdfUrl = choice.pdf;
         };
+
+        var lastProcessedMessage = 0;
+        commandLog.onMessage(function(messages) {
+            messages.slice(lastProcessedMessage).forEach(function(message) {
+                var d = new Date();
+                var time = ((d.getHours() < 10) ? '0' + d.getHours() : d.getHours()) + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes() : d.getMinutes()) + ':' +
+                    ((d.getSeconds() < 10) ? '0' + d.getSeconds() : d.getSeconds()) + ':' +
+                    ((d.getMilliseconds() < 100) ? '0' + ((d.getMilliseconds() < 10) ? '0' + d.getMilliseconds() : d.getMilliseconds()) : d.getMilliseconds());
+
+                var html = '<p>' + time + ' -- ' + message + '</p>';
+                $('.command-log').append(html);
+                var bottom = $('.command-log')[0].scrollHeight - $('.command-log').height();
+                setTimeout(function() {
+                    $('.command-log').animate({scrollTop: bottom}, 500, function() {});
+                }, 1);
+            });
+            lastProcessedMessage = messages.length;
+        });
     };
 
     var app = angular.module('flybrixApp');
 
-    app.factory('commandLog', function() {
-        function command_log(message) {
-            var d = new Date();
-            var time = ((d.getHours() < 10) ? '0' + d.getHours() : d.getHours()) + ':' + ((d.getMinutes() < 10) ? '0' + d.getMinutes() : d.getMinutes()) + ':' +
-                ((d.getSeconds() < 10) ? '0' + d.getSeconds() : d.getSeconds()) + ':' +
-                ((d.getMilliseconds() < 100) ? '0' + ((d.getMilliseconds() < 10) ? '0' + d.getMilliseconds() : d.getMilliseconds()) : d.getMilliseconds())
-
-                    var html = '<p>' + time + ' -- ' + message + '</p>';
-            $('.command-log').append(html);
-            var bottom = $('.command-log')[0].scrollHeight - $('.command-log').height();
-            setTimeout(function() {
-                $('.command-log').animate({scrollTop: bottom}, 500, function() {});
-            }, 1);
-        }
-        return command_log;
-    });
-
-    app.controller('mainController', ['$scope', '$rootScope', '$window', '$timeout', '$interval', 'serial', 'commandLog', 'deviceConfig', mainController]);
+    app.controller('mainController', ['$scope', '$rootScope', '$window', '$timeout', '$interval', 'serial', 'commandLog', 'deviceConfig', 'usbSerial', mainController]);
 
     app.directive('eepromInput', function() {
         return {

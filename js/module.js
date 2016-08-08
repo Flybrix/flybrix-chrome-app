@@ -8,5 +8,5 @@
         $compileProvider.imgSrcSanitizationWhitelist(newImgSrcSanitizationWhiteList);
     };
 
-    angular.module('flybrixApp', ['firebase', 'pdf']).config(['$compileProvider', config]);
+    angular.module('flybrixApp', ['flybrixCommon', 'firebase', 'pdf']).config(['$compileProvider', config]);
 }());

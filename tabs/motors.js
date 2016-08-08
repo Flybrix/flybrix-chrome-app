@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var motorsController = function($scope, $rootScope, $interval, serial, serializer) {
+    var motorsController = function($scope, $rootScope, $interval, serial, serializer, usbSerial) {
         function update_bar_css(index, type, val) {
             // if newval = +4096 --> top is 0, height is 128
             // if newval = -2047 --> top is 128, height is 64
@@ -28,7 +28,7 @@
             $scope.motorsOverrideNeg = !($rootScope.state.status & 0x8000);
 
             var now = new Date();
-            if (now - last_motors_view_update > serial.getGraphUpdateDelay()) {  // throttle redraw to 20Hz
+            if (now - last_motors_view_update > usbSerial.getGraphUpdateDelay()) {  // throttle redraw to 20Hz
                 for (var i = 0; i < 8; i++) {
                     update_bar_css(i, 'Fz', $rootScope.state.control[0] * $rootScope.eepromConfig.mixTableFz[i] / Math.max.apply(null, $rootScope.eepromConfig.mixTableFz));
                     update_bar_css(i, 'Tx', $rootScope.state.control[1] * $rootScope.eepromConfig.mixTableTx[i] / Math.max.apply(null, $rootScope.eepromConfig.mixTableTx));
@@ -75,12 +75,12 @@
         $scope.RCenabled = false;
 
         $scope.changeRC = function() {
-            var b = new serializer.ByteReference();
+            var b = new serializer();
             var dataBytes = new ArrayBuffer(9);
             var view = new DataView(dataBytes, 0);
             view.setUint8(b.index, $scope.RCenabled ? 1 : 0);
             b.add(1);
-            serializer.setInt16Array(view, $scope.RC, b);
+            b.setInt16Array(view, $scope.RC);
             var data = new Uint8Array(dataBytes);
             serial.send(serial.field.COM_SET_SERIAL_RC, data, false)
                 .then(
@@ -98,5 +98,5 @@
         $scope.motorFocused = [false, false, false, false, false, false, false, false];
     };
 
-    angular.module('flybrixApp').controller('motorsController', ['$scope', '$rootScope', '$interval', 'serial', 'serializer', motorsController]);
+    angular.module('flybrixApp').controller('motorsController', ['$scope', '$rootScope', '$interval', 'serial', 'serializer', 'usbSerial', motorsController]);
 }());

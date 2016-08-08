@@ -428,7 +428,7 @@
 (function() {
 		'use strict';
 
-		angular.module('flybrixApp').directive('plotSeries', ['serial', function (serial) {
+		angular.module('flybrixApp').directive('plotSeries', ['usbSerial', function (usbSerial) {
 				var link = function (scope, element, attrs) {
 						var labels = attrs.labels.split('|');
 
@@ -444,7 +444,7 @@
 								if (!plotHolder.find("#live").prop("checked"))
 										return;
 								var newTime = new Date();
-								if (newTime - lastTime < serial.getGraphUpdateDelay())  // limit plots to 20Hz
+								if (newTime - lastTime < usbSerial.getGraphUpdateDelay())  // limit plots to 20Hz
 										return;
 								lastTime = newTime;
 								var x = value.x / 1000000;
