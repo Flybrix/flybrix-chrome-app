@@ -1,0 +1,14 @@
+{
+  "name": "flybrix-chrome-app",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "flybrix-common": "Flybrix/flybrix-common#1.3.x"
+  }
+}

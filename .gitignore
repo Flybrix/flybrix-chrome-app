@@ -33,3 +33,6 @@
 
 # Python stuff
 *.pyc
+
+# Bower
+bower_components/***
