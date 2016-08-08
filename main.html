@@ -116,10 +116,7 @@
             </div>
         </div>
         <div ng-show="viewMode=='basic'">
-          <div>
-            <select ng-model="modelChoice" ng-options="item as item.label for item in models"></select>
-          </div>
-          <div vehicle-preview ng-model="modelChoice.model" screen-width="640" screen-height="480"></div>
+          <div vehicle-preview ng-model="models[eepromConfig.id].model" screen-width="640" screen-height="480"></div>
           <div class="button basic-button" ng-click="viewMode='gallery'">
             build new model
           </div>
