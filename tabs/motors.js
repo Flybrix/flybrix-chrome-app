@@ -71,27 +71,6 @@
             serial.send(serial.field.COM_MOTOR_OVERRIDE_SPEED_0 << index, [motor_v % 256, motor_v / 256]);
         };
 
-        $scope.RC = [0, 0, 0, 0];
-        $scope.RCenabled = false;
-
-        $scope.changeRC = function() {
-            var b = new serializer();
-            var dataBytes = new ArrayBuffer(9);
-            var view = new DataView(dataBytes, 0);
-            view.setUint8(b.index, $scope.RCenabled ? 1 : 0);
-            b.add(1);
-            b.setInt16Array(view, $scope.RC);
-            var data = new Uint8Array(dataBytes);
-            serial.send(serial.field.COM_SET_SERIAL_RC, data, false)
-                .then(
-                    function() {
-                        console.log("SUCCESS");
-                    },
-                    function() {
-                        console.log("FAILURE");
-                    });
-        };
-
         $scope.motorsEnabledNeg = true;
         $scope.motorsOverrideNeg = true;
         $scope.motorValue = [0, 0, 0, 0, 0, 0, 0, 0];
