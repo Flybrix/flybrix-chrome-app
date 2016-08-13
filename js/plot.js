@@ -2,7 +2,7 @@
 (function ($) {
 
 	function togglePlotSeries(plotname, series_index) {
-		var plot = $("." + plotname).data("plot");
+		var plot = plotname.data("plot");
 		var plot_series = plot.getData();
 		plot_series[series_index].lines.show = !plot_series[series_index].lines.show;
 	}
@@ -335,8 +335,8 @@
 		};
 
 		this.each(function () {
-			var plotname = $(this).context.className.split(/[ ]+/)[0];
 			var plot = $(this).data("plot");
+			var ref = $(this);
 			var plot_series = plot.getData();
 			for (var i = 0; i < plot_series.length; i++) {
 				if (label === undefined || label === (plot_series[i].label).split('=')[0]) {
@@ -402,11 +402,11 @@
 							plot.setupGrid();
 
 							// reset series on/off toggling after calling setupGrid
-							$('.' + plotname + ' .legendColorBox').each(function (index, value) {
+							ref.find('.legendColorBox').each(function (index, value) {
 								$(this).mousedown(function (event) {
 									event.preventDefault();
 									setTimeout(function () {
-										togglePlotSeries(plotname, index);
+										togglePlotSeries(ref, index);
 									}, 1);
 								});
 								$(this).css({
@@ -428,7 +428,7 @@
 (function() {
 		'use strict';
 
-		angular.module('flybrixApp').directive('plotSeries', ['serial', function (serial) {
+		angular.module('flybrixApp').directive('plotSeries', ['usbSerial', function (usbSerial) {
 				var link = function (scope, element, attrs) {
 						var labels = attrs.labels.split('|');
 
@@ -444,7 +444,7 @@
 								if (!plotHolder.find("#live").prop("checked"))
 										return;
 								var newTime = new Date();
-								if (newTime - lastTime < serial.getGraphUpdateDelay())  // limit plots to 20Hz
+								if (newTime - lastTime < usbSerial.getGraphUpdateDelay())  // limit plots to 20Hz
 										return;
 								lastTime = newTime;
 								var x = value.x / 1000000;

@@ -70,6 +70,10 @@
                 serial.setDataHandler(null);
             },
         };
+
+        $scope.setSDLog = function(val) {
+            serial.send(serial.field.COM_SET_CARD_RECORDING, new Uint8Array([val]), false);
+        }
     };
 
     angular.module('flybrixApp').controller('datastreamController', ['$scope', '$rootScope', '$interval', 'filehandler', 'commandLog', 'serial', datastreamController]);

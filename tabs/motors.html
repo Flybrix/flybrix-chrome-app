@@ -48,17 +48,5 @@
         </div>
     </div>
 
-    <div class="mixtable-row">
-      <div class="mixtable-row-label" style="width:200px;">Temporary RC control options</div>
-      <div style="float: left;">
-        <input type="checkbox" ng-model="RCenabled" ng-change="changeRC()">RC override enabled</input>
-      </div>
-      <div ng-repeat="n in ['thrust','pitch','roll','yaw']" style="float:left;margin:5px">
-        <div style="float: left;">{{n}}</div>
-        <input step="1" type="number" min="-2048" max="2047" ng-model="RC[$index]" ng-change="changeRC()" ng-model-options="{updateOn:'change'}"/>
-      </div>
-    </div>
-
-
     <div plot-series value="{x:state.timestamp_us, y:state.control}" labels="CH0 (usec)|CH1 (usec)|CH2 (usec)|CH3 (usec)|CH4 (usec)|CH5 (usec)" title="Control Vectors"/>
 </div>

@@ -1,0 +1,140 @@
+{
+  "children": [
+    {
+      "part": "plate1x8",
+      "rotation": 90,
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "children": [
+        {
+          "position": {
+            "x": 1.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": -150,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 6.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": 150,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        }
+      ]
+    },
+    {
+      "part": "plate1x8",
+      "rotation": 90,
+      "position": {
+        "x": 3,
+        "y": 0,
+        "z": 0
+      },
+      "children": [
+        {
+          "position": {
+            "x": 1.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": -30,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        },
+        {
+          "position": {
+            "x": 6.5,
+            "y": 1,
+            "z": 0.5
+          },
+          "rotation": 30,
+          "childrenFiles": [
+            "motorArm.json"
+          ]
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 2,
+        "z": -7
+      },
+      "childrenFiles": [
+        "pcb.json"
+      ]
+    },
+    {
+      "part": "plate1x4",
+      "position": {
+        "x": 0,
+        "y": -1,
+        "z": -8
+      }
+    },
+    {
+      "part": "plate2x4",
+      "position": {
+        "x": 0,
+        "y": -1,
+        "z": -1
+      }
+    },
+    {
+      "part": "plate1x4",
+      "position": {
+        "x": 0,
+        "y": 3,
+        "z": -7
+      }
+    },
+    {
+      "part": "rudder",
+      "rotation": 180,
+      "position": {
+        "x": 3,
+        "y": 0,
+        "z": -7
+      }
+    },
+    {
+      "part": "flat2x2",
+      "position": {
+        "x": 1,
+        "y": 4,
+        "z": -8
+      }
+    },
+    {
+      "part": "windshield",
+      "rotation": 180,
+      "position": {
+        "x": 4,
+        "y": 0,
+        "z": 2
+      }
+    },
+    {
+      "position": {
+        "x": 2,
+        "y": 0,
+        "z": -1
+      },
+      "childrenFiles": [
+        "pilot.json"
+      ]
+    }
+  ]
+}

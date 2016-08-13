@@ -84,6 +84,12 @@
             });
         };
 
+        $scope.$watch('firmwareRemote', function(val) {
+            if (val && officialVersionKey in val) {
+                $scope.storeLocalFirmware(officialVersionKey, val[officialVersionKey]);
+            }
+        });
+
         $scope.storeLocalFirmware = function(key, data) {
             var entry = {};
             entry["hex:@remote:" + key] = data;

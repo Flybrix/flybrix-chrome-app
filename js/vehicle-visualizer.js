@@ -86,7 +86,7 @@
                 shininess: 200,
             });
             var loader = new THREE.STLLoader();
-            loader.load('./models/flyer_assembly_xquad_small.stl', function(geometry) {
+            loader.load('./models/flyer_assembly_xquad_small.STL', function(geometry) {
                 var vehicleMesh = new THREE.Mesh(geometry, modelMaterial);
                 vehicleMesh.position.set(-24, -20, 16);
                 vehicleMesh.rotation.y = Math.PI / 2;
@@ -191,5 +191,93 @@
         };
     };
 
-    angular.module('flybrixApp').directive('vehicleVisualizer', ['$rootScope', vehicleVisualizer]);
+    var vehiclePreview = function($http, modelBuilder) {
+        function link(scope, element, attrs, ngModel) {
+            var SCREEN_WIDTH = 1, SCREEN_HEIGHT = 1;
+            var VIEW_ANGLE = 45, ASPECT = 1, NEAR = 0.1, FAR = 20000;
+
+            var vehicleViewScene = new THREE.Scene();
+            var vehicleViewCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+
+            vehicleViewScene.add(vehicleViewCamera);
+            vehicleViewCamera.position.set(0, 0, 400);
+            vehicleViewCamera.lookAt(vehicleViewScene.position);
+
+            var vehicleViewRenderer = new THREE.WebGLRenderer({
+                antialias: true,
+            });
+
+            function applyWindowSize() {
+                ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
+                vehicleViewCamera.aspect = ASPECT;
+                vehicleViewCamera.updateProjectionMatrix();
+                vehicleViewRenderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+                console.log(SCREEN_WIDTH, SCREEN_HEIGHT);
+            };
+
+            scope.$watch(attrs.screenHeight, function(height) {
+                SCREEN_HEIGHT = Math.max(height, 1);
+                applyWindowSize();
+            });
+
+            scope.$watch(attrs.screenWidth, function(width) {
+                SCREEN_WIDTH = Math.max(width, 1);
+                applyWindowSize();
+            });
+
+            element.append(vehicleViewRenderer.domElement);
+
+            // Camera controls
+            var vehicleViewControls = new THREE.OrbitControls(vehicleViewCamera, vehicleViewRenderer.domElement);
+
+            // Ambient light
+            var light = new THREE.PointLight(0xffffff);
+            light.position.set(0, 0, 400);
+            vehicleViewScene.add(light);
+            vehicleViewScene.add(new THREE.AmbientLight(0x303030));
+
+
+            var vehicleBaseCoordinates = new THREE.Object3D();
+            vehicleBaseCoordinates.position.set(0, 0, 0);
+            vehicleViewScene.add(vehicleBaseCoordinates);
+
+            // Robot model
+            var modelMaterial = new THREE.MeshPhongMaterial({
+                color: 0xAAAAAA,
+                specular: 0x111111,
+                shininess: 200,
+            });
+
+            function render() {
+                vehicleViewRenderer.render(vehicleViewScene, vehicleViewCamera);
+                requestAnimationFrame(render);
+            };
+
+            render();
+
+            ngModel.$render = function() {
+                console.log('DRAWING FOR', ngModel.$modelValue);
+                if (ngModel.$modelValue === undefined)
+                    return;
+                while (vehicleBaseCoordinates.children.length > 0)
+                    vehicleBaseCoordinates.remove(vehicleBaseCoordinates.children[0]);
+                modelBuilder.build(ngModel.$modelValue).then(function(model) {
+                    vehicleBaseCoordinates.add(model);
+                });
+            }
+        }
+
+        return {
+            scope: true,
+            priority: 1,
+            require: 'ngModel',
+            link: link,
+        };
+    };
+
+    var app = angular.module('flybrixApp');
+
+    app.directive('vehicleVisualizer', ['$rootScope', vehicleVisualizer]);
+
+    app.directive('vehiclePreview', ['$http', 'modelBuilder', vehiclePreview]);
 }());

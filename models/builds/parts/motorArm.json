@@ -1,0 +1,27 @@
+{
+  "part": "motorarm",
+  "rotation": 90,
+  "position": {
+    "x": -0.7,
+    "y": 0,
+    "z": 6.85
+  },
+  "children": [
+    {
+      "part": "engine",
+      "position": {
+        "x": 0.15,
+        "y": -2.5,
+        "z": 0.15
+      }
+    },
+    {
+      "part": "propeller",
+      "position": {
+        "x": 0.02,
+        "y": 5.2,
+        "z": -3.08
+      }
+    }
+  ]
+}
