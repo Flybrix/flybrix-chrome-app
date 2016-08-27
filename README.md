@@ -1,11 +1,7 @@
-#flybrix - chrome app
+#Flybric Configuration Utility
 
-Flybrix is still in alpha and our configurator is not yet avaiable in the Google Play Store. In the meantime, you can install it this way:
+This Chrome extension lets you communicate with your Flybrix flightboard over USB. You can download the source code here or install from the Google Play Store by visiting http://flybrix.com/chrome.
 
-1. Download this repository.
-2. In Chrome, select "more tools/ extenstions" from the "three bars" drop down menu at top right. Then check the "developer mode" box. 
-3. Click "Load unpacked extension..." and select the configurator folder.
-4. The Configurator extension should be added to you list. 
-5. Click "Launch" to run the plugin.
+Note that if you are trying to install from source, you must first update the libraries using bower. (From scratch, install node, npm install bower, and then bower update)
 
 If you run into problems, send us a note!
