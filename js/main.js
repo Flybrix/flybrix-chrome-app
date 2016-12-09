@@ -487,7 +487,7 @@ $(document)
     app.directive('eepromInput', function() {
         return {
             template:
-                '<label class="model-entry-label">{{label}}<input class="model-entry-field" type="number" step="{{precision}}" ng-model="field" ng-model-options="{updateOn:\'change\'}" ng-change="onChange()"></input></label>',
+                '<label class="model-entry-label">{{label}}<input class="model-entry-field" type="{{datatype}}" step="{{precision}}" ng-model="field" ng-model-options="{updateOn:\'change\'}" ng-change="onChange()"></input></label>',
             scope: true,
             require: '?ngModel',
             priority: 1,
@@ -502,8 +502,10 @@ $(document)
 
                 ngModel.$render = function() {
                     if (attrs.precision === 'string') {
+                        scope.datatype = 'text';
                         scope.field = ngModel.$modelValue;
                     } else {
+                        scope.datatype = 'number';
                         if (attrs.precision !== undefined)
                             scope.precision = parseFloat(attrs.precision);
                         else
