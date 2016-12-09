@@ -6,7 +6,8 @@
 
 Credit is due to several other projects, including:
 - multiwii ("https://github.com/multiwii")
-- phoenix flight controller ("https://github.com/cTn-dev/Phoenix-FlightController")
+- phoenix flight controller
+("https://github.com/cTn-dev/Phoenix-FlightController")
 
  */
 
@@ -138,7 +139,8 @@ $(document)
 
             var onSuccess = function() {
                 initial_config_request = $timeout(function() {
-                    // request configuration data (so we have something to work with)
+                    // request configuration data (so we have something to work
+                    // with)
                     deviceConfig.request();
 
                     // set the state message mask and frequency
@@ -182,22 +184,35 @@ $(document)
 
         $scope.tabClick = tabClick;
 
-        $rootScope.updateEeprom =
-            function() {
+        $rootScope.updateEeprom = function() {
             deviceConfig.send($rootScope.eepromConfig);
-        }
+        };
 
-            serial.setStateCallback(function(state, state_data_mask, serial_update_rate) {
-                $timeout(function() {
-                    $rootScope.state = state;
-                    $rootScope.stateDataMask = state_data_mask;
-                    $rootScope.stateUpdateRate = serial_update_rate;
-                }, 0);
-            });
+        serial.setStateCallback(function(state, state_data_mask, serial_update_rate) {
+            $timeout(function() {
+                $rootScope.state = state;
+                $rootScope.stateDataMask = state_data_mask;
+                $rootScope.stateUpdateRate = serial_update_rate;
+            }, 0);
+        });
 
         deviceConfig.setConfigCallback(function() {
             $rootScope.$apply(function() {
                 $rootScope.eepromConfig = deviceConfig.getConfig();
+            });
+        });
+
+        $interval(function() {
+            serial.send(serial.field.COM_REQ_CARD_RECORDING_STATE, [], false);
+        }, 2000);
+
+        deviceConfig.setLoggingCallback(function(isLogging, isLocked, delay) {
+            $rootScope.$apply(function() {
+                $rootScope.loggingState = {
+                    logging: isLogging,
+                    locked: isLocked,
+                    delay: delay,
+                };
             });
         });
 
@@ -313,7 +328,8 @@ $(document)
                     $('.datastream-replay .filename').html('No File Selected!');
                     return;
                 }
-                // read all contents into replay buffer //TODO worry about size...
+                // read all contents into replay buffer //TODO worry about
+                // size...
                 chosenEntry.file(function(file) {
                     var reader = new FileReader();
                     reader.onerror = function(e) {
@@ -357,9 +373,11 @@ $(document)
         };
 
         $scope.datastreamReplay.play = function() {
-            // drive everything via the slider value update -- send a chunk of bytes and then advance on a timer.
+            // drive everything via the slider value update -- send a chunk of
+            // bytes and then advance on a timer.
 
-            //$('.datastream-replay .slider').slider( "option", "value", replay_buffer.length );
+            //$('.datastream-replay .slider').slider( "option", "value",
+            // replay_buffer.length );
             $scope.datastreamReplay.interval = $interval(function() {
                 simulateData($scope.datastreamReplay.replayBuffer.slice($scope.datastreamReplay.replayPoint), 50);
             }, 50);
@@ -483,12 +501,16 @@ $(document)
                 };
 
                 ngModel.$render = function() {
-                    if (attrs.precision !== undefined)
-                        scope.precision = parseFloat(attrs.precision);
-                    else
-                        scope.precision = 0;
-                    if (ngModel.$modelValue !== undefined)
-                        scope.field = parseFloat(ngModel.$modelValue.toFixed(scope.precision));
+                    if (attrs.precision === 'string') {
+                        scope.field = ngModel.$modelValue;
+                    } else {
+                        if (attrs.precision !== undefined)
+                            scope.precision = parseFloat(attrs.precision);
+                        else
+                            scope.precision = 0;
+                        if (ngModel.$modelValue !== undefined)
+                            scope.field = parseFloat(ngModel.$modelValue.toFixed(scope.precision));
+                    }
                     scope.label = attrs.label;
                 };
             },

@@ -4,6 +4,13 @@
 
     <p style="margin-bottom: 10px; margin-top: 10px; font-weight: bold;">Data transfer:</p>
     <div>
+        <div>LOGGING STATE: {{loggingState}}</div>
+        <div class="button view-button" ng-click="setSDLog(3)">
+            activate sd card logging with lock
+        </div>
+        <div class="button view-button" ng-click="setSDLog(2)">
+            deactivate sd card logging with lock
+        </div>
         <div class="button view-button" ng-click="setSDLog(1)">
             activate sd card logging
         </div>
