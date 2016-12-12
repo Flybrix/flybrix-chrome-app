@@ -496,7 +496,11 @@ $(document)
                     return;
 
                 scope.onChange = function() {
-                    ngModel.$setViewValue(scope.field);
+                    var value = scope.field;
+                    if (attrs.precision !== 'string') {
+                        value = parseFloat(value);
+                    }
+                    ngModel.$setViewValue(value);
                     scope.$root.updateEeprom();
                 };
 
