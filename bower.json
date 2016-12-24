@@ -9,7 +9,7 @@
         "tests"
     ],
     "dependencies": {
-        "flybrix-common": "Flybrix/flybrix-common#device-naming",
+        "flybrix-common": "Flybrix/flybrix-common#1.4.0",
         "jquery": "^2.2.0",
         "jquery-ui": "^1.11.4",
         "angular": "^1.5.3",
