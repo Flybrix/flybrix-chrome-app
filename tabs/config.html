@@ -37,6 +37,10 @@
             <label class="model-entry-label" ng-repeat="n in ['major','minor','build']">{{n}} (read-only)<output class="model-entry-field">{{$root.eepromConfig.version[$index]}}</output></label>
         </div>
         <div class="model-entry">
+            Bluetooth <span class="model-entry-title">Name</span>
+            <eeprom-input ng-model="$root.eepromConfig.name" label="Name" precision="string"/>
+        </div>
+        <div class="model-entry">
             <span class="model-entry-title">model ID</span>
             <eeprom-input ng-model="$root.eepromConfig.id" label="ID"/>
         </div>

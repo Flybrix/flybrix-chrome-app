@@ -1,0 +1,18 @@
+<div ng-controller="designController">
+  <div>
+    <div>
+        <div class="model-type-tile" ng-repeat="item in models" ng-click="setPdfChoice(item)">
+            <img ng-src="{{item.image}}" alt="{{item.label}}" />
+        </div>
+    </div>
+    
+    <div style="height:400px">
+        
+        <div class="pdf-border">
+            <ng-pdf template-url="templates/assemblyViewer.html" style="width:640px;height:480px" scale="page-fit"></ng-pdf>
+        </div>
+        
+        <div style="clear:left"></div>
+    </div>
+  </div>
+</div>

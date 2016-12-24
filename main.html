@@ -44,8 +44,7 @@
         <script type="text/javascript" src="./tabs/datastream.js"></script>
         <script type="text/javascript" src="./tabs/config.js"></script>
         <script type="text/javascript" src="./tabs/log.js"></script>
-
-        <script type="text/javascript" src="./js/gallery.js"></script>
+        <script type="text/javascript" src="./tabs/designs.js"></script>
 
         <script type="text/javascript" src="./js/main.js"></script>
     </head>
@@ -82,27 +81,19 @@
             </div>
           </div>
           <div class="bar-top-box">
-            <div class="tab-button" ng-click="goToForums()">
+            <div class="gui-button" ng-click="goToForums()">
               go to the flybrix forums
-            </div>
-          </div>
-          <div class="bar-top-box">
-            <div class="tab-button" ng-hide="viewMode=='basic'" ng-click="viewMode='basic'">
-              basic mode
-            </div>
-            <div class="tab-button" ng-show="viewMode=='basic'" ng-click="viewMode='advanced'">
-              advanced mode
             </div>
           </div>
           <div style="clear:left"/>
         </div>
-        <div ng-show="viewMode=='advanced'">
+        <div>
             <div class="datastream-buttons">
               Switch to:
-              <div class="tab-button" ng-hide="dataSource=='serial'" ng-click="dataSource='serial'">
+              <div class="gui-button" ng-hide="dataSource=='serial'" ng-click="dataSource='serial'">
                 serial port
               </div>
-              <div class="tab-button" ng-hide="dataSource=='replay'" ng-click="dataSource='replay'">
+              <div class="gui-button" ng-hide="dataSource=='replay'" ng-click="dataSource='replay'">
                 replay file
               </div>
             </div>
@@ -110,31 +101,13 @@
             <div id="menu" class="tab-button-bar">
                 <a class="tab-button" ng-repeat="tab in tabs" ng-click="tabClick(tab)" title="">{{tab.label}}</a>
             </div>
+            
             <div class="tab-content">
                 <div ng-repeat="tab in tabs" id="{{tab.url}}" ng-include="'tabs/' + tab.url + '.html'"></div>
             </div>
+            
         </div>
-        <div ng-show="viewMode=='basic'">
-          <div vehicle-preview ng-model="models[eepromConfig.id].model" screen-width="640" screen-height="480"></div>
-          <div class="button basic-button" ng-click="viewMode='gallery'">
-            build new model
-          </div>
-        </div>
-        <div ng-show="viewMode=='gallery'" ng-controller="galleryController">
-          <div>
-            <div class="model-type-tile" ng-repeat="item in models" ng-click="setPdfChoice(item)">
-              <img ng-src="{{item.image}}" alt="{{item.label}}" />
-            </div>
-          </div>
-          <div style="height:400px">
-            <div ng-click="goPrevious()" class="pdf-button">&lt;</div>
-            <div class="pdf-border">
-              <ng-pdf template-url="templates/assemblyViewer.html" style="width:640px;height:480px" scale="page-fit"></ng-pdf>
-            </div>
-            <div ng-click="goNext()" class="pdf-button">&gt;</div>
-            <div style="clear:left"></div>
-          </div>
-        </div>
+
       </div>
     </body>
 </html>
