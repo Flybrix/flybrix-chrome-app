@@ -185,6 +185,25 @@ div.label-title {
     display:none;
 }
 
+.gui-button{
+    margin-top: 6px;
+    color: #000;
+    border: 1px solid #999;
+    background-color: #7ddaff;
+    border-radius: 3px;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 12px;
+    height: 16px;
+    display: inline-block;
+    min-width: 90px;
+    padding: 6px;
+    font-weight: bold;
+    margin-left: 1px;
+}
+
 .rate-display-label{
 		float:left;
 		min-width:100px;
