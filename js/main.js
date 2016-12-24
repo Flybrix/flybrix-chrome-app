@@ -171,6 +171,7 @@ $(document)
         };
 
         $scope.tabs = [
+            {url: 'designs', label: 'Designs'},
             {url: 'tuning', label: 'Tuning'},
             {url: 'sensors', label: 'Sensor Data'},
             {url: 'signals', label: 'R/C Signals'},
@@ -428,38 +429,8 @@ $(document)
 
         $rootScope.eepromConfig = deviceConfig.getConfig();
 
-        $scope.$watch('viewMode', function(mode) {
-            if (mode != 'advanced')
-                $scope.dataSource = 'serial';
-        });
 
-        $scope.viewMode = 'basic';
-
-        $scope.models = [
-            {
-              label: 'X Quad',
-              image: './models/x quad.JPG',
-              model: './models/builds/x quad.json',
-              url: './models/flyer_assembly_xquad_small.STL',
-              pdf: './pdfs/xquad.pdf',
-            },
-            {
-              label: 'Hex',
-              image: './models/flat6 hex.JPG',
-              model: './models/builds/hex.json',
-              pdf: './pdfs/flat6.pdf',
-            },
-            {
-              label: 'Octo',
-              image: './models/flat8 octo.JPG',
-              model: './models/builds/octo.json',
-              pdf: './pdfs/flat8.pdf',
-            },
-        ];
-
-        $scope.setPdfChoice = function(choice) {
-            $scope.pdfUrl = choice.pdf;
-        };
+        
 
         var lastProcessedMessage = 0;
         commandLog.onMessage(function(messages) {
