@@ -28,7 +28,7 @@
         chrome.runtime.getBackgroundPage(function(result) {
             backgroundPage = result;
             backgroundPage.serialConnectionId = -1;
-            backgroundPage.serialPortPath = "";
+            backgroundPage.serialPortPath = '';
         });
 
         return {
@@ -52,7 +52,7 @@
         function onSerialReadError(readInfo) {
             if (readInfo) {
                 console.log(
-                    "SERIAL ERROR:", readInfo.connectionId, readInfo.error);
+                    'SERIAL ERROR:', readInfo.connectionId, readInfo.error);
             }
             disconnect();
         };
@@ -78,7 +78,7 @@
 
         function getPath() {
             if (backgroundPage === null) {
-                return "";
+                return '';
             }
             return backgroundPage.serialPortPath;
         }
@@ -98,7 +98,7 @@
                 function(connectionInfo) {
                     onConnectCallback(connectionInfo, serialPort, response);
                 });
-            return response.promise;
+            return response.promise.then(serial.handlePostConnect);
         }
 
         function onConnectCallback(connectionInfo, serialPort, response) {
@@ -150,7 +150,7 @@
                     'Connection closed -- <span style="color: green;">OK</span>');
 
                 backgroundPage.serialConnectionId = -1;  // reset connection id
-                backgroundPage.serialPortPath = "";
+                backgroundPage.serialPortPath = '';
 
                 portUsageStop();
 
