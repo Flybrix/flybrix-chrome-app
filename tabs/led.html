@@ -5,32 +5,46 @@
     </div>
     <div>
       <div ng-repeat="mode in ledModes">
-        <input type="radio" name="ledmode" ng-model="$parent.led.mode" ng-value="mode.code" />{{mode.name}}
+        <input type="radio" name="ledmode" ng-model="$parent.ledState.mode" ng-value="mode.code" />{{mode.name}}
       </div>
     </div>
   </div>
   <div>
     <div class="color-box">
       <div class="label-title">
-        LEFT LED
+        FRONT LEFT LED
       </div>
-      <input color-picker ng-model="led.light.left"/>
+      <input color-picker ng-model="ledState.front_left"/>
     </div>
     <div class="color-box">
       <div class="label-title">
-        RIGHT LED
+        FRONT RIGHT LED
       </div>
-      <input color-picker ng-model="led.light.right" />
+      <input color-picker ng-model="ledState.front_right" />
+    </div>
+  </div>
+  <div>
+    <div class="color-box">
+      <div class="label-title">
+        REAR LEFT LED
+      </div>
+      <input color-picker ng-model="ledState.rear_left"/>
+    </div>
+    <div class="color-box">
+      <div class="label-title">
+        REAR RIGHT LED
+      </div>
+      <input color-picker ng-model="ledState.rear_right" />
     </div>
   </div>
   <div>
     <div style="display: inline-block;">
-      <input type="checkbox" class="led-green led-checkbox" style="height:22px;width:22px;margin:10px 20px;" ng-model="led.indicator.green">
+      <input type="checkbox" class="led-green led-checkbox" style="height:22px;width:22px;margin:10px 20px;" ng-model="ledState.green">
         <div class="led-label" style="margin-left:10px;">Green Indicator</div>
       </input>
     </div>
     <div style="display: inline-block;">
-      <input type="checkbox" class="led-green led-checkbox" style="height:22px;width:22px;margin:10px 20px;" ng-model="led.indicator.red">
+      <input type="checkbox" class="led-green led-checkbox" style="height:22px;width:22px;margin:10px 20px;" ng-model="ledState.red">
         <div class="led-label" style="margin-left:10px;">Red Indicator</div>
       </input>
     </div>
