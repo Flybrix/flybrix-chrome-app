@@ -1,36 +1,12 @@
 <div ng-controller="configController">
-    <div ng-if="recommendedFirmware">
-      <div class="firmware-list-title">Recommended firmware</div>
-      <firmware-card data="recommendedFirmware"/>
-    </div>
-    <div class="button view-button" ng-click="loadHexFile">load local firmware</div>
-    <div>
-        <div style="display: inline-block;">
-            <div class='firmware-list-title'>Remote firmwares</div>
-            <div class='firmware-list'>
-              <div class='firmware-list-inner'>
-                <firmware-card ng-repeat="(key, fw) in firmwareRemote" data="fw" callback-right="storeLocalFirmware" label-right="'store'" key='key'/>
-              </div>
-            </div>
-        </div>
-        <div style="display: inline-block; margin-left: 20px;">
-            <div class='firmware-list-title'>Local firmwares</div>
-            <div class='firmware-list'>
-              <div class='firmware-list-inner'>
-                <firmware-card ng-repeat="fw in firmwareLocal" data="fw.data" callback-right="fw.callbackRight" label-right="'remove'"/>
-              </div>
-            </div>
-        </div>
-    </div>
 
-    <filehandler-bar ng-model="configurationFilehandler"/>
-
+	<p style="margin-bottom: 10px; font-weight: bold;">Configuration Settings:</p>
+	
     <div class='button view-button' ng-click="eepromRefresh()">refresh from flyer</div>
-
     <div class='button view-button' ng-click="eepromReinit()">reset factory configuration</div>
-
-    <div ng-show="$root.eepromConfig">
-    <p style="margin-bottom: 10px; margin-top: 50px;font-weight: bold;">Configuration data:</p>
+	
+<div ng-show="$root.eepromConfig">
+    <p style="margin-top: 10px;">&nbsp;</p>
     <div class="config-fields" id="current-config">
         <div class="model-entry">
             <span class="model-entry-title">version</span>
@@ -133,5 +109,14 @@
             <eeprom-input ng-model="$root.eepromConfig.enableParameters[$index]" precision="5" label="{{n}}" ng-repeat="n in ['vibration','angle']"/>
         </div>
     </div>
-    </div>
+</div>
+
+	<p style="margin-top: 30px;font-weight: bold;">Configuration JSON File</p>
+	<filehandler-bar ng-model="configurationFilehandler"/>
+	
+	<p style="margin-top: 30px;font-weight: bold;">Firmware Updater</p>
+    <p style="">Don't forget to press the program button!</p>
+    <div class="button view-button" ng-click="loadHexFile()">flash from hex file</div> 
+
+	
 </div>

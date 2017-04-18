@@ -171,7 +171,7 @@ $(document)
         };
 
         $scope.tabs = [
-            {url: 'designs', label: 'Designs'},
+            /* {url: 'designs', label: 'Designs'}, PDF viewing no longer works because of CSP in packaged apps */
             {url: 'tuning', label: 'Tuning'},
             {url: 'sensors', label: 'Sensor Data'},
             {url: 'signals', label: 'R/C Signals'},

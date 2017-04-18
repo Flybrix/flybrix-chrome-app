@@ -1,13 +1,12 @@
 {
     "manifest_version": 2,
     "name": "Flybrix Configuration Utility",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "description": "Use the Flybrix Configuration Utility to tune and reconfigure your Flybrix flyer.",
     "icons": { "16": "icon16.png",
                "48": "icon48.png",
               "128": "icon128.png" },
     "minimum_chrome_version": "46", 
-
     "app": {
         "background": {
             "scripts": [ "background.js" ],

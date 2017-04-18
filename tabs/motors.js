@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var motorsController = function($scope, $rootScope, $interval, serial, serializer, usbSerial) {
+    var motorsController = function($scope, $rootScope, $interval, serial, usbSerial) {
         function update_bar_css(index, type, val) {
             // if newval = +4096 --> top is 0, height is 128
             // if newval = -2047 --> top is 128, height is 64
@@ -77,5 +77,5 @@
         $scope.motorFocused = [false, false, false, false, false, false, false, false];
     };
 
-    angular.module('flybrixApp').controller('motorsController', ['$scope', '$rootScope', '$interval', 'serial', 'serializer', 'usbSerial', motorsController]);
+    angular.module('flybrixApp').controller('motorsController', ['$scope', '$rootScope', '$interval', 'serial', 'usbSerial', motorsController]);
 }());
